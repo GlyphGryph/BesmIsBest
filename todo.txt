@@ -1,0 +1,9 @@
+Goal: Build a multiplayer online monster fighting game!
+
+Current master goals:
+Get a basic world movement system implemented
+  - Remember, it needs to be server validated!
+Get a basic combat system implemented
+  - Have two basic test spirits
+Get basic user management implemented
+  - Allow two people to simultaneously do all the above!

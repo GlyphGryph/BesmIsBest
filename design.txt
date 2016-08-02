@@ -1,0 +1,32 @@
+Okay, so... for our overworld, what are we going to need?
+
+Something on the client that asks the server for a "map" and renders it to the user.
+Something on the server that returns a "map".
+Something on the client that responds to input and moves the user around the map.
+Something on the client that occassionally updates the server with current state.
+Something on the server that keeps a record of the last valid state, and sends it back to the client when requested.
+Something on the client that can load a state delivered from the server.
+Something on the client that occassionally updates the server with a list of actions since last valid state was saved.
+Something on the server that checks the list of actions to see if it's valid, creates and saves the new state if so, and returns the last valid state and error if not.
+
+Okay, lets have... on the rails side
+
+A World model, which stores a map
+  - Generates map definition (this will eventually be moved to it's own thing)
+A Player mode
+  - Stores player position
+  - Stores player's current world
+A World channel
+  r- update - (updates this players position in world)
+  r- getState - (return's players position, creates new world if no world yet exists)
+A Game controller
+  - index (only action loads game)
+
+... on the client side
+  - send request to server to get grid size and player position
+  - build a table of that size
+  - place player token in assigned position
+  - Allow player arrow keys to move player
+  - Do not allow moving past the edge of the grid.
+  - Update server with current position after each move.
+  - Reload last "state" (position) when page is reloaded

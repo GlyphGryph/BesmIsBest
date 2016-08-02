@@ -6,8 +6,5 @@
 //= require_tree ./channels
 
 (function() {
-  this.App || (this.App = {});
-
-  App.cable = ActionCable.createConsumer();
-
+  Eidolon.cable = ActionCable.createConsumer();
 }).call(this);

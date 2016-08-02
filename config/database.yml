@@ -24,6 +24,9 @@ default: &default
 development:
   <<: *default
   database: Eidolon_development
+  host: localhost
+  username: app
+  password: app
 
   # The specified database role being used to connect to postgres.
   # To create additional roles in postgres see `$ createuser --help`.

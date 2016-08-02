@@ -1,5 +1,6 @@
-Eidolon.Channels.world = Eidolon.cable.subscriptions.create "WorldChannel",
+class Eidolon.WorldSubscription
   connected: ->
+    @app = Eidolon.application
     # Do nothing
 
   received: (data) ->
@@ -7,3 +8,8 @@ Eidolon.Channels.world = Eidolon.cable.subscriptions.create "WorldChannel",
 
   ping: (data) ->
     alert('ping!')
+
+  mapState: (data) ->
+    console.log('loading map state')
+    @app.state.rows = data.state
+    $('body').html(HandlebarsTemplates['map'](@app.state))

@@ -8,7 +8,8 @@ class WorldChannel < ApplicationCable::Channel
     stream_from @player_channel
     stream_from @world_channel
 
-    ActionCable.server.broadcast @world_channel, action: 'ping'
+    ActionCable.server.broadcast @world_channel, action: 'mapState',
+      state: [[1,2,3],[1,2,3],[1,2,3]]
   end
 
   def unsubscribed

@@ -12,5 +12,8 @@
 //
 //= require jquery
 //= require jquery_ujs
+//= require handlebars.runtime
+//= require_tree ./templates
+
 //= require master.coffee
 //= require_tree .

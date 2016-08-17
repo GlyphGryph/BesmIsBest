@@ -3,7 +3,16 @@
 
   .cell{
     border:1px solid black;
-    height:10px;
-    width:10px;
+    height:20px;
+    width:20px;
+    background-color:green;
+    text-align:center;
+
+    &.empty{
+    }
+
+    &.occupied{
+      color:white;
+    }
   }
 }

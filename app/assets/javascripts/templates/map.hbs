@@ -1,9 +1,13 @@
 MAP:
 <table class='map'>
   {{#each rows}}
-    <tr>
+    <tr data-row='{{@index}}'>
       {{#each .}}
-        <td class='cell'></td>
+        <td class='cell {{class}}' data-column='{{@index}}'>
+          {{#if occupied}}
+            @
+          {{/if}}
+        </td>
       {{/each}}
     </tr>
   {{/each}}

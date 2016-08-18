@@ -1,21 +1,19 @@
 class Eidolon.WorldSubscription
   connected: ->
+    console.log('Connecting to WorldChannel')
     @app = Eidolon.application
     # Do nothing
 
   received: (data) ->
+    console.log('Receiving action '+data.action+', via WorldChannel')
     @[data.action](data)
 
   ping: (data) ->
     alert('ping!')
 
   mapState: (data) ->
-    console.log('loading map state')
-    @app.state.rows = data.state
-    for row, row_num in @app.state.rows
-      for cell, column_num in row
-        if(cell == 0)
-          @app.state.rows[row_num][column_num] = {class: 'empty', occupied: false}
-        else
-          @app.state.rows[row_num][column_num] = {class: 'occupied', occupied: true}
-    $('body').html(HandlebarsTemplates['map'](@app.state))
+    @app.map.rows = data.map
+    @app.updateWorld()
+
+  commandProcessed: () ->
+    @app.actionAllowed = true

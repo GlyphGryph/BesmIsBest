@@ -8,7 +8,19 @@ class WorldChannel < ApplicationCable::Channel
     stream_from @player_channel
     stream_from @world_channel
     
-    @baseMap = ->{ [[0,0,0],[0,0,0],[0,0,0]] }
+    @baseMap = ->{ 
+      height = 5
+      width = 6
+      map = []
+      height.times do
+        row = []
+        width.times do
+          row.push(0)
+        end
+        map.push(row)
+      end
+      map
+    }
     @playerPosition = {x: 1, y: 1}
     @map = @baseMap.call
     @map[@playerPosition[:y]][@playerPosition[:x]] = 1

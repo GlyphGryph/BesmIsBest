@@ -2,6 +2,7 @@
 class WorldChannel < ApplicationCable::Channel
   def subscribed
     @player_channel = "player_#{current_user}"
+    @character = current_user.character || Character.create!(user: current_user, xx: 0, yy: 0)
     @world = OpenStruct.new({id: '1'})
     @world_channel = "world_#{@world.id}"
 
@@ -21,9 +22,8 @@ class WorldChannel < ApplicationCable::Channel
       end
       map
     }
-    @playerPosition = {x: 1, y: 1}
     @map = @baseMap.call
-    @map[@playerPosition[:y]][@playerPosition[:x]] = 1
+    @map[@character.yy][@character.xx] = 1
 
     ActionCable.server.broadcast @world_channel, action: 'mapState', map: @map
   end
@@ -35,29 +35,32 @@ class WorldChannel < ApplicationCable::Channel
     direction = data['direction']
     p "Moving player #{data}"
     if(direction=='up')
-      @playerPosition[:y] -= 1
-      if(@playerPosition[:y] < 0)
-        @playerPosition[:y] = 0
+      @character.yy -= 1
+      if(@character.yy < 0)
+        @character.yy = 0
       end
     elsif(direction=='down')
-      @playerPosition[:y] += 1
-      if(@playerPosition[:y] >= @map.length)
-        @playerPosition[:y] = @map.length-1
+      @character.yy += 1
+      if(@character.yy >= @map.length)
+        @character.yy = @map.length-1
       end
     elsif(direction=='right')
-      @playerPosition[:x] += 1
-      if(@playerPosition[:x] >= @map[0].length)
-        @playerPosition[:x] = @map[0].length-1
+      @character.xx += 1
+      if(@character.xx >= @map[0].length)
+        @character.xx = @map[0].length-1
       end
     elsif(direction=='left')
-      @playerPosition[:x] -= 1
-      if(@playerPosition[:x] < 0)
-        @playerPosition[:x] = 0
+      @character.xx -= 1
+      if(@character.xx < 0)
+        @character.xx = 0
       end
     end
+    @character.save!
     p "New player position: #{@playerPosition}"
     @map = @baseMap.call
-    @map[@playerPosition[:y]][@playerPosition[:x]] = 1
+    Character.all.each do |c|
+      @map[c.yy][c.xx] = 1
+    end
     ActionCable.server.broadcast @world_channel, action: 'mapState', map: @map
     ActionCable.server.broadcast @world_channel, action: 'commandProcessed'
   end

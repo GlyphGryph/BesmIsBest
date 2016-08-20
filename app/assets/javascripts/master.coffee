@@ -9,11 +9,11 @@ class Eidolon.MasterController
     # Do nothing
 
   start: () ->
-    # Begin loading the page!
-    @subscribe('world')
+    if $('body.master.begin').length > 0
+      @subscribe('world')
 
   subscribe: (name) ->
-    console.log('subscribing')
+    console.log('Subscribing to '+name)
     upname = name.substr(0,1).toUpperCase()+name.substr(1)
     subscriptionController = new Eidolon[upname+"Subscription"]()
     channel = upname+"Channel"

@@ -10,9 +10,11 @@ class Eidolon.WorldSubscription
   ping: (data) ->
     console.log('ping!')
 
-  mapState: (data) ->
-    @app.map.rows = data.map
-    @app.updateWorld()
+  updateWorldMap: (data) ->
+    @commandProcessed()
+    if(Eidolon.worldController.active)
+      Eidolon.worldController.map.rows = data.map
+      Eidolon.worldController.update()
 
   commandProcessed: () ->
     @app.actionAllowed = true

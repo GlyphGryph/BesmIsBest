@@ -9,7 +9,7 @@ class WorldChannel < ApplicationCable::Channel
     stream_from @player_channel
     stream_from @world_channel
 
-    ActionCable.server.broadcast @world_channel, action: 'mapState', map: @world.reload.full_map
+    ActionCable.server.broadcast @world_channel, action: 'updateWorldMap', map: @world.full_map
   end
 
   def unsubscribed
@@ -41,7 +41,6 @@ class WorldChannel < ApplicationCable::Channel
     end
     @character.save!
     p "New player position: #{@playerPosition}"
-    ActionCable.server.broadcast @world_channel, action: 'mapState', map: @world.reload.full_map
-    ActionCable.server.broadcast @world_channel, action: 'commandProcessed'
+    ActionCable.server.broadcast @world_channel, action: 'updateWorldMap', map: @world.reload.full_map
   end
 end

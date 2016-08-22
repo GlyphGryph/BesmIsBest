@@ -4,7 +4,7 @@ class Eidolon.BattleController
 
   start: ->
     @active = true
-    @update()
+    Eidolon.Channels.world.perform('request_update')
 
   end: ->
     @active = false

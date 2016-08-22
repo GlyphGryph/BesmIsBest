@@ -10,11 +10,26 @@ class Eidolon.WorldSubscription
   ping: (data) ->
     console.log('ping!')
 
-  updateWorldMap: (data) ->
-    @commandProcessed()
-    if(Eidolon.worldController.active)
-      Eidolon.worldController.map.rows = data.map
-      Eidolon.worldController.update()
+  subscribed: () ->
+    @app.subscribed()
 
-  commandProcessed: () ->
+  updateWorldMap: (data) ->
+    @app.update(data)
+    @commandProcessed()
+
+  enterBattle: (data) ->
+    @app.enterBattle()
+    @commandProcessed()
+
+  updateBattle: (data) ->
+    @app.update(data)
+    @commandProcessed()
+
+  leaveBattle: (data) ->
+    @app.leaveBattle()
+    @commandProcessed()
+
+  commandProcessed: (data={}) ->
+    if(data.message?)
+      console.log(data.message)
     @app.actionAllowed = true

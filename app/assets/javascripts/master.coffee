@@ -17,8 +17,10 @@ class Eidolon.MasterController
     upname = name.substr(0,1).toUpperCase()+name.substr(1)
     subscriptionController = new Eidolon[upname+"Subscription"]()
     channel = upname+"Channel"
-    @setController(Eidolon.worldController)
     Eidolon.Channels[name] = Eidolon.cable.subscriptions.create(channel, subscriptionController)
+
+  subscribed: () ->
+    @setController(Eidolon.worldController)
 
   actionAllowed: false
 
@@ -27,7 +29,6 @@ class Eidolon.MasterController
       key = e.which
       console.log('Keypress seen: '+key)
       @actionAllowed = false
-      
       captured = @receiveKey(e.which)
       if(!captured)
         captured = @currentController.receiveKey(e.which)
@@ -38,13 +39,22 @@ class Eidolon.MasterController
   
   receiveKey: (key) ->
     switch(key)
-      when 65 then @setController(Eidolon.worldController)
-      when 66 then @setController(Eidolon.battleController)
+      when 65
+        console.log('Leaving battle...')
+        Eidolon.Channels.world.perform('leave_battle')
+      when 66
+        console.log('Entering battle...')
+        Eidolon.Channels.world.perform('enter_battle')
       else
         return false
     @actionAllowed = true
     return true
+  
+  enterBattle: () ->
+    @setController(Eidolon.battleController)
 
+  leaveBattle: () ->
+    @setController(Eidolon.worldController)
 
   setController: (controller) ->
     console.log('Switching Controller to '+controller.class)
@@ -52,6 +62,9 @@ class Eidolon.MasterController
       @currentController.end()
     @currentController = controller
     @currentController.start()
+
+  update: (data) ->
+    @currentController.update(data)
 
 Eidolon.application = new Eidolon.MasterController()
 

@@ -5,21 +5,21 @@ class Eidolon.WorldController
 
   start: () ->
     @active = true
-    @update()
+    Eidolon.Channels.world.perform('request_update')
 
   end: () ->
     @active = false
 
-  update: () ->
-    console.log('Updating '+@class)
-    if(@map.rows)
-      for row, row_num in @map.rows
-        for cell, column_num in row
-          if(cell == 0)
-            @map.rows[row_num][column_num] = {class: 'empty', occupied: false}
-          else
-            @map.rows[row_num][column_num] = {class: 'occupied', occupied: true}
-      $('body').html(HandlebarsTemplates.map(@map))
+  update: (data) ->
+    console.log('Updating Map')
+    @map.rows = data.map
+    for row, row_num in @map.rows
+      for cell, column_num in row
+        if(cell == 0)
+          @map.rows[row_num][column_num] = {class: 'empty', occupied: false}
+        else
+          @map.rows[row_num][column_num] = {class: 'occupied', occupied: true}
+    $('body').html(HandlebarsTemplates.map(@map))
   
   move: (direction) ->
     console.log('Moving '+direction)

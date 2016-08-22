@@ -1,46 +1,34 @@
 # Be sure to restart your server when you modify this file. Action Cable runs in a loop that does not support auto reloading.
 class WorldChannel < ApplicationCable::Channel
   def subscribed
-    @player_channel = "player_#{current_user}"
-    @world = World.first || World.create!
-    @character = current_user.character || Character.create!(user: current_user, xx: 0, yy: 0, world: @world)
-    @world_channel = "world_#{@world.id}"
+    # Join first world or create a new one
+    world = World.first || World.create!
+    # Create character if character does not exist
+    current_user.character || Character.create!(user: current_user, xx: 0, yy: 0, world: world)
 
-    stream_from @player_channel
-    stream_from @world_channel
+    stream_for current_user
+    stream_for current_user.character.world
 
-    ActionCable.server.broadcast @world_channel, action: 'updateWorldMap', map: @world.full_map
+    WorldChannel.broadcast_to current_user, action: 'subscribed'
   end
 
   def unsubscribed
+    current_user.character.leave_battle_mode
   end
 
   def move(data)
-    direction = data['direction']
-    p "Moving player #{data}"
-    if(direction=='up')
-      @character.yy -= 1
-      if(@character.yy < 0)
-        @character.yy = 0
-      end
-    elsif(direction=='down')
-      @character.yy += 1
-      if(@character.yy >= @world.height)
-        @character.yy = @world.height-1
-      end
-    elsif(direction=='right')
-      @character.xx += 1
-      if(@character.xx >= @world.width)
-        @character.xx = @world.width-1
-      end
-    elsif(direction=='left')
-      @character.xx -= 1
-      if(@character.xx < 0)
-        @character.xx = 0
-      end
-    end
-    @character.save!
-    p "New player position: #{@playerPosition}"
-    ActionCable.server.broadcast @world_channel, action: 'updateWorldMap', map: @world.reload.full_map
+    current_user.character.move(data['direction'])
+  end
+
+  def request_update
+    current_user.character.request_update
+  end
+
+  def enter_battle
+    current_user.character.enter_battle_mode
+  end
+
+  def leave_battle
+    current_user.character.leave_battle_mode
   end
 end

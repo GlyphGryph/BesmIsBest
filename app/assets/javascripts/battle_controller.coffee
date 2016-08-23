@@ -9,9 +9,9 @@ class Eidolon.BattleController
   end: ->
     @active = false
 
-  update: () ->
-    console.log('Updating '+@class)
-    $('body').html(HandlebarsTemplates.battle())
+  update: (data) ->
+    @state = data.state
+    $('body').html(HandlebarsTemplates.battle(@state))
 
   receiveKey: (key) ->
     return false

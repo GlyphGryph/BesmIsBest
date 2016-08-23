@@ -6,9 +6,9 @@ class Character < ApplicationRecord
   def request_update
     reload
     if(mode == :move)
-      WorldChannel.broadcast_to user, action: 'updateWorldMap', map: user.character.world.reload.full_map
+      WorldChannel.broadcast_to user, action: 'updateWorldMap', map: world.reload.full_map
     elsif(mode == :battle)
-      WorldChannel.broadcast_to user, action: 'updateBattle'
+      WorldChannel.broadcast_to user, action: 'updateBattle', state: battle.reload.full_state
     end
   end
   

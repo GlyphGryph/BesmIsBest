@@ -1,11 +1,31 @@
-BATTLE:
-
-<div>
-  Them
-
-  *
-  \
-  *
-
-  You
+<div id='battle-zone'>
+  <div id='side_two' class='side'>
+    <div class='details'>
+      <div class='name'>
+        {{side_two.name}}
+      </div>
+      <div class='time-bar'>
+        <div class='background-bar' />
+        <div class='foreground-bar' style='width:{{side_two.time_unit_percent}}%'/>
+      </div>
+    </div>
+    <div class='picture'>
+      <img src='{{side_two.image}}' />
+    </div>
+  </div>
+  <div id='between'>VS</div>
+  <div id='side_one' class='side'>
+    <div class='details'>
+      <div class='name'>
+        {{side_one.name}}
+      </div>
+      <div class='time-bar'>
+        <div class='background-bar' />
+        <div class='foreground-bar' style='width:{{side_one.time_unit_percent}}%'/>
+      </div>
+    </div>
+    <div class='picture'>
+      <img src='{{side_one.image}}' />
+    </div>
+  </div>
 </div>

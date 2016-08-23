@@ -1,0 +1,98 @@
+#battle-zone{
+  width:400px;
+
+  .picture img{
+    width:128px;
+    height:128px;
+  }
+
+  #side_one{
+    width:100%;
+
+    .details{
+      float:right;
+    }
+
+    .picture{
+      float:left;
+
+      img{
+        -moz-transform:scaleX(-1);
+        -o-transform:scaleX(-1);
+        -webkit-transform:scaleX(-1);
+        transform:scaleX(-1);
+        filter:FlipH;
+        -ms-filter:"FlipH";
+      }
+    }
+  }
+
+  #side_two{
+    width:100%;
+
+    .details{
+      float:left;
+    }
+
+    .picture{
+      float:right;
+    }
+  }
+
+  #between{
+    width:100%;
+    text-align:center;
+    margin-left:auto;
+    margin-right:auto;
+    border:1px solid black;
+    padding:5px;
+    margin-bottom:15px;
+    margin-top:15px;
+  }
+
+  .side{
+    .details{
+      width:50%;
+      text-align:center;
+
+      .name{
+        width:100%;
+      }
+      
+      .time-bar{
+        width:100%;
+        position:relative;
+        height:40px;
+        background-color: black;
+
+        .background-bar{
+          position:absolute;
+          top:10px;
+          left:0;
+          height: 20px;
+          width:100%;
+          background-color:#EEE;
+        }
+
+        .foreground-bar{
+          position: absolute;
+          top:10px;
+          left:0;
+          height: 20px;
+          background-color:#999;
+        }
+      }
+    }
+    
+    .name{
+      width:50%;
+      text-align:center;
+    }
+
+    &:after{
+      display:block;
+      content:'';
+      clear:both;
+    }
+  }
+}

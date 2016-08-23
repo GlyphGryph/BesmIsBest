@@ -59,7 +59,7 @@
         width:100%;
       }
       
-      .time-bar{
+      .bar-container{
         width:100%;
         position:relative;
         height:40px;
@@ -80,6 +80,15 @@
           left:0;
           height: 20px;
           background-color:#999;
+        }
+
+        .label{
+          position:absolute;
+          top:10px;
+          left:0;
+          height:20px;
+          width:100%;
+          text-align:center;
         }
       }
     }

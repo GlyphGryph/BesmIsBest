@@ -11,7 +11,12 @@ class Battle < ApplicationRecord
         max_health: 50,
         health_percent: 100,
         time_units: 19,
-        time_unit_percent: 19*100/20
+        time_unit_percent: 19*100/20,
+        texts: [
+          "What's this?",
+          "You've encountered a wild Eidolon!",
+          "Prepare to fight!"
+        ]
       },
       side_two: {
         name: 'Faithdolon',

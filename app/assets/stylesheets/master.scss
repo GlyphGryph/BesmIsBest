@@ -2,6 +2,14 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+html {
+  box-sizing: border-box;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
 img { 
   image-rendering: optimizeSpeed;             /* STOP SMOOTHING, GIVE ME SPEED  */
   image-rendering: -moz-crisp-edges;          /* Firefox                        */
@@ -10,4 +18,20 @@ img {
   image-rendering: pixelated; /* Chrome */
   image-rendering: optimize-contrast;         /* CSS3 Proposed                  */
   -ms-interpolation-mode: nearest-neighbor;   /* IE8+                           */
+}
+
+
+.blink {
+  animation: blink-animation 1s steps(2, start) infinite;
+  -webkit-animation: blink-animation 1s steps(2, start) infinite;
+}
+@keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
+}
+@-webkit-keyframes blink-animation {
+  to {
+    visibility: hidden;
+  }
 }

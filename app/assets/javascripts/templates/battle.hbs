@@ -5,14 +5,18 @@
         {{side_two.name}}
       </div>
       <div class='health-bars bar-container'>
-        <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_two.health_percent}}%'/>
-        <div class='label'>HP: {{side_two.health}}/{{side_two.max_health}}</div>
+        <div class='inside-bar-container'>
+          <div class='background-bar' />
+          <div class='foreground-bar' style='width:{{side_two.health_percent}}%'/>
+          <div class='label'>HP: {{side_two.health}}/{{side_two.max_health}}</div>
+        </div>
       </div>
       <div class='time-bars bar-container'>
-        <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_two.time_unit_percent}}%'/>
-        <div class='label'>TU</div>
+        <div class='inside-bar-container'>
+          <div class='background-bar' />
+          <div class='foreground-bar' style='width:{{side_two.time_unit_percent}}%'/>
+          <div class='label'>TU</div>
+        </div>
       </div>
     </div>
     <div class='picture'>
@@ -26,18 +30,28 @@
         {{side_one.name}}
       </div>
       <div class='health-bars bar-container'>
-        <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_one.health_percent}}%'/>
-        <div class='label'>HP: {{side_one.health}}/{{side_one.max_health}}</div>
+        <div class='inside-bar-container'>
+          <div class='background-bar' />
+          <div class='foreground-bar' style='width:{{side_one.health_percent}}%'/>
+          <div class='label'>HP: {{side_one.health}}/{{side_one.max_health}}</div>
+        </div>
       </div>
       <div class='time-bars bar-container'>
-        <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_one.time_unit_percent}}%'/>
-        <div class='label'>TU</div>
+        <div class='inside-bar-container'>
+          <div class='background-bar' />
+          <div class='foreground-bar' style='width:{{side_one.time_unit_percent}}%'/>
+          <div class='label'>TU</div>
+        </div>
       </div>
     </div>
     <div class='picture'>
       <img src='{{side_one.image}}' />
+    </div>
+  </div>
+  <div id='battle-text'>
+    <div class='text' />
+    <div class='continue-arrow'>
+      <div class='blink'>▼</div>
     </div>
   </div>
 </div>

@@ -10,7 +10,7 @@ class Eidolon.MasterController
     if $('body.master.begin').length > 0
       @subscribe('world')
     console.log('Watching for keypresses')
-    $(document).keydown(@keypressHandler)
+    $(document).on('keydown', @keypressHandler)
 
   subscribe: (name) ->
     console.log('Subscribing to '+name)
@@ -25,7 +25,7 @@ class Eidolon.MasterController
   actionAllowed: false
 
   keypressHandler: (e) =>
-    if(@actionAllowed && @currentController && @currentController.active)
+    if(@actionAllowed && @currentController && @currentController.active && !@keyupKey)
       key = e.which
       console.log('Keypress seen: '+key)
       @actionAllowed = false
@@ -36,6 +36,18 @@ class Eidolon.MasterController
         e.preventDefault()
       else
         @actionAllowed = true
+
+  keyupHandler: (e) =>
+    if(e.which == @keyupKey)
+      console.log("Keyup of "+e.which+" detected, allowing input")
+      $(document).off('keyup')
+      @keyupKey = null
+      @actionAllowed = true
+
+  waitForKeyup: (key) =>
+    console.log("Waiting for keyup of "+key)
+    @keyupKey = key
+    $(document).on('keyup', @keyupHandler)
   
   receiveKey: (key) ->
     switch(key)

@@ -1,5 +1,6 @@
 #battle-zone{
   width:400px;
+  font-family: "Lucida Console", Monaco, monospace;
 
   .picture img{
     width:128px;
@@ -63,32 +64,40 @@
         width:100%;
         position:relative;
         height:40px;
-        background-color: black;
+        background-color:black;
+        margin-bottom:5px;
+        padding:10px 5px 10px 5px;
 
-        .background-bar{
-          position:absolute;
-          top:10px;
-          left:0;
-          height: 20px;
+        .inside-bar-container{
+          position: relative;
+          height:100%;
           width:100%;
-          background-color:#EEE;
-        }
 
-        .foreground-bar{
-          position: absolute;
-          top:10px;
-          left:0;
-          height: 20px;
-          background-color:#999;
-        }
+          .background-bar{
+            position:absolute;
+            top:0;
+            left:0;
+            height:100%;
+            width:100%;
+            background-color:#EEE;
+          }
 
-        .label{
-          position:absolute;
-          top:10px;
-          left:0;
-          height:20px;
-          width:100%;
-          text-align:center;
+          .foreground-bar{
+            position:absolute;
+            top:0;
+            left:0;
+            height:100%;
+            background-color:#999;
+          }
+
+          .label{
+            position:absolute;
+            top:0px;
+            left:0;
+            height:100%;
+            width:100%;
+            text-align:center;
+          }
         }
       }
     }
@@ -104,4 +113,27 @@
       clear:both;
     }
   }
+
+  #battle-text{
+    position:relative;
+    width:100%;
+    border:10px double black;
+    padding:15px;
+    height:120px;
+
+    .text{
+      width:100%;
+      height:100px;
+    }
+    .continue-arrow{
+      display:none;
+      position:absolute;
+      bottom:0px;
+      right:0px;
+      height:20px;
+      width:20px;
+      padding:2px;
+    }
+  }
 }
+

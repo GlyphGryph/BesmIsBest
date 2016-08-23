@@ -1,5 +1,6 @@
 class Eidolon.WorldController
   class: 'WorldController'
+  mode: 'world'
   map: {}
   active: false
 
@@ -11,7 +12,6 @@ class Eidolon.WorldController
     @active = false
 
   update: (data) ->
-    console.log('Updating Map')
     @map.rows = data.map
     for row, row_num in @map.rows
       for cell, column_num in row
@@ -22,7 +22,6 @@ class Eidolon.WorldController
     $('body').html(HandlebarsTemplates.map(@map))
   
   move: (direction) ->
-    console.log('Moving '+direction)
     Eidolon.Channels.world.perform('move', {direction: direction})
   
   receiveKey: (key) ->

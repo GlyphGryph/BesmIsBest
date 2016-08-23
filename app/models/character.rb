@@ -6,9 +6,9 @@ class Character < ApplicationRecord
   def request_update
     reload
     if(mode == :move)
-      WorldChannel.broadcast_to user, action: 'updateWorldMap', map: world.reload.full_map
+      WorldChannel.broadcast_to user, action: 'update', map: world.reload.full_map, mode: 'world'
     elsif(mode == :battle)
-      WorldChannel.broadcast_to user, action: 'updateBattle', state: battle.reload.full_state
+      WorldChannel.broadcast_to user, action: 'update', state: battle.reload.full_state, mode: 'battle'
     end
   end
   
@@ -43,11 +43,11 @@ class Character < ApplicationRecord
     end
     p "New Character #{id} position: #{self.xx}, #{self.yy}"
     if rand(10)==1
+      WorldChannel.broadcast_to world, action: 'update', map: world.reload.full_map, mode: 'world'
       enter_battle_mode()
-      WorldChannel.broadcast_to world, action: 'updateWorldMap', map: world.reload.full_map
     else
       save!
-      WorldChannel.broadcast_to world, action: 'updateWorldMap', map: world.reload.full_map
+      WorldChannel.broadcast_to world, action: 'update', map: world.reload.full_map, mode: 'world'
     end
   end
 

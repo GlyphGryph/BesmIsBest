@@ -1,5 +1,6 @@
 class Eidolon.BattleController
   class: 'BattleController'
+  mode: 'battle'
   active: false
 
   start: ->

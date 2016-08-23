@@ -63,7 +63,12 @@ class Eidolon.MasterController
     return true
   
   enterBattle: () ->
+    @actionAllowed = false
+    $('#map').fadeTo(600, 0, @finishEnteringBattle)
+    
+  finishEnteringBattle: () =>
     @setController(Eidolon.battleController)
+    @actionAllowed = true
 
   leaveBattle: () ->
     @setController(Eidolon.worldController)
@@ -76,7 +81,8 @@ class Eidolon.MasterController
     @currentController.start()
 
   update: (data) ->
-    @currentController.update(data)
+    if(data.mode == @currentController.mode)
+      @currentController.update(data)
 
 Eidolon.application = new Eidolon.MasterController()
 

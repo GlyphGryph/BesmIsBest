@@ -13,16 +13,12 @@ class Eidolon.WorldSubscription
   subscribed: () ->
     @app.subscribed()
 
-  updateWorldMap: (data) ->
+  update: (data) ->
     @app.update(data)
     @commandProcessed()
 
   enterBattle: (data) ->
     @app.enterBattle()
-    @commandProcessed()
-
-  updateBattle: (data) ->
-    @app.update(data)
     @commandProcessed()
 
   leaveBattle: (data) ->

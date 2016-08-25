@@ -1,0 +1,2 @@
+class KnownMove < ApplicationRecord
+end

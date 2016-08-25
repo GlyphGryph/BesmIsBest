@@ -1,0 +1,2 @@
+class Spirit < ApplicationRecord
+end

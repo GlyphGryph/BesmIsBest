@@ -1,0 +1,2 @@
+class EquippedMove < ApplicationRecord
+end

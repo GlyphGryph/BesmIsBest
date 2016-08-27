@@ -27,8 +27,14 @@ class Eidolon.BattleController
       $('#battle-text .continue-arrow').show()
     else
       $('#battle-text .continue-arrow').hide()
-      $('#battle-text .text').text("[ACTION SELECTION PLACEHOLDER]")
-    
+      $('#battle-text .text').html(@moveListElement())
+  
+  moveListElement: () ->
+    element = $('<div></div>').addClass('move-list')
+    for move in @state.side_one.moves
+      moveElement = $('<div></div>').addClass('move').attr('data-id', move.id).text(move.name)
+      element.append(moveElement)
+
   receiveKey: (key) ->
     switch(key)
       when 13

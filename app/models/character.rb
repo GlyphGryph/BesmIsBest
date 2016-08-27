@@ -2,6 +2,9 @@ class Character < ApplicationRecord
   belongs_to :user
   belongs_to :world, required: false
   belongs_to :battle, required: false
+  has_many :character_spirits, dependent: :destroy
+  has_many :spirits, through: :character_spirits
+  before_create :setup
 
   def request_update
     reload
@@ -68,5 +71,14 @@ class Character < ApplicationRecord
       self.battle.destroy!
       WorldChannel.broadcast_to user, action: 'leaveBattle'
     end
+  end
+
+  def spirit
+    spirits.first
+  end
+
+private
+  def setup
+    self.character_spirits << CharacterSpirit.create(spirit: Spirit.create(name: 'Nightwing'), position: 0)
   end
 end

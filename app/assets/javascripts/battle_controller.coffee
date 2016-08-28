@@ -10,7 +10,10 @@ class Eidolon.BattleController
   start: ->
     @active = true
     @messageQueue = []
-    Eidolon.application.subscribe('battle')
+    if(Eidolon.Channels.battle)
+      @subscribed()
+    else
+      Eidolon.application.subscribe('battle')
 
   end: ->
     @active = false
@@ -21,7 +24,7 @@ class Eidolon.BattleController
   update: (data) ->
     @state = data.state
     $('body').html(HandlebarsTemplates.battle(@state))
-    @receiveTexts(@state.side_one.texts)
+    @receiveTexts(@state.texts)
 
   receiveTexts: (texts)->
     if(texts?)
@@ -37,6 +40,11 @@ class Eidolon.BattleController
       $('#battle-text .text').text(@messageQueue.shift())
       $('#battle-text .continue-arrow').show()
       @menuMode = 'viewText'
+    else if(@state.battle_finished)
+      $('#battle-text .continue-arrow').hide()
+      @waitText = $('#battle-text .text').text()
+      @menuMode = 'wait'
+      Eidolon.Channels.world.perform('leave_battle')
     else
       $('#battle-text .continue-arrow').hide()
       $('#battle-text .text').html(@moveListElement())
@@ -46,6 +54,7 @@ class Eidolon.BattleController
   selectMove: () ->
     @waitText = @state.side_one.name+" uses "+@indicatedMove.name
     $('#battle-text .text').text(@waitText)
+    $('#battle-text .continue-arrow').hide()
     @menuMode = 'wait'
     Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove.id})
 
@@ -57,7 +66,6 @@ class Eidolon.BattleController
       moveText = $('<td></td>').addClass('move-name-cell').text(move.name)
       moveElement.append(moveSelector).append(moveText)
       element.append(moveElement)
-    return element
 
   receiveConfirmation: () ->
     switch(@menuMode)

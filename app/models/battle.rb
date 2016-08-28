@@ -12,32 +12,63 @@ class Battle < ApplicationRecord
   end
 
   def full_state
-    message = {
-      side_one: {
-        name: character.spirit.name,
-        health: character.spirit.hp,
-        max_health: character.spirit.max_hp,
-        health_percent: (character.spirit.hp * 100) / character.spirit.max_hp,
-        time_units: character.spirit.ap,
-        time_unit_percent: (character.spirit.ap * 100) / 5,
-        image: ActionController::Base.helpers.image_url(character.spirit.image),
+    if(battle_finished?)
+      add_text('Victory! The enemy has been defeated!')
+      message = {
+        side_one: {
+          name: character.spirit.name,
+          health: character.spirit.hp,
+          max_health: character.spirit.max_hp,
+          health_percent: (character.spirit.hp * 100) / character.spirit.max_hp,
+          time_units: character.spirit.ap,
+          time_unit_percent: (character.spirit.ap * 100) / 5,
+          image: ActionController::Base.helpers.image_url(character.spirit.image),
+          moves: character.spirit.equipped_move_hash
+        },
+        side_two: {
+          name: spirit.name,
+          image: ActionController::Base.helpers.image_url(spirit.image),
+          health: 0,
+          max_health: spirit.max_hp,
+          health_percent: (spirit.hp * 100) / spirit.max_hp,
+          time_units: 0,
+          time_unit_percent: (spirit.ap * 100) / 5,
+          moves: spirit.equipped_move_hash
+        },
         texts: state['texts'],
-        moves: character.spirit.equipped_move_hash
-      },
-      side_two: {
-        name: spirit.name,
-        image: ActionController::Base.helpers.image_url(spirit.image),
-        health: spirit.hp,
-        max_health: spirit.max_hp,
-        health_percent: (spirit.hp * 100) / spirit.max_hp,
-        time_units: spirit.ap,
-        time_unit_percent: (spirit.ap * 100) / 5,
-        moves: spirit.equipped_move_hash
+        battle_finished: true
       }
-    }
-    self.state['texts'] = []
-    self.save!
-    message
+      self.destroy!
+      message
+    else
+      message = {
+        side_one: {
+          name: character.spirit.name,
+          health: character.spirit.hp,
+          max_health: character.spirit.max_hp,
+          health_percent: (character.spirit.hp * 100) / character.spirit.max_hp,
+          time_units: character.spirit.ap,
+          time_unit_percent: (character.spirit.ap * 100) / 5,
+          image: ActionController::Base.helpers.image_url(character.spirit.image),
+          moves: character.spirit.equipped_move_hash
+        },
+        side_two: {
+          name: spirit.name,
+          image: ActionController::Base.helpers.image_url(spirit.image),
+          health: spirit.hp,
+          max_health: spirit.max_hp,
+          health_percent: (spirit.hp * 100) / spirit.max_hp,
+          time_units: spirit.ap,
+          time_unit_percent: (spirit.ap * 100) / 5,
+          moves: spirit.equipped_move_hash
+        },
+        texts: state['texts'],
+        battle_finished: false
+      }
+      self.state['texts'] = []
+      self.save!
+      message
+    end
   end
 
   def add_text(text)
@@ -54,6 +85,10 @@ class Battle < ApplicationRecord
 
   def check_triggers(action, owner, enemy)
     return true
+  end
+
+  def battle_finished?
+    spirit.hp <= 0
   end
 
 private

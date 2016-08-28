@@ -45,21 +45,6 @@ class Character < ApplicationRecord
     end
   end
 
-  def enter_battle_mode
-    p "Character #{id} has entered Battle!"
-    self.battle = Battle.create()
-    save!
-    WorldChannel.broadcast_to user, action: 'enterBattle'
-  end
-
-  def leave_battle_mode
-    if(self.reload.battle)
-      p "Character #{id} has left Battle!"
-      self.battle.destroy!
-      WorldChannel.broadcast_to user, action: 'leaveBattle'
-    end
-  end
-
   def spirit
     spirits.first
   end

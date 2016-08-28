@@ -18,7 +18,7 @@ class Spirit < ApplicationRecord
 private
   def assign_defaults
     self.name ||= 'Normalon'
-    self.max_hp ||= 24
+    self.max_hp ||= 22
     self.hp ||= self.max_hp
     self.ap ||= 5
     self.image ||= 'faithdolon.png'

@@ -25,10 +25,15 @@ class WorldChannel < ApplicationCable::Channel
   end
 
   def enter_battle
-    current_user.character.enter_battle_mode
+    current_user.character.battle = Battle.create!()
+    current_user.character.save!
+    WorldChannel.broadcast_to current_user, action: 'enterBattle'
   end
 
   def leave_battle
-    current_user.character.leave_battle_mode
+    if(current_user.character.reload.battle)
+      current_user.character.battle.destroy!
+    end
+    WorldChannel.broadcast_to current_user, action: 'leaveBattle'
   end
 end

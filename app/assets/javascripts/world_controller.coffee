@@ -6,7 +6,10 @@ class Eidolon.WorldController
 
   start: () ->
     @active = true
-    Eidolon.application.subscribe('world')
+    if(Eidolon.Channels.world)
+      @subscribed()
+    else
+      Eidolon.application.subscribe('world')
 
   subscribed: ->
     Eidolon.Channels.world.perform('request_update')

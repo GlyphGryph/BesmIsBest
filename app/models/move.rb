@@ -1,6 +1,20 @@
 class Move
-  def self.execute(id, me, them)
-    @@all[id].call(me, them)
+  def self.execute(id, battle, owner, enemy)
+    action = getMove(id)
+    # owner.ap -= action.ap
+    # # Early exist if there's not enough ap for this move
+    # if(owner.ap < 0)
+    #   owner.ap += action.ap
+    #   return false
+    # end
+    allowed = battle.check_triggers(action, owner, enemy)
+    if(allowed)
+      if(action.types.include?(:attack))
+        enemy.hp -= action.damage
+      end
+      action.try(:special).try(:call, owner, enemy)
+    end
+    owner.save!
   end
 
   def self.getMove(id)
@@ -9,33 +23,34 @@ class Move
   end
 
   @@all = {
-    attack: {
+    attack: OpenStruct.new(
       name: 'Attack',
-      types: [:hidden, :temporary],
+      types: [:attack],
       ap: 3,
-      result: lambda do |me, them|
-      end
-    },
-    wait: {
+      damage: 5
+    ),
+    wait: OpenStruct.new(
       name: 'Wait',
-      types: [:hidden, :temporary],
-      ap: 1,
-      result: lambda do |me, them|
-      end
-    },
-    juke: {
+      types: [:action],
+      ap: 1
+    ),
+    juke: OpenStruct.new(
       name: 'Juke',
-      types: [:hidden, :temporary],
+      types: [:hidden, :temporary, :trap],
       ap: 3,
-      result: lambda do |me, them|
+      special: lambda do |owner, enemy|
+      end,
+      trigger: lambda do |owner, enemy, attack|
+      end,
+      expire: lambda do |owner, enemy, attack|
       end
-    },
-    shake_off: {
+    ),
+    shake_off: OpenStruct.new(
       name: 'Shake Off',
-      types: [:hidden, :temporary],
+      types: [:action],
       ap: 3,
-      result: lambda do |me, them|
+      special: lambda do |owner, enemy|
       end
-    }
+    )
   }
 end

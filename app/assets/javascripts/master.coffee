@@ -8,7 +8,7 @@ class Eidolon.MasterController
   class: 'MasterController'
   start: () ->
     if $('body.master.begin').length > 0
-      @subscribe('world')
+      @setController(Eidolon.worldController)
     console.log('Watching for keypresses')
     $(document).on('keydown', @keypressHandler)
 
@@ -20,7 +20,7 @@ class Eidolon.MasterController
     Eidolon.Channels[name] = Eidolon.cable.subscriptions.create(channel, subscriptionController)
 
   subscribed: () ->
-    @setController(Eidolon.worldController)
+    @currentController.subscribed()
 
   actionAllowed: false
 

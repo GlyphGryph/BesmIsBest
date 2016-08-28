@@ -6,18 +6,9 @@ class Character < ApplicationRecord
   has_many :spirits, through: :character_spirits
   before_create :setup
 
-  def request_update
-    reload
-    if(mode == :move)
-      WorldChannel.broadcast_to user, action: 'update', map: world.reload.full_map, mode: 'world'
-    elsif(mode == :battle)
-      WorldChannel.broadcast_to user, action: 'update', state: battle.reload.full_state, mode: 'battle'
-    end
-  end
-  
   def move(direction)
     p "Moving Character #{id} #{direction}"
-    if mode != :move
+    if battle
       p "Could not move Character #{id} #{direction}. Character is in battle!"
       WorldChannel.broadcast_to world, action: 'commandProcessed', message: 'Invalid Command'
       return false
@@ -52,10 +43,6 @@ class Character < ApplicationRecord
       save!
       WorldChannel.broadcast_to world, action: 'update', map: world.reload.full_map, mode: 'world'
     end
-  end
-
-  def mode
-    self.battle ? :battle : :move
   end
 
   def enter_battle_mode

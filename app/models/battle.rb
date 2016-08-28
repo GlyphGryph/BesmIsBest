@@ -3,6 +3,10 @@ class Battle < ApplicationRecord
   belongs_to :spirit, required: false, dependent: :destroy
   before_create :setup
 
+  def request_update_for(target)
+    BattleChannel.broadcast_to target, action: 'update', state: self.reload.full_state, mode: 'battle'
+  end
+
   def full_state
     {
       side_one: {
@@ -33,8 +37,25 @@ class Battle < ApplicationRecord
     }
   end
 
+  def action_selected(move_id)
+    Move.execute(move_id, self)
+  end
+
+  def current_turn
+    return :side_one
+  end
+
+  def check_triggers(action, owner, enemy)
+    return true
+  end
+
 private
   def setup
     self.spirit = Spirit.create(image: ActionController::Base.helpers.image_url('feardolon.png'))
+    self.state = {
+      buffs: [],
+      debuffs: [],
+      pending: []
+    }
   end
 end

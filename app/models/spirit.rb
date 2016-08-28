@@ -1,6 +1,7 @@
 class Spirit < ApplicationRecord
   has_one :character_spirit
   has_one :character, through: :character_spirits
+  has_one :battle, through: :character
   has_many :known_moves
   has_many :equipped_moves
 
@@ -9,7 +10,8 @@ class Spirit < ApplicationRecord
 
   def equipped_move_hash
     equipped_moves.map do |em|
-      Move.getMove(em.move_id.to_sym).slice(:id, :name)
+      move = Move.getMove(em.move_id.to_sym)
+      {name: move.name, id: em.move_id}
     end
   end
 

@@ -6,10 +6,13 @@ class Eidolon.BattleController
   start: ->
     @active = true
     @messageQueue = []
-    Eidolon.Channels.world.perform('request_update')
+    Eidolon.application.subscribe('battle')
 
   end: ->
     @active = false
+
+  subscribed: ->
+    Eidolon.Channels.battle.perform('request_update')
 
   update: (data) ->
     @state = data.state
@@ -28,7 +31,7 @@ class Eidolon.BattleController
     else
       $('#battle-text .continue-arrow').hide()
       $('#battle-text .text').html(@moveListElement())
-  
+
   moveListElement: () ->
     element = $('<div></div>').addClass('move-list')
     for move in @state.side_one.moves

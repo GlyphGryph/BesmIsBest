@@ -1,6 +1,6 @@
 class Move
   def self.execute(id, battle, owner, enemy)
-    action = getMove(id)
+    action = getMove(id.to_sym)
     # owner.ap -= action.ap
     # # Early exist if there's not enough ap for this move
     # if(owner.ap < 0)
@@ -11,15 +11,22 @@ class Move
     if(allowed)
       if(action.types.include?(:attack))
         enemy.hp -= action.damage
+        battle.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
       end
-      action.try(:special).try(:call, owner, enemy)
+      action.try(:special).try(:call, battle, owner, enemy)
     end
     owner.save!
+    enemy.save!
+    battle.save!
+    battle.request_update
   end
 
   def self.getMove(id)
-    return @@all[id]
-    raise "#{id} is an Invalid move ID"
+    if(move = @@all[id])
+      return move
+    else
+      raise "#{id} is an Invalid move ID"
+    end
   end
 
   @@all = {
@@ -38,18 +45,20 @@ class Move
       name: 'Juke',
       types: [:hidden, :temporary, :trap],
       ap: 3,
-      special: lambda do |owner, enemy|
+      special: lambda do |battle, owner, enemy|
+        battle.add_text("#{owner.name} has prepared a hidden technique.")
       end,
-      trigger: lambda do |owner, enemy, attack|
+      trigger: lambda do |battle, owner, enemy, attack|
       end,
-      expire: lambda do |owner, enemy, attack|
+      expire: lambda do |battle, owner, enemy, attack|
       end
     ),
     shake_off: OpenStruct.new(
       name: 'Shake Off',
       types: [:action],
       ap: 3,
-      special: lambda do |owner, enemy|
+      special: lambda do |battle, owner, enemy|
+        battle.add_text("#{owner.name} has shaken off a debuff.")
       end
     )
   }

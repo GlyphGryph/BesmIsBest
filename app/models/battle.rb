@@ -7,8 +7,12 @@ class Battle < ApplicationRecord
     BattleChannel.broadcast_to target, action: 'update', state: self.reload.full_state, mode: 'battle'
   end
 
+  def request_update
+    BattleChannel.broadcast_to character.user, action: 'update', state: self.reload.full_state, mode: 'battle'
+  end
+
   def full_state
-    {
+    message = {
       side_one: {
         name: character.spirit.name,
         health: character.spirit.hp,
@@ -17,11 +21,7 @@ class Battle < ApplicationRecord
         time_units: character.spirit.ap,
         time_unit_percent: (character.spirit.ap * 100) / 5,
         image: ActionController::Base.helpers.image_url(character.spirit.image),
-        texts: [
-          "What's this?",
-          "You've encountered a wild Eidolon!",
-          "Prepare to fight!"
-        ],
+        texts: state['texts'],
         moves: character.spirit.equipped_move_hash
       },
       side_two: {
@@ -35,10 +35,17 @@ class Battle < ApplicationRecord
         moves: spirit.equipped_move_hash
       }
     }
+    self.state['texts'] = []
+    self.save!
+    message
+  end
+
+  def add_text(text)
+    self.state['texts'] << text
   end
 
   def action_selected(move_id)
-    Move.execute(move_id, self)
+    Move.execute(move_id, self, character.spirit, spirit)
   end
 
   def current_turn
@@ -53,9 +60,14 @@ private
   def setup
     self.spirit = Spirit.create(image: ActionController::Base.helpers.image_url('feardolon.png'))
     self.state = {
-      buffs: [],
-      debuffs: [],
-      pending: []
+      'texts': [
+        "What's this?",
+        "You've encountered a wild Eidolon!",
+        "Prepare to fight!"
+      ],
+      'buffs': [],
+      'debuffs': [],
+      'pending': []
     }
   end
 end

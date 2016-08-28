@@ -15,6 +15,7 @@ class BattleChannel < ApplicationCable::Channel
     current_user.character.battle.request_update_for(current_user)
   end
 
-  def action_select
+  def action_select(data)
+    current_user.character.battle.action_selected(data['move_id'])
   end
 end

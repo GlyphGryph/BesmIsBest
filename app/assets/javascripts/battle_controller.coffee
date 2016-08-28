@@ -5,6 +5,7 @@ class Eidolon.BattleController
   active: false
   indicatedMoveIndex: null
   indicatedMove: null
+  waitText: 'Waiting...'
 
   start: ->
     @active = true
@@ -23,12 +24,16 @@ class Eidolon.BattleController
     @receiveTexts(@state.side_one.texts)
 
   receiveTexts: (texts)->
-    if(texts? && texts.length > 0)
+    if(texts?)
       @messageQueue = @messageQueue.concat(texts)
-      @displayNextText()
+    @displayNextText()
 
   displayNextText: () ->
-    if(@messageQueue.length > 0)
+    if(@menuMode == 'wait')
+      $('#battle-text .text').text(@waitText)
+      $('#battle-text .continue-arrow').show()
+      @menuMode = 'viewText'
+    else if(@messageQueue.length > 0)
       $('#battle-text .text').text(@messageQueue.shift())
       $('#battle-text .continue-arrow').show()
       @menuMode = 'viewText'
@@ -39,7 +44,10 @@ class Eidolon.BattleController
       @newMoveIndex(0)
 
   selectMove: () ->
-    $('#battle-text .text').text(@state.side_one.name+" uses "+@indicatedMove.name)
+    @waitText = @state.side_one.name+" uses "+@indicatedMove.name
+    $('#battle-text .text').text(@waitText)
+    @menuMode = 'wait'
+    Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove.id})
 
   moveListElement: () ->
     element = $('<table></table>').addClass('move-list')

@@ -1,20 +1,29 @@
 class Move
   def self.execute(id, battle, owner, enemy)
     action = getMove(id.to_sym)
-    # owner.ap -= action.ap
-    # # Early exist if there's not enough ap for this move
-    # if(owner.ap < 0)
-    #   owner.ap += action.ap
-    #   return false
-    # end
+
+    owner.ap -= action.ap
+    # Early exist if there's not enough ap for this move
+    if(owner.ap < 0)
+      owner.ap += action.ap
+      return false
+    end
+
     allowed = battle.check_triggers(action, owner, enemy)
     if(allowed)
+      if(action_types.include?(:hidden))
+        battle.add_text("#{owner.name} has prepared a hidden technique.")
+      else
+        battle.add_text("#{owner.name} uses #{action.name}")
+      end
+
       if(action.types.include?(:attack))
         enemy.hp -= action.damage
         battle.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
       end
       action.try(:special).try(:call, battle, owner, enemy)
     end
+
     owner.save!
     enemy.save!
     battle.save!
@@ -46,7 +55,6 @@ class Move
       types: [:hidden, :temporary, :trap],
       ap: 3,
       special: lambda do |battle, owner, enemy|
-        battle.add_text("#{owner.name} has prepared a hidden technique.")
       end,
       trigger: lambda do |battle, owner, enemy, attack|
       end,

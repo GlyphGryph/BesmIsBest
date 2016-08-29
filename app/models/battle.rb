@@ -41,6 +41,7 @@ class Battle < ApplicationRecord
       self.destroy!
       message
     else
+      advance_time
       message = {
         side_one: {
           name: character.spirit.name,
@@ -63,7 +64,7 @@ class Battle < ApplicationRecord
           moves: spirit.equipped_move_hash
         },
         texts: state['texts'],
-        battle_finished: false
+        battle_finished: false,
       }
       self.state['texts'] = []
       self.save!
@@ -80,7 +81,34 @@ class Battle < ApplicationRecord
   end
 
   def current_turn
-    return :side_one
+    if(character.spirit.ap >= 5)
+      return :side_one
+    else
+      return :side_two
+    end
+  end
+
+  def advance_time
+    tics_passed = 0
+    c_spirit = character.spirit
+    while(c_spirit.ap < 5 && spirit.ap < 5)
+      c_spirit.ap += 1
+      spirit.ap += 1
+      tics_passed += 1
+    end
+    c_spirit.save!
+    spirit.save!
+    if(current_turn == :side_one)
+      add_text("#{tics_passed} tics have passed. #{character.spirit.name} can act!")
+    else
+      add_text("#{tics_passed} tics have passed. #{spirit.name} can act!")
+      take_ai_turn
+    end
+  end
+
+  def take_ai_turn
+    move_to_use = spirit.equipped_moves.sample
+    Move.execute(move_to_use.move_id, self, spirit, character.spirit)
   end
 
   def check_triggers(action, owner, enemy)

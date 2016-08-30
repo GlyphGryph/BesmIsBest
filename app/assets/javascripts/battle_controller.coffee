@@ -1,15 +1,15 @@
 class Eidolon.BattleController
   class: 'BattleController'
   mode: 'battle'
-  menuMode: 'none'
+  menuMode: 'wait'
   active: false
   indicatedMoveIndex: null
   indicatedMove: null
-  waitText: 'Waiting...'
+  currentText: 'Waiting...'
 
   start: ->
     @active = true
-    @messageQueue = []
+    @eventQueue = []
     if(Eidolon.Channels.battle)
       @subscribed()
     else
@@ -22,38 +22,70 @@ class Eidolon.BattleController
     Eidolon.Channels.battle.perform('request_update')
 
   update: (data) ->
-    @state = data.state
-    $('body').html(HandlebarsTemplates.battle(@state))
-    @receiveTexts(@state.texts)
+    if(data.state.initial)
+      @state = data.state
+      @setHealthPercents()
+      @setTimeUnitPercents()
+      $('body').html(HandlebarsTemplates.battle(@state))
+    @receiveEvents(data.state.events)
 
-  receiveTexts: (texts)->
-    if(texts?)
-      @messageQueue = @messageQueue.concat(texts)
-    @displayNextText()
+  receiveEvents: (events)->
+    @menuMode = 'normal'
+    if(events?)
+      @eventQueue = @eventQueue.concat(events)
+    @processNextEvent()
 
-  displayNextText: () ->
+  processNextEvent: () ->
     if(@menuMode == 'wait')
-      $('#battle-text .text').text(@waitText)
-      $('#battle-text .continue-arrow').show()
-      @menuMode = 'viewText'
-    else if(@messageQueue.length > 0)
-      $('#battle-text .text').text(@messageQueue.shift())
-      $('#battle-text .continue-arrow').show()
-      @menuMode = 'viewText'
-    else if(@state.battle_finished)
+      console.log('waiting')
+      $('#battle-text .text').text(@currentText)
       $('#battle-text .continue-arrow').hide()
-      @waitText = $('#battle-text .text').text()
-      @menuMode = 'wait'
-      Eidolon.Channels.world.perform('leave_battle')
+      @menuMode = 'viewText'
+    else if(@eventQueue.length > 0)
+      nextEvent = @eventQueue.shift()
+      if(nextEvent.type == 'text')
+        console.log('displaying text')
+        @currentText = nextEvent.value
+        $('#battle-text .text').text(@currentText)
+        $('#battle-text .continue-arrow').show()
+      else if(nextEvent.type == 'delay')
+        console.log('delaying')
+        @menuMode = 'wait'
+        @currentText = ''
+        $('#battle-text .text').text(@currentText)
+        $('#battle-text .continue-arrow').hide()
+        setTimeout(@delayCompleted,300)
+      else if(nextEvent.type == 'update')
+        console.log('updating')
+        if( (nextEvent.stat == 'health' || nextEvent.stat == 'time_units') && nextEvent.value < 0)
+            nextEvent.value = 0
+        @state[nextEvent.side][nextEvent.stat] = nextEvent.value
+        if(nextEvent.stat == 'health')
+          @setHealthPercents()
+        else if(nextEvent.stat == 'time_units')
+          @setTimeUnitPercents()
+        $('#battle-display').html(Handlebars.partials._battle_display(@state))
+        $('#battle-text .continue-arrow').hide()
+        @processNextEvent()
+      else if(nextEvent.type == 'end_battle')
+        console.log('leaving battle')
+        @menuMode = 'wait'
+        Eidolon.Channels.world.perform('leave_battle')
     else
+      console.log('displaying move list')
       $('#battle-text .continue-arrow').hide()
       $('#battle-text .text').html(@moveListElement())
-      @menuMode =  'viewMoves'
+      @menuMode =  'list'
       @newMoveIndex(0)
 
+  delayCompleted: () =>
+    console.log('resuming!')
+    @menuMode = 'normal'
+    @processNextEvent()
+
   selectMove: () ->
-    @waitText = @state.side_one.name+" uses "+@indicatedMove.name
-    $('#battle-text .text').text(@waitText)
+    @currentText = @state.side_one.name+" uses "+@indicatedMove.name
+    $('#battle-text .text').text(@currentText)
     $('#battle-text .continue-arrow').hide()
     @menuMode = 'wait'
     Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove.id})
@@ -67,22 +99,30 @@ class Eidolon.BattleController
       moveElement.append(moveSelector).append(moveText)
       element.append(moveElement)
 
+  setHealthPercents: () ->
+    @state.side_one.health_percent = 100 * @state.side_one.health / @state.side_one.max_health
+    @state.side_two.health_percent = 100 * @state.side_two.health / @state.side_two.max_health
+
+  setTimeUnitPercents: () ->
+    @state.side_one.time_unit_percent = 100 * @state.side_one.time_units / @state.side_one.max_time_units
+    @state.side_two.time_unit_percent = 100 * @state.side_two.time_units / @state.side_two.max_time_units
+
   receiveConfirmation: () ->
     switch(@menuMode)
-      when 'viewText'
-        @displayNextText()
-      when 'viewMoves'
+      when 'normal'
+        @processNextEvent()
+      when 'list'
         @selectMove()
   
   indicatorDown: () ->
     switch(@menuMode)
-      when 'viewMoves'
+      when 'list'
         if(@indicatedMoveIndex < (@state.side_one.moves.length-1))
           @newMoveIndex(@indicatedMoveIndex + 1)
 
   indicatorUp: () ->
     switch(@menuMode)
-      when 'viewMoves'
+      when 'list'
         if(@indicatedMoveIndex > 0)
           @newMoveIndex(@indicatedMoveIndex - 1)
 
@@ -109,4 +149,3 @@ class Eidolon.BattleController
     return true
 
 Eidolon.battleController = new Eidolon.BattleController()
-

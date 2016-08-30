@@ -1,5 +1,6 @@
 class Move
   def self.execute(id, battle, owner, enemy)
+    p "execute move"
     action = getMove(id.to_sym)
 
     owner.ap -= action.ap
@@ -8,10 +9,11 @@ class Move
       owner.ap += action.ap
       return false
     end
+    battle.add_display_update(owner, :time_units, owner.ap)
 
     allowed = battle.check_triggers(action, owner, enemy)
     if(allowed)
-      if(action_types.include?(:hidden))
+      if(action.types.include?(:hidden))
         battle.add_text("#{owner.name} has prepared a hidden technique.")
       else
         battle.add_text("#{owner.name} uses #{action.name}")
@@ -19,6 +21,7 @@ class Move
 
       if(action.types.include?(:attack))
         enemy.hp -= action.damage
+        battle.add_display_update(enemy, :health, enemy.hp)
         battle.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
       end
       action.try(:special).try(:call, battle, owner, enemy)

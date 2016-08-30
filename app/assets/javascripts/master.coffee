@@ -7,7 +7,7 @@ Eidolon.Cable = {}
 class Eidolon.MasterController
   class: 'MasterController'
   start: () ->
-    if $('body.master.begin').length > 0
+    if( $('body.master.begin').length > 0 )
       @setController(Eidolon.worldController)
     console.log('Watching for keypresses')
     $(document).on('keydown', @keypressHandler)

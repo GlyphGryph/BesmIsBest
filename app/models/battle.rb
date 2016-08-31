@@ -14,17 +14,17 @@ class Battle < ApplicationRecord
   def update_state
     if(state['initial'] == true)
       c_spirit = character.spirit
-      c_spirit.ap = 5
-      c_spirit.hp = c_spirit.max_hp
+      c_spirit.time_units = 5
+      c_spirit.health = c_spirit.max_health
       c_spirit.save!
 
       self.state['initial'] = false
       message = {
         side_one: {
           name: character.spirit.name,
-          health: character.spirit.hp,
-          max_health: character.spirit.max_hp,
-          time_units: character.spirit.ap,
+          health: character.spirit.health,
+          max_health: character.spirit.max_health,
+          time_units: character.spirit.time_units,
           max_time_units: 5,
           image: ActionController::Base.helpers.image_url(character.spirit.image),
           moves: character.spirit.equipped_move_hash
@@ -32,9 +32,9 @@ class Battle < ApplicationRecord
         side_two: {
           name: spirit.name,
           image: ActionController::Base.helpers.image_url(spirit.image),
-          health: spirit.hp,
-          max_health: spirit.max_hp,
-          time_units: spirit.ap,
+          health: spirit.health,
+          max_health: spirit.max_health,
+          time_units: spirit.time_units,
           max_time_units: 5,
           moves: spirit.equipped_move_hash
         },
@@ -89,7 +89,7 @@ class Battle < ApplicationRecord
   end
 
   def current_turn
-    if(character.spirit.ap >= 5)
+    if(character.spirit.time_units >= 5)
       return character.spirit
     else
       return spirit
@@ -104,13 +104,13 @@ class Battle < ApplicationRecord
 
     tics_passed = 0
     c_spirit = character.spirit
-    while(c_spirit.ap < 5 && spirit.ap < 5)
-      c_spirit.ap += 1
-      spirit.ap += 1
+    while(c_spirit.time_units < 5 && spirit.time_units < 5)
+      c_spirit.time_units += 1
+      spirit.time_units += 1
       tics_passed += 1
       add_delay(1)
-      add_display_update(character.spirit, :time_units, c_spirit.ap)
-      add_display_update(spirit, :time_units, spirit.ap)
+      add_display_update(character.spirit, :time_units, c_spirit.time_units)
+      add_display_update(spirit, :time_units, spirit.time_units)
     end
     c_spirit.save!
     spirit.save!
@@ -133,7 +133,7 @@ class Battle < ApplicationRecord
   end
 
   def battle_finished?
-    spirit.hp <= 0
+    spirit.health <= 0
   end
 
 private

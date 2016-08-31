@@ -18,9 +18,9 @@ class Spirit < ApplicationRecord
 private
   def assign_defaults
     self.name ||= 'Normalon'
-    self.max_hp ||= 22
-    self.hp ||= self.max_hp
-    self.ap ||= 5
+    self.max_health ||= 22
+    self.health ||= self.max_health
+    self.time_units ||= 5
     self.image ||= 'faithdolon.png'
     if self.known_moves.empty?
       self.known_moves << KnownMove.create(move_id: :attack)

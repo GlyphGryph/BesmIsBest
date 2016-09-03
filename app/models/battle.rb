@@ -14,7 +14,7 @@ class Battle < ApplicationRecord
   def update_state
     if(state['initial'] == true)
       c_spirit = character.spirit
-      c_spirit.time_units = 5
+      c_spirit.time_units = 20
       c_spirit.health = c_spirit.max_health
       c_spirit.save!
 
@@ -25,7 +25,7 @@ class Battle < ApplicationRecord
           health: character.spirit.health,
           max_health: character.spirit.max_health,
           time_units: character.spirit.time_units,
-          max_time_units: 5,
+          max_time_units: 20,
           image: ActionController::Base.helpers.image_url(character.spirit.image),
           moves: character.spirit.equipped_move_hash
         },
@@ -35,7 +35,7 @@ class Battle < ApplicationRecord
           health: spirit.health,
           max_health: spirit.max_health,
           time_units: spirit.time_units,
-          max_time_units: 5,
+          max_time_units: 20,
           moves: spirit.equipped_move_hash
         },
         events: state['events'],
@@ -89,7 +89,7 @@ class Battle < ApplicationRecord
   end
 
   def current_turn
-    if(character.spirit.time_units >= 5)
+    if(character.spirit.time_units >= 20)
       return character.spirit
     else
       return spirit
@@ -104,13 +104,18 @@ class Battle < ApplicationRecord
 
     tics_passed = 0
     c_spirit = character.spirit
-    while(c_spirit.time_units < 5 && spirit.time_units < 5)
-      c_spirit.time_units += 1
-      spirit.time_units += 1
-      tics_passed += 1
+    while(c_spirit.time_units < 20 && spirit.time_units < 20)
+      c_spirit.time_units -= 1 if(c_spirit.has_debuff?('hesitant'))
+      c_spirit.time_units -= 2 if(c_spirit.has_debuff?('panic'))
+      c_spirit.time_units += 4
       add_delay(1)
-      add_display_update(character.spirit, :time_units, c_spirit.time_units)
+      add_display_update(c_spirit, :time_units, c_spirit.time_units)
+
+      spirit.time_units -= 1 if spirit.has_debuff?('hesitant')
+      spirit.time_units += 4
       add_display_update(spirit, :time_units, spirit.time_units)
+
+      tics_passed += 1
     end
     c_spirit.save!
     spirit.save!

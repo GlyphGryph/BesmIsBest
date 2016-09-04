@@ -2,8 +2,8 @@ class Spirit < ApplicationRecord
   has_one :character_spirit
   has_one :character, through: :character_spirits
   has_one :battle, through: :character
-  has_many :known_moves
-  has_many :equipped_moves
+  has_many :known_moves, dependent: :destroy
+  has_many :equipped_moves, dependent: :destroy
 
 
   before_create :assign_defaults
@@ -16,7 +16,7 @@ class Spirit < ApplicationRecord
   end
 
   def apply_debuff(debuff_id)
-    if(can_debuff?(debuff_id)
+    if can_debuff?(debuff_id)
       self.debuffs << debuff_id
     else
       return false
@@ -62,7 +62,7 @@ class Spirit < ApplicationRecord
 
   def can_debuff?(debuff_id)
     if(
-      has_debuff?(debuff) ||
+      has_debuff?(debuff_id) ||
       (debuff_id == ':hesitant' && has_move?(:no_fear)) ||
       (debuff_id == ':panic' && has_move?(:no_fear)) ||
       (debuff_id == ':despair' && has_move?(:no_fear))
@@ -74,7 +74,7 @@ class Spirit < ApplicationRecord
   end
   
   def has_move?(move_id)
-    self.equipped_moves.find({|move| move.move_id == move_id})
+    self.equipped_moves.find{|move| move.move_id == move_id}
   end
 
 private

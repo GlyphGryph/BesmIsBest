@@ -116,17 +116,17 @@ class Move
       time_units: 8,
       description: 'If enemy attacks while this trap is active, they take 5 damage and gain the Hesitant debuff.',
       trigger: lambda do |battle, owner, enemy|
-      end
+      end,
       expire: lambda do |battle, owner, enemy|
       end
     ),
-    :ambush OpenStruct.new(
+    ambush: OpenStruct.new(
       name: 'Ambush',
       types: [:incomplete, :hidden, :temporary, :trap],
       nature: :cunning,
       description: 'Adds 15 damage to your next attack, unless you are attacked before then',
       trigger: lambda do |battle, owner, enemy|
-      end
+      end,
       expire: lambda do |battle, owner, enemy|
       end
     ),
@@ -193,9 +193,9 @@ class Move
         enemy.remove_debuffs
         enemy.remove_buffs
         battle.add_text("#{enemy.name} has been stripped of all buffs and debuffs.")
-      end
+      end,
       trigger: lambda do |battle, owner, enemy|
-      end
+      end,
       expire: lambda do |battle, owner, enemy|
       end
     ),
@@ -313,7 +313,7 @@ class Move
       description: 'Deal a large amount of damage, but until your next action gain RECKLESS: Receive double damage from all sources.',
       damage: 22,
       special: lambda do |battle, owner, enemy|
-      end
+      end,
       expire: lambda do |battle, owner, enemy|
       end
     ),

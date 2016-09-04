@@ -1,4 +1,4 @@
 class CharacterSpirit < ApplicationRecord
   belongs_to :character
-  belongs_to :spirit, dependent: :destroy
+  belongs_to :spirit
 end

@@ -1,6 +1,6 @@
 class World < ApplicationRecord
   before_save :generate_map
-  has_many :characters
+  has_many :characters, dependent: :destroy
 
   def request_update_for(target)
     WorldChannel.broadcast_to target.reload, action: 'update', map: self.reload.full_map, mode: 'world'

@@ -1,9 +1,9 @@
 class Character < ApplicationRecord
   belongs_to :user
   belongs_to :world, required: false
-  belongs_to :battle, required: false
+  belongs_to :battle, required: false, dependent: :destroy
   has_many :character_spirits, dependent: :destroy
-  has_many :spirits, through: :character_spirits
+  has_many :spirits, through: :character_spirits, dependent: :destroy
   before_create :setup
 
   def move(direction)

@@ -4,7 +4,6 @@ class Eidolon.BattleController
   menuMode: 'wait'
   active: false
   indicatedMoveIndex: null
-  indicatedMove: null
   currentText: 'Waiting...'
 
   start: ->
@@ -58,7 +57,7 @@ class Eidolon.BattleController
       else if(nextEvent.type == 'update')
         console.log('updating')
         if( (nextEvent.stat == 'health' || nextEvent.stat == 'time_units') && nextEvent.value < 0)
-            nextEvent.value = 0
+          nextEvent.value = 0
         @state[nextEvent.side][nextEvent.stat] = nextEvent.value
         if(nextEvent.stat == 'health')
           @setHealthPercents()
@@ -84,11 +83,11 @@ class Eidolon.BattleController
     @processNextEvent()
 
   selectMove: () ->
-    @currentText = @state.side_one.name+" uses "+@indicatedMove.name
+    @currentText = @state.side_one.name+" uses "+@indicatedMove().name
     $('#battle-text .text').text(@currentText)
     $('#battle-text .continue-arrow').hide()
     @menuMode = 'wait'
-    Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove.id})
+    Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove().id})
 
   moveListElement: () ->
     element = $('<table></table>').addClass('move-list')
@@ -98,6 +97,9 @@ class Eidolon.BattleController
       moveText = $('<td></td>').addClass('move-name-cell').text(move.name)
       moveElement.append(moveSelector).append(moveText)
       element.append(moveElement)
+
+  indicatedMove: () ->
+    @state.side_one.moves[@indicatedMoveIndex]
 
   setHealthPercents: () ->
     @state.side_one.health_percent = 100 * @state.side_one.health / @state.side_one.max_health
@@ -128,10 +130,9 @@ class Eidolon.BattleController
 
   newMoveIndex: (newIndex) ->
     @indicatedMoveIndex = newIndex
-    @indicatedMove = @state.side_one.moves[@indicatedMoveIndex]
     element = $('.move-list')
     element.find('.move .indicator-cell').removeClass('blink').text('')
-    element.find('.move[data-id='+@indicatedMove.id+'] .indicator-cell').addClass('blink').text('>')
+    element.find('.move[data-id='+@indicatedMove().id+'] .indicator-cell').addClass('blink').text('>')
 
   receiveKey: (key) ->
     switch(key)

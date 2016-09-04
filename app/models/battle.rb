@@ -45,7 +45,6 @@ class Battle < ApplicationRecord
       self.save!
       message
     elsif(battle_finished?)
-      add_text('Victory! The enemy has been defeated!')
       add_battle_end()
       message = {
         events: state['events']
@@ -138,7 +137,16 @@ class Battle < ApplicationRecord
   end
 
   def battle_finished?
-    spirit.health <= 0
+    if(spirit.health <= 0 && character.spirit.health <= 0)
+      add_text('What? How?')
+    elsif(spirit.health <= 0)
+      add_text('Victory! The enemy has been defeated!')
+    elsif(character.spirit.health <= 0)
+      add_text('Defeat! You have lost the fight!')
+      return true
+    else
+      return false
+    end
   end
 
 private

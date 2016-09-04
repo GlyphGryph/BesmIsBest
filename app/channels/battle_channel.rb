@@ -8,7 +8,10 @@ class BattleChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    current_user.character.leave_battle_mode
+    spirit = current_user.character.battle.spirit
+    spirit.hp = 0
+    spirit.save!
+    current_user.character.battle.request_update
   end
 
   def request_update

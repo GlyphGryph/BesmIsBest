@@ -13,8 +13,12 @@ class Eidolon.BattleSubscription
   subscribed: () ->
     @app.subscribed()
 
-  update: (data) ->
-    @app.update(data)
+  updateState: (data) ->
+    @app.updateState(data)
+    @commandProcessed()
+
+  updateEvents: (data) ->
+    @app.updateEvents(data)
     @commandProcessed()
 
   leaveBattle: (data) ->

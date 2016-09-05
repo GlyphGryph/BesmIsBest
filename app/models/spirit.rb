@@ -17,8 +17,7 @@ class Spirit < ApplicationRecord
   def apply_debuff(debuff_id)
     if can_debuff?(debuff_id)
       self.debuffs << debuff_id
-      binding.pry
-      battle.add_display_update(self, :debuffs, self.debuffs)
+      team.battle.add_display_update(self, :debuffs, self.debuffs)
       return true
     else
       return false
@@ -30,7 +29,7 @@ class Spirit < ApplicationRecord
       return false
     else
       self.buffs << buff_id
-      battle.add_display_update(self, :buffs, self.buffs)
+      team.battle.add_display_update(self, :buffs, self.buffs)
       return true
     end
   end
@@ -83,6 +82,8 @@ class Spirit < ApplicationRecord
   def reset_state
     self.time_units = 20
     self.health = self.max_health
+    self.buffs = []
+    self.debuffs = []
     save!
   end
 
@@ -113,14 +114,13 @@ class Spirit < ApplicationRecord
 
 private
   def setup 
-    self.name ||= 'Normalon'
+    self.name ||= ['Normalon', 'Otheron', 'Faithdolon', 'Feardolon', 'Notdolon'].sample
     self.max_health ||= 22
     self.health ||= self.max_health
-    self.time_units ||= 5
+    self.time_units ||= 20
     self.image ||= 'faithdolon.png'
     self.buffs = []
     self.debuffs = []
-    self.poisons = []
   end
 
   def setup_associations

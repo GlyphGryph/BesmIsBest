@@ -18,17 +18,25 @@ class Eidolon.BattleController
     @active = false
 
   subscribed: ->
-    Eidolon.Channels.battle.perform('request_update')
+    Eidolon.Channels.battle.perform('request_state')
 
-  update: (data) ->
-    if(data.state.initial)
-      @state = data.state
-      @setHealthPercents()
-      @setTimeUnitPercents()
-      $('body').html(HandlebarsTemplates.battle(@state))
-    @receiveEvents(data.state.events)
+  updateState: (data) ->
+    @state = {
+      max_time_units: data.max_time_units,
+      own: data.own_state,
+      enemy: data.enemy_state
+    }
+    @setHealthPercents()
+    @setTimeUnitPercents()
+    $('body').html(HandlebarsTemplates.battle(@state))
+    @receiveEvents(data.events)
+
+  updateEvents: (data) ->
+    @receiveEvents(data.events)
 
   receiveEvents: (events)->
+    console.log('Received Events:')
+    console.log(events)
     @menuMode = 'normal'
     if(events?)
       @eventQueue = @eventQueue.concat(events)
@@ -83,15 +91,12 @@ class Eidolon.BattleController
     @processNextEvent()
 
   selectMove: () ->
-    @currentText = @state.side_one.name+" uses "+@indicatedMove().name
-    $('#battle-text .text').text(@currentText)
-    $('#battle-text .continue-arrow').hide()
     @menuMode = 'wait'
     Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove().id})
 
   moveListElement: () ->
     element = $('<table></table>').addClass('move-list')
-    for move in @state.side_one.moves
+    for move in @state.own.moves
       moveElement = $('<tr></tr>').addClass('move').attr('data-id', move.id)
       moveSelector = $('<td></td>').addClass('indicator-cell')
       moveText = $('<td></td>').addClass('move-name-cell').text(move.name)
@@ -99,15 +104,15 @@ class Eidolon.BattleController
       element.append(moveElement)
 
   indicatedMove: () ->
-    @state.side_one.moves[@indicatedMoveIndex]
+    @state.own.moves[@indicatedMoveIndex]
 
   setHealthPercents: () ->
-    @state.side_one.health_percent = 100 * @state.side_one.health / @state.side_one.max_health
-    @state.side_two.health_percent = 100 * @state.side_two.health / @state.side_two.max_health
+    @state.own.health_percent = 100 * @state.own.health / @state.own.max_health
+    @state.enemy.health_percent = 100 * @state.enemy.health / @state.enemy.max_health
 
   setTimeUnitPercents: () ->
-    @state.side_one.time_unit_percent = 100 * @state.side_one.time_units / @state.side_one.max_time_units
-    @state.side_two.time_unit_percent = 100 * @state.side_two.time_units / @state.side_two.max_time_units
+    @state.own.time_unit_percent = 100 * @state.own.time_units / @state.max_time_units
+    @state.enemy.time_unit_percent = 100 * @state.enemy.time_units / @state.max_time_units
 
   receiveConfirmation: () ->
     switch(@menuMode)
@@ -119,7 +124,7 @@ class Eidolon.BattleController
   indicatorDown: () ->
     switch(@menuMode)
       when 'list'
-        if(@indicatedMoveIndex < (@state.side_one.moves.length-1))
+        if(@indicatedMoveIndex < (@state.own.moves.length-1))
           @newMoveIndex(@indicatedMoveIndex + 1)
 
   indicatorUp: () ->

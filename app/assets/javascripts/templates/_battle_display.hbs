@@ -1,57 +1,57 @@
-<div id='side_two' class='side'>
+<div id='enemy_display' class='side'>
   <div class='details'>
     <div class='name'>
-      {{side_two.name}}
+      {{enemy.name}}
     </div>
     <div class='health-bars bar-container'>
       <div class='inside-bar-container'>
         <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_two.health_percent}}%'/>
-        <div class='label'>HP: {{side_two.health}}/{{side_two.max_health}}</div>
+        <div class='foreground-bar' style='width:{{enemy.health_percent}}%'/>
+        <div class='label'>HP: {{enemy.health}}/{{enemy.max_health}}</div>
       </div>
     </div>
     <div class='time-bars bar-container'>
       <div class='inside-bar-container'>
         <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_two.time_unit_percent}}%'/>
-        <div class='label'>TU: {{side_two.time_units}}/{{side_two.max_time_units}}</div>
+        <div class='foreground-bar' style='width:{{enemy.time_unit_percent}}%'/>
+        <div class='label'>TU: {{enemy.time_units}}/{{max_time_units}}</div>
       </div>
     </div>
     <div class='status-effects'>
-      {{#each side_two.buffs}}
+      {{#each enemy.buffs}}
         <span class='buff'>{{.}}</span>
       {{/each}}
-      {{#each side_two.debuffs}}
+      {{#each enemy.debuffs}}
         <span class='debuff'>{{.}}</span>
       {{/each}}
     </div>
   </div>
   <div class='picture'>
-    <img src='{{side_two.image}}' />
+    <img src='{{enemy.image}}' />
   </div>
 </div>
 <div id='between'>VS</div>
-<div id='side_one' class='side'>
+<div id='own_display' class='side'>
   <div class='details'>
     <div class='name'>
-      {{side_one.name}}
+      {{own.name}}
     </div>
     <div class='health-bars bar-container'>
       <div class='inside-bar-container'>
         <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_one.health_percent}}%'/>
-        <div class='label'>HP: {{side_one.health}}/{{side_one.max_health}}</div>
+        <div class='foreground-bar' style='width:{{own.health_percent}}%'/>
+        <div class='label'>HP: {{own.health}}/{{own.max_health}}</div>
       </div>
     </div>
     <div class='time-bars bar-container'>
       <div class='inside-bar-container'>
         <div class='background-bar' />
-        <div class='foreground-bar' style='width:{{side_one.time_unit_percent}}%'/>
-        <div class='label'>TU: {{side_one.time_units}}/{{side_one.max_time_units}}</div>
+        <div class='foreground-bar' style='width:{{own.time_unit_percent}}%'/>
+        <div class='label'>TU: {{own.time_units}}/{{max_time_units}}</div>
       </div>
     </div>
   </div>
   <div class='picture'>
-    <img src='{{side_one.image}}' />
+    <img src='{{own.image}}' />
   </div>
 </div>

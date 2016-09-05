@@ -25,14 +25,16 @@ class WorldChannel < ApplicationCable::Channel
   end
 
   def enter_battle
-    current_user.character.battle = Battle.create!(character: current_user.character)
+    battle = Battle.new
+    battle.teams << current_user.character.team
+    battle.save!
     WorldChannel.broadcast_to current_user, action: 'enterBattle'
   end
 
   def leave_battle
-    if(current_user.character.reload.battle)
-      current_user.character.battle.destroy!
-    end
-    WorldChannel.broadcast_to current_user, action: 'leaveBattle'
+    spirit = current_user.character.team.active_spirit
+    spirit.health = 0
+    spirit.save!
+    current_user.character.team.battle.broadcast_events
   end
 end

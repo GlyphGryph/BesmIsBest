@@ -8,6 +8,10 @@ class Team < ApplicationRecord
   after_create :setup_associations
 
   def reset_state
+    spirits.each{ |spirit| spirit.reset_state }
+  end
+
+  def clear_events
     self.state['events'] = []
     self.save!
   end
@@ -17,16 +21,30 @@ class Team < ApplicationRecord
   end
 
   def defeated?
-    active_spirit.hp <= 0
+    active_spirit.health <= 0
   end
 
   def ready_to_act?
     active_spirit.time_units >= 20
   end
 
+  def action_selected(move_id)
+    reload
+    if(ready_to_act? && active_spirit.has_move?(move_id))
+      Move.execute(move_id, battle, active_spirit)
+    else
+      if(!ready_to_act?)
+        raise "Attempted to act out of turn!"
+      else(!active_spirit.has_move?(move_id))
+        raise "Attempted to use a move they don't know!"
+      end
+    end
+  end
+
   def take_ai_turn
     move_to_use = active_spirit.equipped_moves.sample
     Move.execute(move_to_use.move_id, battle, active_spirit)
+    battle.advance_time
   end
 
   def add_text(text)
@@ -38,7 +56,7 @@ class Team < ApplicationRecord
   end
 
   def add_display_update(spirit, stat, value)
-    self.state['events'] << {type: 'update', side: (spirit == active_spirit ? 'own_state' : 'enemy_state'), stat: stat, value: value }
+    self.state['events'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
   end
 
   def add_battle_end

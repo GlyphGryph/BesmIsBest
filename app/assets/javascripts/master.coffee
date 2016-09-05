@@ -84,6 +84,14 @@ class Eidolon.MasterController
     if(data.mode == @currentController.mode)
       @currentController.update(data)
 
+  updateState: (data) ->
+    if(data.mode == @currentController.mode)
+      @currentController.updateState(data)
+
+  updateEvents: (data) ->
+    if(data.mode == @currentController.mode)
+      @currentController.updateEvents(data)
+
 Eidolon.application = new Eidolon.MasterController()
 
 $ ->

@@ -1,7 +1,7 @@
 class Move
   def self.execute(id, battle, owner)
     enemy = battle.other_team(owner.team).active_spirit
-    p "execute move"
+    p "!! EXECUTING MOVE !!"
     action = getMove(id.to_sym)
 
     owner.time_units -= action.time_units
@@ -17,9 +17,7 @@ class Move
     if(allowed)
       if(action.types.include?(:hidden))
         battle.add_text("#{owner.name} has prepared a hidden technique.")
-        battle.add_text("#{owner.name} has prepared a hidden technique.")
       else
-        battle.add_text("#{owner.name} uses #{action.name}")
         battle.add_text("#{owner.name} uses #{action.name}")
       end
 
@@ -37,7 +35,6 @@ class Move
     owner.save!
     enemy.save!
     battle.save!
-    battle.request_update
   end
 
   def self.getMove(id)

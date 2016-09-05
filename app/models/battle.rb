@@ -1,98 +1,68 @@
 class Battle < ApplicationRecord
-  has_one :character, required: true
-  belongs_to :spirit, required: false, dependent: :destroy
+  has_many :teams
+
   before_create :setup
+  after_create :setup_associations
 
-  def request_update_for(target)
-    BattleChannel.broadcast_to target, action: 'update', state: self.reload.update_state, mode: 'battle'
-  end
-
-  def request_update
-    BattleChannel.broadcast_to character.user, action: 'update', state: self.reload.update_state, mode: 'battle'
-  end
-
-  def update_state
-    if(state['initial'] == true)
-      c_spirit = character.spirit
-      c_spirit.time_units = 20
-      c_spirit.health = c_spirit.max_health
-      c_spirit.save!
-
-      self.state['initial'] = false
-      message = {
-        side_one: {
-          name: character.spirit.name,
-          health: character.spirit.health,
-          max_health: character.spirit.max_health,
-          time_units: character.spirit.time_units,
-          max_time_units: 20,
-          image: ActionController::Base.helpers.image_url(character.spirit.image),
-          moves: character.spirit.equipped_move_hash
-        },
-        side_two: {
-          name: spirit.name,
-          image: ActionController::Base.helpers.image_url(spirit.image),
-          health: spirit.health,
-          max_health: spirit.max_health,
-          time_units: spirit.time_units,
-          max_time_units: 20,
-          moves: spirit.equipped_move_hash
-        },
-        events: state['events'],
-        initial: true
-      }
-      self.state['events'] = []
-      self.save!
-      message
-    elsif(battle_finished?)
+  def broadcast_events
+    finished = battle_finished?
+    if(finished)
       add_battle_end()
-      message = {
-        events: state['events']
-      }
+    end
+
+    teams.each do |team|
+      if(own_team.try(:character).try(:user))
+        BattleChannel.broadcast_to(
+          own_team.character.user,
+          action: 'update_events',
+          events: own_teamstate['events']
+        )
+      end
+      team.reset_state
+    end
+
+    if(finished)
       self.destroy!
-      message
-    else
-      advance_time
-      message = {
-        events: state['events']
-      }
-      self.state['events'] = []
-      self.save!
-      message
+    end
+  end
+
+  def broadcast_state
+    teams.each{|team| broadcast_state_to_team(team) }
+    teams.each{|team| team.reset_state }
+  end
+
+  def broadcast_state_to_team(own_team)
+    enemy_team = other_team(own_team)
+    if(own_team.try(:character).try(:user))
+      BattleChannel.broadcast_to(
+        own_team.character.user,
+        action: 'update_state',
+        max_time_units: 20,
+        events: own_team.state['events'],
+        own_state: own_team.active_spirit.own_state,
+        enemy_state: enemy_team.active_spirit.enemy_state
+      )
     end
   end
 
   def add_text(text)
-    self.state['events'] << {type: 'text', value: text}
+    teams.each{|team| team.add_text(text) }
   end
 
   def add_delay(delay)
-    self.state['events'] << {type: 'delay', value: delay}
+    teams.each{|team| team.add_delay(delay) }
   end
 
-  def add_display_update(side, stat, value)
-    if(side == character.spirit)
-      side = :side_one
-    elsif(side == spirit)
-      side = :side_two
-    end
-    self.state['events'] << {type: 'update', side: side, stat: stat, value: value }
+  def add_display_update(spirit, stat, value)
+    teams.each{|team| team.add_display_update(spirit, state, value) }
   end
 
   def add_battle_end
-    self.state['events'] << {type: 'end_battle'}
+    teams.each{|team| team.add_battle_end }
   end
 
   def action_selected(move_id)
     Move.execute(move_id, self, character.spirit, spirit)
-  end
-
-  def current_turn
-    if(character.spirit.time_units >= 20)
-      return character.spirit
-    else
-      return spirit
-    end
   end
 
   def advance_time
@@ -102,34 +72,30 @@ class Battle < ApplicationRecord
     end
 
     tics_passed = 0
-    c_spirit = character.spirit
-    while(c_spirit.time_units < 20 && spirit.time_units < 20)
-      c_spirit.time_units -= 1 if(c_spirit.has_debuff?('hesitant'))
-      c_spirit.time_units -= 2 if(c_spirit.has_debuff?('panic'))
-      c_spirit.time_units += 4
-      add_delay(1)
-      add_display_update(c_spirit, :time_units, c_spirit.time_units)
-
-      spirit.time_units -= 1 if spirit.has_debuff?('hesitant')
-      spirit.time_units += 4
-      add_display_update(spirit, :time_units, spirit.time_units)
-
+    while(!team_one.ready_to_act? && !team_two.ready_to_act?)
+      teams.each do |team|
+        spirit = team.active_spirit
+        spirit.time_units -= 1 if(spirit.has_debuff?('hesitant'))
+        spirit.time_units -= 2 if(spirit.has_debuff?('panic'))
+        spirit.time_units += 4
+        add_delay(1)
+        add_display_update(spirit, :time_units, spirit.time_units)
+      end
       tics_passed += 1
     end
-    c_spirit.save!
-    spirit.save!
-    if(current_turn == character.spirit)
-      # TODO: Figure out if this is redundant, remov it completely if it is?
-      # add_text("#{tics_passed} tics have passed. #{character.spirit.name} can act!")
-    else
-      #add_text("#{tics_passed} tics have passed. #{spirit.name} can act!")
-      take_ai_turn
+    teams.each{|team| team.spirit.save!}
+    teams.each do |team|
+      if(team.ready_to_act?)
+        add_text("#{tics_passed} tics have passed. #{team.spirit.name} can act!")
+        unless(team_one.try(:character).try(:user))
+          team.take_ai_turn
+        end
+      end
     end
   end
 
-  def take_ai_turn
-    move_to_use = spirit.equipped_moves.sample
-    Move.execute(move_to_use.move_id, self, spirit, character.spirit)
+  def other_team(this_team)
+    teams.find{|team| team != this_team}
   end
 
   def check_triggers(action, owner, enemy)
@@ -137,31 +103,27 @@ class Battle < ApplicationRecord
   end
 
   def battle_finished?
-    if(spirit.health <= 0 && character.spirit.health <= 0)
-      add_text('What? How?')
-    elsif(spirit.health <= 0)
-      add_text('Victory! The enemy has been defeated!')
-    elsif(character.spirit.health <= 0)
-      add_text('Defeat! You have lost the fight!')
-      return true
-    else
-      return false
+    finished = false
+    teams.each do |team|
+      if(team.defeated?)
+        finished = true
+        team.add_text('Defeat! You have lost the fight!')
+        other_team(team).add_text('The enemy has been defeated!')
+      end
     end
   end
 
 private
   def setup
-    self.spirit = Spirit.create(image: ActionController::Base.helpers.image_url('feardolon.png'))
-    self.state = {
-      'events': [
-        {type: 'text', value: "What's this?"},
-        {type: 'text', value: "You've encountered a wild Eidolon!"},
-        {type: 'text', value: "Prepare to fight!"}
-      ],
-      'buffs': [],
-      'debuffs': [],
-      'pending': [],
-      'initial': true
-    }
+
+    add_text("What's this?")
+    add_text("You've encountered a wild Eidolon!")
+    add_text("Prepare to fight!")
+  end
+  
+  def setup_associations
+    while(teams.count < 2)
+      Team.create!(battle: self)
+    end
   end
 end

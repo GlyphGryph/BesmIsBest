@@ -1,5 +1,6 @@
 class Move
-  def self.execute(id, battle, owner, enemy)
+  def self.execute(id, battle, owner)
+    enemy = battle.other_team(owner.team).active_spirit
     p "execute move"
     action = getMove(id.to_sym)
 

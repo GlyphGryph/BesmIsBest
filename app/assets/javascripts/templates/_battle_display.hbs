@@ -17,6 +17,14 @@
         <div class='label'>TU: {{side_two.time_units}}/{{side_two.max_time_units}}</div>
       </div>
     </div>
+    <div class='status-effects'>
+      {{#each side_two.buffs}}
+        <span class='buff'>{{.}}</span>
+      {{/each}}
+      {{#each side_two.debuffs}}
+        <span class='debuff'>{{.}}</span>
+      {{/each}}
+    </div>
   </div>
   <div class='picture'>
     <img src='{{side_two.image}}' />

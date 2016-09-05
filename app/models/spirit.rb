@@ -1,12 +1,11 @@
 class Spirit < ApplicationRecord
-  has_one :character_spirit
-  has_one :character, through: :character_spirits
-  has_one :battle, through: :character
+  has_one :team_membership
+  has_one :team, through: :team_membership
   has_many :known_moves, dependent: :destroy
   has_many :equipped_moves, dependent: :destroy
 
-
-  before_create :assign_defaults
+  before_create :setup
+  after_create :setup_associations
 
   def equipped_move_hash
     equipped_moves.map do |em|
@@ -18,6 +17,9 @@ class Spirit < ApplicationRecord
   def apply_debuff(debuff_id)
     if can_debuff?(debuff_id)
       self.debuffs << debuff_id
+      binding.pry
+      battle.add_display_update(self, :debuffs, self.debuffs)
+      return true
     else
       return false
     end
@@ -28,6 +30,7 @@ class Spirit < ApplicationRecord
       return false
     else
       self.buffs << buff_id
+      battle.add_display_update(self, :buffs, self.buffs)
       return true
     end
   end
@@ -77,8 +80,39 @@ class Spirit < ApplicationRecord
     self.equipped_moves.find{|move| move.move_id == move_id}
   end
 
+  def reset_state
+    self.time_units = 20
+    self.health = self.max_health
+    save!
+  end
+
+  def visible_state_hash
+    {
+      name: name,
+      health: health,
+      max_health: max_health,
+      time_units: time_units,
+      image: ActionController::Base.helpers.image_url(image),
+      buffs: buffs,
+      debuffs: debuffs
+    }
+  end
+
+  def own_state_hash
+    {
+      name: name,
+      health: health,
+      max_health: max_health,
+      time_units: time_units,
+      image: ActionController::Base.helpers.image_url(image),
+      moves: equipped_move_hash,
+      buffs: buffs,
+      debuffs: debuffs
+    }
+  end
+
 private
-  def assign_defaults
+  def setup 
     self.name ||= 'Normalon'
     self.max_health ||= 22
     self.health ||= self.max_health
@@ -87,6 +121,9 @@ private
     self.buffs = []
     self.debuffs = []
     self.poisons = []
+  end
+
+  def setup_associations
     if self.known_moves.empty?
       self.known_moves << KnownMove.create(move_id: :attack)
       self.known_moves << KnownMove.create(move_id: :wait)

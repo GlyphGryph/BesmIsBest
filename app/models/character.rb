@@ -1,14 +1,14 @@
 class Character < ApplicationRecord
   belongs_to :user
   belongs_to :world, required: false
-  belongs_to :battle, required: false, dependent: :destroy
-  has_many :character_spirits, dependent: :destroy
-  has_many :spirits, through: :character_spirits, dependent: :destroy
+  has_one :team, dependent: :destroy
+
   before_create :setup
+  after_create :setup_associations
 
   def move(direction)
     p "Moving Character #{id} #{direction}"
-    if battle
+    if team.battle
       p "Could not move Character #{id} #{direction}. Character is in battle!"
       WorldChannel.broadcast_to world, action: 'commandProcessed', message: 'Invalid Command'
       return false
@@ -45,12 +45,11 @@ class Character < ApplicationRecord
     end
   end
 
-  def spirit
-    spirits.first
-  end
-
 private
   def setup
-    self.character_spirits << CharacterSpirit.create(spirit: Spirit.create(name: 'Nightwing'), position: 0)
+  end
+
+  def setup_associations
+    team ||= Team.create!(character: self)
   end
 end

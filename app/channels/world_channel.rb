@@ -35,6 +35,7 @@ class WorldChannel < ApplicationCable::Channel
     spirit = current_user.character.team.active_spirit
     spirit.health = 0
     spirit.save!
+    current_user.character.team.battle.add_battle_end
     current_user.character.team.battle.broadcast_events
   end
 end

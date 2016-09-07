@@ -75,9 +75,9 @@ class Eidolon.BattleController
         $('#battle-text .continue-arrow').hide()
         @processNextEvent()
       else if(nextEvent.type == 'end_battle')
-        console.log('leaving battle')
         @menuMode = 'wait'
-        Eidolon.Channels.world.perform('leave_battle')
+        Eidolon.application.leaveBattle()
+        console.log('left battle')
     else
       console.log('displaying move list')
       $('#battle-text .continue-arrow').hide()

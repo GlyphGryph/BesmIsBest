@@ -80,7 +80,7 @@ class Spirit < ApplicationRecord
   end
 
   def reset_state
-    self.time_units = 20
+    self.time_units = TimeUnit.multiplied(TimeUnit.max)
     self.health = self.max_health
     self.buffs = []
     self.debuffs = []
@@ -92,7 +92,7 @@ class Spirit < ApplicationRecord
       name: name,
       health: health,
       max_health: max_health,
-      time_units: time_units,
+      time_units: TimeUnit.reduced(time_units),
       image: ActionController::Base.helpers.image_url(image),
       buffs: buffs,
       debuffs: debuffs
@@ -104,7 +104,7 @@ class Spirit < ApplicationRecord
       name: name,
       health: health,
       max_health: max_health,
-      time_units: time_units,
+      time_units: TimeUnit.reduced(time_units),
       image: ActionController::Base.helpers.image_url(image),
       moves: equipped_move_hash,
       buffs: buffs,
@@ -117,7 +117,7 @@ private
     self.name ||= ['Normalon', 'Otheron', 'Faithdolon', 'Feardolon', 'Notdolon'].sample
     self.max_health ||= 22
     self.health ||= self.max_health
-    self.time_units ||= 20
+    self.time_units ||= TimeUnit.multiplied(TimeUnit.max) 
     self.image ||= 'faithdolon.png'
     self.buffs = []
     self.debuffs = []

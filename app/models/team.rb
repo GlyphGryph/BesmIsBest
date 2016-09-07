@@ -25,7 +25,7 @@ class Team < ApplicationRecord
   end
 
   def ready_to_act?
-    active_spirit.time_units >= 20
+    active_spirit.time_units >= TimeUnit.multiplied(TimeUnit.max)
   end
 
   def action_selected(move_id)

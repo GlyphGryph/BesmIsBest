@@ -4,6 +4,9 @@ class Battle < ApplicationRecord
   before_create :setup
   after_create :setup_associations
 
+  @@time_unit_multiplier = 12
+  @@max_time_units = 5
+
   def broadcast_events
     teams.each do |team|
       if(team.try(:character).try(:user))
@@ -35,7 +38,7 @@ class Battle < ApplicationRecord
         own_team.character.user,
         action: 'updateState',
         mode: 'battle',
-        max_time_units: 20,
+        max_time_units: TimeUnit.max,
         events: own_team.state['events'],
         own_state: own_team.active_spirit.own_state_hash,
         enemy_state: enemy_team.active_spirit.visible_state_hash
@@ -60,26 +63,22 @@ class Battle < ApplicationRecord
   end
 
   def advance_time
-    p "!! ADVANCING TIME? !!"
     if(battle_finished?)
-      p "!! BATTLE FINISHED !!"
       add_battle_end
       return false
     end
 
     tics_passed = 0
     while(!teams.first.ready_to_act? && !teams.last.ready_to_act?)
-      p "!! TIC ADVANCED !!"
       teams.each do |team|
         spirit = team.active_spirit
-        spirit.time_units -= 1 if(spirit.has_debuff?('hesitant'))
-        spirit.time_units -= 2 if(spirit.has_debuff?('panic'))
-        spirit.time_units += 4
+        spirit.time_units -= TimeUnit.multiplier/4 if(spirit.has_debuff?('hesitant'))
+        spirit.time_units -= TimeUnit.multiplier/3 if(spirit.has_debuff?('panic'))
+        spirit.time_units += TimeUnit.multiplier
         spirit.save!
-        add_delay(1)
-        add_display_update(spirit, :time_units, spirit.time_units)
-        p "!! Team has #{spirit.time_units} time units !!"
+        add_display_update(spirit, :time_units, TimeUnit.reduced(spirit.time_units))
       end
+      add_delay(1)
       tics_passed += 1
     end
     teams.each do |team|

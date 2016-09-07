@@ -33,8 +33,9 @@ class Move
         action.special.call(battle, owner, enemy)
       end
     end
-
+    owner.team.save!
     owner.save!
+    enemy.team.save!
     enemy.save!
     battle.save!
   end
@@ -229,7 +230,7 @@ class Move
       time_units: 0,
       description: 'Causes HESITANT: Lose a fourth of a time unit each tic',
       special: lambda do |battle, owner, enemy|
-        if(enemy.apply_debuff(:hesitant))
+        if(enemy.apply_debuff('hesitant'))
           battle.add_text("#{enemy.name} has become hesitant to act!")
         else
           battle.add_text("#{enemy.name} could not be intimidated.")
@@ -243,7 +244,7 @@ class Move
       time_units: 3,
       description: 'Causes PANIC: Lose a half of a time unit each tic',
       special: lambda do |battle, owner, enemy|
-        if(enemy.apply_debuff(:panic))
+        if(enemy.apply_debuff('panic'))
           battle.add_text("#{enemy.name} shakes with terror!")
         else
           battle.add_text("#{enemy.name} could not be terrified.")
@@ -257,7 +258,7 @@ class Move
       time_units: 2,
       description: 'Causes DESPAIR: Damage received is doubled.',
       special: lambda do |battle, owner, enemy|
-        if(enemy.apply_debuff(:despair))
+        if(enemy.apply_debuff('despair'))
           battle.add_text("#{enemy.name} has lost all sense of self-preservation.")
         else
           battle.add_text("#{enemy.name} could not be doomed.")
@@ -272,7 +273,7 @@ class Move
       description: 'In addition to dealing damage, causes HESITANT: Lose a fourth of a time unit each tic',
       damage: 2,
       special: lambda do |battle, owner, enemy|
-        if(enemy.apply_debuff(:hesitant))
+        if(enemy.apply_debuff('hesitant'))
           battle.add_text("#{enemy.name} has become hesitant to act!")
         else
           battle.add_text("#{enemy.name} could not be made to fear the pain.")
@@ -307,8 +308,8 @@ class Move
     # Passion type actions
     assault: OpenStruct.new(
       name: 'Reckless Assault',
-      types: [:attack, :temporary, :special, :debuff],
-      nature: :fear,
+      types: [:incomplete, :attack, :temporary, :special, :debuff],
+      nature: :passion,
       time_units: 5,
       description: 'Deal a large amount of damage, but until your next action gain RECKLESS: Receive double damage from all sources.',
       damage: 22,
@@ -317,20 +318,20 @@ class Move
       expire: lambda do |battle, owner, enemy|
       end
     ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
+    regenerate: OpenStruct.new(
+      name: 'Regenerate',
+      types: [:special, :buff],
+      nature: :passion,
+      time_units: 2,
+      description: 'Apply the REGENERATE buff: Regain 1 health per tic',
+      special: lambda do |battle, owner, enemy|
+        if(owner.apply_buff('regenerate'))
+          battle.add_text("#{owner.name} has started healing!")
+        else
+          battle.add_text("#{owner.name} could not begin healing.")
+        end
+      end
+    ),
     # : OpenStruct.new(
     #   name: '',
     #   types: [:],

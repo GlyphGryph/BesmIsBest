@@ -135,4 +135,19 @@
       padding:2px;
     }
   }
+  
+  .buff, .debuff{
+    display:inline-block;
+    color:white;
+    padding-left:3px;
+    padding-right:3px;
+  }
+
+  .buff{
+    background-color: green;
+  }
+
+  .debuff{
+    background-color: brown;
+  }
 }

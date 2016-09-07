@@ -28,6 +28,8 @@ class Eidolon.BattleController
     }
     @setHealthPercents()
     @setTimeUnitPercents()
+    console.log('Received State:')
+    console.log(@state)
     $('body').html(HandlebarsTemplates.battle(@state))
     @receiveEvents(data.events)
 

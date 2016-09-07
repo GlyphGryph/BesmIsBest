@@ -50,6 +50,14 @@
         <div class='label'>TU: {{own.time_units}}/{{max_time_units}}</div>
       </div>
     </div>
+    <div class='status-effects'>
+      {{#each own.buffs}}
+        <span class='buff'>{{.}}</span>
+      {{/each}}
+      {{#each own.debuffs}}
+        <span class='debuff'>{{.}}</span>
+      {{/each}}
+    </div>
   </div>
   <div class='picture'>
     <img src='{{own.image}}' />

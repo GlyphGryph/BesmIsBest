@@ -48,19 +48,23 @@ class Team < ApplicationRecord
   end
 
   def add_text(text)
-    self.state['events'] << {type: 'text', value: text}
+    self.reload.state['events'] << {type: 'text', value: text}
+    self.save!
   end
 
   def add_delay(delay)
-    self.state['events'] << {type: 'delay', value: delay}
+    self.reload.state['events'] << {type: 'delay', value: delay}
+    self.save!
   end
 
   def add_display_update(spirit, stat, value)
-    self.state['events'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
+    self.reload.state['events'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
+    self.save!
   end
 
   def add_battle_end
-    self.state['events'] << {type: 'end_battle'}
+    self.reload.state['events'] << {type: 'end_battle'}
+    self.save!
   end
 
 private

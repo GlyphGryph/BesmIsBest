@@ -25,28 +25,32 @@ class Spirit < ApplicationRecord
   end
 
   def apply_buff(buff_id)
-    if(self.buffs.include?(buff_id))
-      return false
-    else
+    if can_buff?(buff_id)
       self.buffs << buff_id
       team.battle.add_display_update(self, :buffs, self.buffs)
       return true
+    else
+      return false
     end
   end
 
   def remove_debuff(debuff_id=nil)
     if(debuff_id)
       self.debuffs.delete(debuff_id)
+      team.battle.add_display_update(self, :debuffs, self.debuffs)
     else
       self.debuffs.delete(self.debuffs.sample)
+      team.battle.add_display_update(self, :debuffs, self.debuffs)
     end
   end
 
   def remove_buff(buff_id=nil)
     if(buff_id)
       self.buffs.delete(buff_id)
+      team.battle.add_display_update(self, :buffs, self.buffs)
     else
       self.buffs.delete(self.buffs.sample)
+      team.battle.add_display_update(self, :buffs, self.buffs)
     end
   end
 
@@ -62,12 +66,26 @@ class Spirit < ApplicationRecord
     debuffs.include?(debuff_id)
   end
 
+  def has_buff?(buff_id)
+    buffs.include?(buff_id)
+  end
+
   def can_debuff?(debuff_id)
     if(
       has_debuff?(debuff_id) ||
-      (debuff_id == ':hesitant' && has_move?(:no_fear)) ||
-      (debuff_id == ':panic' && has_move?(:no_fear)) ||
-      (debuff_id == ':despair' && has_move?(:no_fear))
+      (debuff_id == 'hesitant' && has_move?(:no_fear)) ||
+      (debuff_id == 'panic' && has_move?(:no_fear)) ||
+      (debuff_id == 'despair' && has_move?(:no_fear))
+    )
+      return false
+    else
+      return true
+    end
+  end
+
+  def can_buff?(buff_id)
+    if(
+      has_buff?(buff_id)
     )
       return false
     else
@@ -84,7 +102,6 @@ class Spirit < ApplicationRecord
     self.health = self.max_health
     self.buffs = []
     self.debuffs = []
-    save!
   end
 
   def visible_state_hash
@@ -126,8 +143,8 @@ private
   def setup_associations
     if self.known_moves.empty?
       self.known_moves << KnownMove.create(move_id: :attack)
-      self.known_moves << KnownMove.create(move_id: :wait)
       self.known_moves << KnownMove.create(move_id: :intimidate)
+      self.known_moves << KnownMove.create(move_id: :regenerate)
       self.known_moves << KnownMove.create(move_id: :shake_off)
       self.known_moves.each do |km|
         self.equipped_moves << EquippedMove.create(move_id: km.move_id)

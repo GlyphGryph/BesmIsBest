@@ -8,7 +8,7 @@ class Team < ApplicationRecord
   after_create :setup_associations
 
   def reset_state
-    spirits.each{ |spirit| spirit.reset_state }
+    spirits.each{ |spirit| spirit.reset_state; spirit.save! }
   end
 
   def clear_events
@@ -67,6 +67,17 @@ class Team < ApplicationRecord
     self.save!
   end
 
+  def add_wild_spirit
+    spirit = Spirit.create!(
+      name: 'Wild Enemy',
+      max_health: 22,
+      image: 'faithdolon.png'
+    )
+    TeamMembership.create(team: self, spirit: spirit)
+    KnownMove.create(spirit: spirit, move_id: :attack)
+    EquippedMove.create(spirit: spirit, move_id: :attack)
+  end
+
 private
   def setup
     self.state = {
@@ -75,8 +86,5 @@ private
   end
 
   def setup_associations
-    if(team_memberships.count < 1)
-      TeamMembership.create(team: self, spirit: Spirit.create!)
-    end
   end
 end

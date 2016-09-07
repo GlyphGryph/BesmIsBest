@@ -25,9 +25,10 @@ class WorldChannel < ApplicationCable::Channel
   end
 
   def enter_battle
-    battle = Battle.new
+    battle = Battle.create
     battle.teams << current_user.character.team
-    battle.save!
+    battle.add_wild_team
+    battle.start
     WorldChannel.broadcast_to current_user, action: 'enterBattle'
   end
 

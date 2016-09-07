@@ -125,18 +125,25 @@ class Battle < ApplicationRecord
     add_battle_end if finished
     finished
   end
+  
+  def add_wild_team
+    if(teams.count < 2)
+      Team.create!(battle: self).add_wild_spirit
+      return true
+    end
+    return false
+  end
 
-private
-  def setup
+  def start
+    teams.each{|team| team.reset_state; team.save! }
     add_text("What's this?")
     add_text("You've encountered a wild Eidolon!")
     add_text("Prepare to fight!")
   end
+private
+  def setup
+  end
   
   def setup_associations
-    while(teams.count < 2)
-      Team.create!(battle: self)
-    end
-    teams.each{|team| team.reset_state; team.save! }
   end
 end

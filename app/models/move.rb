@@ -48,6 +48,10 @@ class Move
     end
   end
 
+  def self.all
+    @@all
+  end
+
   @@all = {
     ## Normal type actions
     attack: OpenStruct.new(

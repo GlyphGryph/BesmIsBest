@@ -131,7 +131,7 @@ class Spirit < ApplicationRecord
 
 private
   def setup 
-    self.name ||= ['Normalon', 'Otheron', 'Faithdolon', 'Feardolon', 'Notdolon'].sample
+    self.name ||= 'Normalon'
     self.max_health ||= 22
     self.health ||= self.max_health
     self.time_units ||= TimeUnit.multiplied(TimeUnit.max) 
@@ -141,14 +141,5 @@ private
   end
 
   def setup_associations
-    if self.known_moves.empty?
-      self.known_moves << KnownMove.create(move_id: :attack)
-      self.known_moves << KnownMove.create(move_id: :intimidate)
-      self.known_moves << KnownMove.create(move_id: :regenerate)
-      self.known_moves << KnownMove.create(move_id: :shake_off)
-      self.known_moves.each do |km|
-        self.equipped_moves << EquippedMove.create(move_id: km.move_id)
-      end
-    end
   end
 end

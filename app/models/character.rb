@@ -50,6 +50,12 @@ private
   end
 
   def setup_associations
-    team ||= Team.create!(character: self)
+    starter_spirit = Spirit.create!(name: "Nighthawk", max_health: 50, image: 'feardolon.png' )
+    team = Team.create!(character: self)
+    TeamMembership.create!(team: team, spirit: starter_spirit)
+    Move.all.keys.each do |key|
+      KnownMove.create(spirit: starter_spirit, move_id: key)
+    end
+    EquippedMove.create(spirit: starter_spirit, move_id: :attack)
   end
 end

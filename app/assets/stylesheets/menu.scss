@@ -1,0 +1,47 @@
+.menu{
+  border:10px double black;
+  padding:6px;
+
+  .text{
+    width:100%;
+  }
+
+  .continue-arrow{
+    display:none;
+    position:absolute;
+    bottom:0px;
+    right:0px;
+    height:20px;
+    width:20px;
+    padding:2px;
+  }
+}
+
+.move-selector{
+  .spirit{
+
+    .name{
+      font-weight: bold;
+      text-decoration: underline;
+      border:1px solid black;
+    }
+    
+    .moves{
+      border:1px solid black;
+      margin-left: 5px;
+
+      .move{
+        width:250px;
+        display: inline-block;
+        margin: 2px;
+        border-bottom:1px dotted black;
+        padding:3px;
+
+        .equipped-tag{
+          display: inline-block;
+          background-color: green;
+        }
+      }
+    }
+  }
+}

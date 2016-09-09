@@ -1,4 +1,10 @@
-<div class='text' />
+{{#if display_options }}
+  {{#with own.moves }}
+    {{> _options_list }}
+  {{/with}}
+{{else}}
+  <div class='text'>{{currentText}}</div>
+{{/if }}
 <div class='continue-arrow'>
   <div class='blink'>▼</div>
 </div>

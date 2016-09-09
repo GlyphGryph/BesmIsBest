@@ -21,7 +21,7 @@ class WorldChannel < ApplicationCable::Channel
   end
 
   def request_update
-    current_user.character.world.request_update_for(current_user)
+    current_user.character.world.broadcast_update_for(current_user)
   end
 
   def enter_battle

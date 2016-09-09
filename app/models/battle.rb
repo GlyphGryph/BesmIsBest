@@ -94,7 +94,6 @@ class Battle < ApplicationRecord
     end
     teams.each do |team|
       if(team.ready_to_act?)
-        add_text("#{team.active_spirit.name} can act!")
         unless(team.try(:character).try(:user))
           # If this is an AI, let them take their turn and trigger more time advancement
           team.take_ai_turn 

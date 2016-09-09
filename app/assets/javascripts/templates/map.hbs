@@ -1,13 +1,34 @@
-<table id='map'>
-  {{#each rows}}
-    <tr data-row='{{@index}}'>
-      {{#each .}}
-        <td class='cell {{class}}' data-column='{{@index}}'>
-          {{#if occupied}}
-            @
-          {{/if}}
-        </td>
-      {{/each}}
-    </tr>
-  {{/each}}
-</table>
+<div id='map-zone'>
+  <table id='map-display'>
+    {{#each map.rows}}
+      <tr data-row='{{@index}}'>
+        {{#each .}}
+          <td class='cell {{class}}' data-column='{{@index}}'>
+            {{#if occupied}}
+              @
+            {{/if}}
+          </td>
+        {{/each}}
+      </tr>
+    {{/each}}
+  </table>
+  <div class='move-selector menu'>
+    {{#each team.spirits}}
+      <div class='spirit' data-id='{{id}}'>
+        <div class='name'>
+          {{name}}
+        </div>
+        <div class='moves'>
+          {{#each moves}}
+            <div class='move' data-id='{{move_id}}' data-equipped={{equipped}}>
+              {{name}}
+              {{#if equipped}}
+                <span class='equipped-tag'>EQUIPPED</span>
+              {{/if}}
+            </div>
+          {{/each}}
+        </div>
+    {{/each}}
+  </div>
+</div>
+

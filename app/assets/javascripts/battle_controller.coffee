@@ -4,7 +4,6 @@ class Eidolon.BattleController
   menuMode: 'wait'
   active: false
   indicatedMoveIndex: null
-  currentText: 'Waiting...'
 
   start: ->
     @active = true
@@ -24,12 +23,14 @@ class Eidolon.BattleController
     @state = {
       max_time_units: data.max_time_units,
       own: data.own_state,
-      enemy: data.enemy_state
+      enemy: data.enemy_state,
+      state: 'Waiting...'
     }
     @setHealthPercents()
     @setTimeUnitPercents()
     console.log('Received State:')
     console.log(@state)
+    # Replacing state
     $('body').html(HandlebarsTemplates.battle(@state))
     @receiveEvents(data.events)
 
@@ -45,23 +46,24 @@ class Eidolon.BattleController
     @processNextEvent()
 
   processNextEvent: () ->
+    @state.display_options = false
     if(@menuMode == 'wait')
       console.log('waiting')
-      $('#battle-text .text').text(@currentText)
+      $('#battle-text').html(Handlebars.partials._battle_text(@state))
       $('#battle-text .continue-arrow').hide()
       @menuMode = 'viewText'
     else if(@eventQueue.length > 0)
       nextEvent = @eventQueue.shift()
       if(nextEvent.type == 'text')
         console.log('displaying text')
-        @currentText = nextEvent.value
-        $('#battle-text .text').text(@currentText)
+        @state.currentText = nextEvent.value
+        $('#battle-text').html(Handlebars.partials._battle_text(@state))
         $('#battle-text .continue-arrow').show()
       else if(nextEvent.type == 'delay')
         console.log('delaying')
         @menuMode = 'wait'
-        @currentText = ''
-        $('#battle-text .text').text(@currentText)
+        @state.currentText = ''
+        $('#battle-text').html(Handlebars.partials._battle_text(@state))
         $('#battle-text .continue-arrow').hide()
         setTimeout(@delayCompleted,300)
       else if(nextEvent.type == 'update')
@@ -82,8 +84,9 @@ class Eidolon.BattleController
         console.log('left battle')
     else
       console.log('displaying move list')
+      @state.display_options = true
+      $('#battle-text').html(Handlebars.partials._battle_text(@state))
       $('#battle-text .continue-arrow').hide()
-      $('#battle-text .text').html(@moveListElement())
       @menuMode =  'list'
       @newMoveIndex(0)
 
@@ -96,14 +99,14 @@ class Eidolon.BattleController
     @menuMode = 'wait'
     Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove().id})
 
-  moveListElement: () ->
-    element = $('<table></table>').addClass('move-list')
-    for move in @state.own.moves
-      moveElement = $('<tr></tr>').addClass('move').attr('data-id', move.id)
-      moveSelector = $('<td></td>').addClass('indicator-cell')
-      moveText = $('<td></td>').addClass('move-name-cell').text(move.name)
-      moveElement.append(moveSelector).append(moveText)
-      element.append(moveElement)
+ #  moveListElement: () ->
+ #    element = $('<table></table>').addClass('option-list')
+ #    for move in @state.own.moves
+ #      moveElement = $('<tr></tr>').addClass('option').attr('data-id', move.id)
+ #      moveSelector = $('<td></td>').addClass('indicator-cell')
+ #      moveText = $('<td></td>').addClass('name-cell').text(move.name)
+ #      moveElement.append(moveSelector).append(moveText)
+ #      element.append(moveElement)
 
   indicatedMove: () ->
     @state.own.moves[@indicatedMoveIndex]
@@ -137,9 +140,9 @@ class Eidolon.BattleController
 
   newMoveIndex: (newIndex) ->
     @indicatedMoveIndex = newIndex
-    element = $('.move-list')
-    element.find('.move .indicator-cell').removeClass('blink').text('')
-    element.find('.move[data-id='+@indicatedMove().id+'] .indicator-cell').addClass('blink').text('>')
+    element = $('.option-list')
+    element.find('.option .indicator-cell').removeClass('blink').text('')
+    element.find('.option[data-id='+@indicatedMove().id+'] .indicator-cell').addClass('blink').text('>')
 
   receiveKey: (key) ->
     switch(key)

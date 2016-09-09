@@ -2,7 +2,7 @@ class Move
   def self.execute(id, battle, owner)
     enemy = battle.other_team(owner.team).active_spirit
     p "!! EXECUTING MOVE !!"
-    action = getMove(id.to_sym)
+    action = get_move(id.to_sym)
 
     owner.time_units -= TimeUnit.multiplied(action.time_units)
 
@@ -40,7 +40,8 @@ class Move
     battle.save!
   end
 
-  def self.getMove(id)
+  def self.get_move(id)
+    id = id.to_sym
     if(move = @@all[id])
       return move
     else

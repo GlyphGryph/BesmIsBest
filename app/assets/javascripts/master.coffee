@@ -64,7 +64,7 @@ class Eidolon.MasterController
   
   enterBattle: () ->
     @actionAllowed = false
-    $('#map').fadeTo(600, 0, @finishEnteringBattle)
+    $('#map-zone').fadeTo(600, 0, @finishEnteringBattle)
     
   finishEnteringBattle: () =>
     @setController(Eidolon.battleController)

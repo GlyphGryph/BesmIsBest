@@ -37,11 +37,11 @@ class Character < ApplicationRecord
     end
     p "New Character #{id} position: #{self.xx}, #{self.yy}"
     if rand(10)==1
-      WorldChannel.broadcast_to world, action: 'update', map: world.reload.full_map, mode: 'world'
+      world.broadcast_update_for(self.user)
       enter_battle_mode()
     else
       save!
-      WorldChannel.broadcast_to world, action: 'update', map: world.reload.full_map, mode: 'world'
+      world.broadcast_update_for(self.user)
     end
   end
 

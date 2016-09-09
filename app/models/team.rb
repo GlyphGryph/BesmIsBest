@@ -7,6 +7,10 @@ class Team < ApplicationRecord
   before_create :setup
   after_create :setup_associations
 
+  def customization_data
+    { spirits: spirits.map{ |spirit| spirit.customization_data } }
+  end
+
   def reset_state
     spirits.each{ |spirit| spirit.reset_state; spirit.save! }
   end

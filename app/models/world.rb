@@ -2,8 +2,14 @@ class World < ApplicationRecord
   before_save :generate_map
   has_many :characters, dependent: :destroy
 
-  def request_update_for(target)
-    WorldChannel.broadcast_to target.reload, action: 'update', map: self.reload.full_map, mode: 'world'
+  def broadcast_update_for(user)
+    WorldChannel.broadcast_to(
+      user,
+      action: 'update',
+      mode: 'world',
+      map: self.reload.full_map,
+      team: user.character.team.customization_data
+    )
   end
 
   def full_map

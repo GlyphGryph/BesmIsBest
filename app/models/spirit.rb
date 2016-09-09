@@ -9,7 +9,7 @@ class Spirit < ApplicationRecord
 
   def equipped_move_hash
     equipped_moves.map do |em|
-      move = Move.getMove(em.move_id.to_sym)
+      move = Move.get_move(em.move_id.to_sym)
       {name: move.name, id: em.move_id}
     end
   end
@@ -127,6 +127,23 @@ class Spirit < ApplicationRecord
       buffs: buffs,
       debuffs: debuffs
     }
+  end
+
+  def customization_data
+    equip_ids = equipped_moves.map{|em| em.move_id}
+    {
+      id: id,
+      name: name,
+      moves: known_moves.map do |km|
+        { move_id: km.move_id,
+          name: Move.get_move(km.move_id).name,
+          equipped: equip_ids.include?(km.move_id)
+        }
+      end
+    }
+  end
+
+  def equip_moves(data)
   end
 
 private

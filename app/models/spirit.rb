@@ -132,6 +132,7 @@ class Spirit < ApplicationRecord
   end
 
   def customization_data
+    reload
     equip_ids = equipped_moves.map{|em| em.move_id}
     {
       id: id,

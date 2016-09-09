@@ -20,26 +20,36 @@
 .move-selector{
   .spirit{
 
-    .name{
-      font-weight: bold;
-      text-decoration: underline;
-      border:1px solid black;
+    .header{
+      border-left:1px solid black;
+      border-top:1px solid black;
+      padding:3px;
+      
+      .name{
+        font-weight:bold;
+      }
     }
     
     .moves{
       border:1px solid black;
-      margin-left: 5px;
+      margin-left:5px;
+      background-color:#CCC;
 
       .move{
-        width:250px;
-        display: inline-block;
-        margin: 2px;
-        border-bottom:1px dotted black;
+        width:350px;
+        display:inline-block;
+        margin:2px;
+        border:1px outset black;
         padding:3px;
 
         .equipped-tag{
-          display: inline-block;
-          background-color: green;
+          display:inline-block;
+          background-color:green;
+        }
+
+        &.equipped{
+          background-color:#FFF;
+          border-style: inset;
         }
       }
     }

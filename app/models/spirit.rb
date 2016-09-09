@@ -7,6 +7,8 @@ class Spirit < ApplicationRecord
   before_create :setup
   after_create :setup_associations
 
+  @@max_moves = 4
+
   def equipped_move_hash
     equipped_moves.map do |em|
       move = Move.get_move(em.move_id.to_sym)
@@ -134,6 +136,8 @@ class Spirit < ApplicationRecord
     {
       id: id,
       name: name,
+      number_equipped_moves: equip_ids.count,
+      max_equipped_moves: @@max_moves,
       moves: known_moves.map do |km|
         { move_id: km.move_id,
           name: Move.get_move(km.move_id).name,
@@ -143,7 +147,19 @@ class Spirit < ApplicationRecord
     }
   end
 
-  def equip_moves(data)
+  def equip_move(move_id)
+    if(equipped_moves.count < @@max_moves && known_moves.where(move_id: move_id).count > 0)
+      EquippedMove.create(spirit: self, move_id: move_id)
+      team.character.world.broadcast_update_for(team.character.user)
+    end
+  end
+
+  def unequip_move(move_id)
+    if(equipped_moves.count > 1)
+      target_move = equipped_moves.find_by(move_id: move_id)
+      target_move.destroy
+      team.character.world.broadcast_update_for(team.character.user)
+    end
   end
 
 private

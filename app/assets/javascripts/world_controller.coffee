@@ -16,6 +16,8 @@ class Eidolon.WorldController
       @subscribed()
     else
       Eidolon.application.subscribe('world')
+    $('body').on('click', '.move.unequipped', @equipMove)
+    $('body').on('click', '.move.equipped', @unequipMove)
 
   subscribed: ->
     Eidolon.Channels.world.perform('request_update')
@@ -37,6 +39,12 @@ class Eidolon.WorldController
 
   move: (direction) ->
     Eidolon.Channels.world.perform('move', {direction: direction})
+
+  equipMove: (event) ->
+    Eidolon.Channels.world.perform('equip_move', {move_id: $(this).data('id'), spirit_id: $(this).parents('.spirit').data('id')})
+
+  unequipMove: (event) ->
+    Eidolon.Channels.world.perform('unequip_move', {move_id: $(this).data('id'), spirit_id: $(this).parents('.spirit').data('id')})
 
   receiveKey: (key) ->
     switch(key)

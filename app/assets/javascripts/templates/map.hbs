@@ -15,17 +15,22 @@
   <div class='move-selector menu'>
     {{#each team.spirits}}
       <div class='spirit' data-id='{{id}}'>
-        <div class='name'>
-          {{name}}
+        <div class='header'>
+          <span class='name'>{{name}}</span>
+          <span class='move-count'>{{number_equipped_moves}} / {{max_equipped_moves}} moves equipped.</span>
         </div>
         <div class='moves'>
           {{#each moves}}
-            <div class='move' data-id='{{move_id}}' data-equipped={{equipped}}>
-              {{name}}
-              {{#if equipped}}
+            {{#if equipped}}
+              <div class='move equipped' data-id='{{move_id}}'>
+                {{name}}
                 <span class='equipped-tag'>EQUIPPED</span>
-              {{/if}}
-            </div>
+              </div>
+            {{else}}
+              <div class='move unequipped' data-id='{{move_id}}'>
+                {{name}}
+              </div>
+            {{/if}}
           {{/each}}
         </div>
     {{/each}}

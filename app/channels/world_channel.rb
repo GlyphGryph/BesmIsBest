@@ -24,6 +24,14 @@ class WorldChannel < ApplicationCable::Channel
     current_user.character.world.broadcast_update_for(current_user)
   end
 
+  def equip_move(data)
+    current_user.character.team.spirits.find(data['spirit_id']).equip_move(data['move_id'])
+  end
+
+  def unequip_move(data)
+    current_user.character.team.spirits.find(data['spirit_id']).unequip_move(data['move_id'])
+  end
+
   def enter_battle
     battle = Battle.create
     battle.teams << current_user.character.team

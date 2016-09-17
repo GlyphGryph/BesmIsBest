@@ -55,11 +55,15 @@ class Character < ApplicationRecord
     end
   end
   
-  def start_battle
+  def start_battle(opponent = nil)
     if(team.reload.battle.nil?)
       battle = Battle.create!
       battle.teams << team
-      battle.add_wild_team
+      if(opponent)
+        battle.teams << opponent.team
+      else
+        battle.add_wild_team
+      end
       battle.save!
       battle.start
     else

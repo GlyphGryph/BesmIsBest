@@ -100,6 +100,7 @@ class Spirit < ApplicationRecord
   end
 
   def reset_state
+    reload
     self.time_units = TimeUnit.multiplied(TimeUnit.max)
     self.health = self.max_health
     self.buffs = []

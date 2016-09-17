@@ -10,21 +10,7 @@ class Battle < ApplicationRecord
 
   def broadcast_events
     teams.each{|team| team.broadcast_events}
-    teams.each do |team|
-      if(team.try(:character).try(:user))
-        BattleChannel.broadcast_to(
-          team.character.user,
-          action: 'updateEvents',
-          mode: 'battle',
-          events: team.state['events']
-        )
-      end
-      team.clear_events
-    end
-
-    if(battle_finished?)
-      self.destroy!
-    end
+    self.destroy! if battle_finished?
   end
 
   def broadcast_state

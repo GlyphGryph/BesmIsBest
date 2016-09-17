@@ -56,48 +56,63 @@ class Team < ApplicationRecord
   end
 
   def request_ai_turn
-    if(character.nil?)
+    if(!has_player?)
       move_to_use = active_spirit.equipped_moves.sample
       battle.take_ai_turn(self, {'move_id' => move_to_use.move_id})
     end
   end
 
   def add_text(text)
-    self.reload.state['events'] << {type: 'text', value: text}
-    self.reload.state['history'] << {type: 'text', value: text}
-    self.save!
+    if has_player?
+      reload
+      self.state['events'] << {type: 'text', value: text}
+      self.state['history'] << {type: 'text', value: text}
+      self.save!
+    end
   end
 
   def add_delay(delay)
-    self.reload.state['events'] << {type: 'delay', value: delay}
-    self.reload.state['history'] << {type: 'delay', value: delay}
-    self.save!
+    if has_player?
+      reload
+      self.state['events'] << {type: 'delay', value: delay}
+      self.state['history'] << {type: 'delay', value: delay}
+      self.save!
+    end
   end
 
   def add_display_update(spirit, stat, value)
-    self.reload.state['events'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
-    self.reload.state['history'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
-    self.save!
+    if has_player?
+      reload
+      self.state['events'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
+      self.state['history'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
+      self.save!
+    end
   end
 
   def add_battle_end
-    if(defeated?)
-      add_text('Defeat! You have lost the fight!')
-    else
-      add_text('The enemy has been defeated!')
+    if has_player?
+      if(defeated?)
+        add_text('Defeat! You have lost the fight!')
+      else
+        add_text('The enemy has been defeated!')
+      end
+      self.state['last_event'] = {type: 'end_battle'}
+      self.save!
     end
-    self.reload.state['last_event'] = {type: 'end_battle'}
-    self.save!
   end
 
   def add_wait
-    self.reload.state['last_event'] = {type: 'wait'}
-    self.save!
+    if has_player?
+      self.reload.state['last_event'] = {type: 'wait'}
+      self.save!
+    end
   end
 
   def add_take_turn
-    self.reload.state['last_event'] = {type: 'take_turn'}
-    self.save!
+    if has_player?
+      self.reload.state['last_event'] = {type: 'take_turn'}
+      self.save!
+    end
   end
 
   def add_wild_spirit
@@ -124,7 +139,8 @@ class Team < ApplicationRecord
   end
 
   def broadcast_events
-    if(character && character.user)
+    reload
+    if has_player?
       BattleChannel.broadcast_to(
         character.user,
         action: 'updateEvents',
@@ -133,6 +149,10 @@ class Team < ApplicationRecord
       )
     end
     clear_events
+  end
+
+  def has_player?
+    character && character.user
   end
 
 private

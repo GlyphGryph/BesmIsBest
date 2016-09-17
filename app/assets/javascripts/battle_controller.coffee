@@ -83,7 +83,10 @@ class Eidolon.BattleController
         @menuMode = 'wait'
         Eidolon.application.leaveBattle()
         console.log('left battle')
-      else if(nextEvent.type == 'wait_for_turn')
+      else if(nextEvent.type == 'wait')
+        @state.currentText = ""
+        $('#battle-text').html(Handlebars.partials._battle_text(@state))
+        $('#battle-text .continue-arrow').hide()
         console.log('waiting for turn')
       else if(nextEvent.type == 'take_turn')
         console.log('taking turn')

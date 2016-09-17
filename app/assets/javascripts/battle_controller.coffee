@@ -6,25 +6,28 @@ class Eidolon.BattleController
   indicatedMoveIndex: null
 
   start: ->
-    @active = true
-    @eventQueue = []
-    if(Eidolon.Channels.battle)
-      @subscribed()
-    else
+    if(Eidolon.application.initialBattleState)
+      @active = true
+      @eventQueue = []
       Eidolon.application.subscribe('battle')
+      @loadState(Eidolon.application.initialBattleState)
+    else # Data not provided, cannot start. Request data and try again
+      Eidolon.Channels.master.perform('join_battle')
 
   end: ->
-    @active = false
+    if(Eidolon.Channels.battle)
+      Eidolon.Channels.battle.unsubscribe
+      Eidolon.Channels.battle = null
+      Eidolon.application.initialBattleState = null
 
-  subscribed: ->
-    Eidolon.Channels.battle.perform('request_state')
+      @active = false
 
-  updateState: (data) ->
+  loadState: (data) ->
     @state = {
       max_time_units: data.max_time_units,
       own: data.own_state,
       enemy: data.enemy_state,
-      state: 'Waiting...'
+      events: data.events
     }
     @setHealthPercents()
     @setTimeUnitPercents()
@@ -32,12 +35,10 @@ class Eidolon.BattleController
     console.log(@state)
     # Replacing state
     $('body').html(HandlebarsTemplates.battle(@state))
-    @receiveEvents(data.events)
+    @updateEvents(data)
 
-  updateEvents: (data) ->
-    @receiveEvents(data.events)
-
-  receiveEvents: (events)->
+  updateEvents: (data)->
+    events = data.events
     console.log('Received Events:')
     console.log(events)
     @menuMode = 'normal'
@@ -82,13 +83,20 @@ class Eidolon.BattleController
         @menuMode = 'wait'
         Eidolon.application.leaveBattle()
         console.log('left battle')
-    else
-      console.log('displaying move list')
-      @state.display_options = true
-      $('#battle-text').html(Handlebars.partials._battle_text(@state))
-      $('#battle-text .continue-arrow').hide()
-      @menuMode =  'list'
-      @newMoveIndex(0)
+      else if(nextEvent.type == 'wait_for_turn')
+        console.log('waiting for turn')
+      else if(nextEvent.type == 'take_turn')
+        console.log('taking turn')
+        @state.display_options = true
+        $('#battle-text').html(Handlebars.partials._battle_text(@state))
+        $('#battle-text .continue-arrow').hide()
+        @menuMode =  'list'
+        @newMoveIndex(0)
+      else
+        console.log('Unrecognized event: '+nextEvent.type)
+        @state.currentText = "ERROR: Unrecognized event in stack."
+        $('#battle-text').html(Handlebars.partials._battle_text(@state))
+        $('#battle-text .continue-arrow').show()
 
   delayCompleted: () =>
     console.log('resuming!')
@@ -97,7 +105,7 @@ class Eidolon.BattleController
 
   selectMove: () ->
     @menuMode = 'wait'
-    Eidolon.Channels.battle.perform('action_select', {move_id: @indicatedMove().id})
+    Eidolon.Channels.battle.perform('take_turn', {move_id: @indicatedMove().id})
 
  #  moveListElement: () ->
  #    element = $('<table></table>').addClass('option-list')

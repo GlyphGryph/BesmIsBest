@@ -162,6 +162,24 @@ class Spirit < ApplicationRecord
       team.character.world.broadcast_update_for(team.character.user)
     end
   end
+  
+  def advance_time
+    self.time_units -= TimeUnit.multiplier/4 if(has_debuff?('hesitant'))
+    self.time_units -= TimeUnit.multiplier/3 if(has_debuff?('panic'))
+    self.time_units += TimeUnit.multiplier
+    
+    if(has_buff?('regenerate'))
+      self.health += 1
+      team.battle.add_display_update(self, :health, health)
+      if(health >= max_health)
+        remove_buff('regenerate')
+        team.battle.add_text("#{name} has finished regenerating!")
+      end
+    end
+
+    self.save!
+    team.battle.add_display_update(self, :time_units, TimeUnit.reduced(time_units))
+  end
 
 private
   def setup 

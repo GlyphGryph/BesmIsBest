@@ -5,12 +5,21 @@ class Character < ApplicationRecord
 
   before_create :setup
   after_create :setup_associations
+  
+  def mode
+    team.battle ? :battle : :world
+  end
+
+  def status
+    { mode: mode }
+  end
 
   def move(direction)
+    reload
     p "Moving Character #{id} #{direction}"
-    if team.battle
+    if mode == :battle
       p "Could not move Character #{id} #{direction}. Character is in battle!"
-      WorldChannel.broadcast_to world, action: 'commandProcessed', message: 'Invalid Command'
+      MasterChannel.broadcast_to user, action: 'commandProcessed', message: 'Invalid Command: Could not move character, character is in battle'
       return false
     end
 
@@ -35,13 +44,32 @@ class Character < ApplicationRecord
         self.xx = 0
       end
     end
+    self.save!
     p "New Character #{id} position: #{self.xx}, #{self.yy}"
-    if rand(10)==1
+    if true # RANDOM CHANCE OF ENTERING BATTLE
       world.broadcast_update_for(self.user)
-      enter_battle_mode()
+      start_battle
     else
       save!
       world.broadcast_update_for(self.user)
+    end
+  end
+  
+  def start_battle
+    if(team.reload.battle.nil?)
+      battle = Battle.create!
+      battle.teams << team
+      battle.add_wild_team
+      battle.save!
+      battle.start
+    else
+      raise "You are already in battle."
+    end
+  end
+
+  def join_battle
+    if(team.battle)
+      team.battle.broadcast_state_to_team(team, team.history)
     end
   end
 

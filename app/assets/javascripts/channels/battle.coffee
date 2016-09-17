@@ -7,25 +7,9 @@ class Eidolon.BattleSubscription
     console.log('Receiving action '+data.action+', via BattleChannel')
     @[data.action](data)
 
-  ping: (data) ->
-    console.log('ping!')
-
-  subscribed: () ->
-    @app.subscribed()
-
-  updateState: (data) ->
-    @app.updateState(data)
-    @commandProcessed()
+  subscribed: (data) ->
+    @app.updateSubscription(data)
 
   updateEvents: (data) ->
     @app.updateEvents(data)
-    @commandProcessed()
-
-  leaveBattle: (data) ->
-    @app.leaveBattle()
-    @commandProcessed()
-
-  commandProcessed: (data={}) ->
-    if(data.message?)
-      console.log(data.message)
-    @app.actionAllowed = true
+    @app.commandProcessed()

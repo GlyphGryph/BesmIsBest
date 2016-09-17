@@ -7,8 +7,14 @@ Eidolon.Cable = {}
 class Eidolon.MasterController
   class: 'MasterController'
   start: () ->
-    if( $('body.master.begin').length > 0 )
+    @subscribe('master')
+
+  subscribed: (data) ->
+    console.log('Receiving subscription data: '+data.state)
+    if(data.state.mode == 'world')
       @setController(Eidolon.worldController)
+    else if(data.state.mode == 'battle')
+      @setController(Eidolon.battleController)
     console.log('Watching for keypresses')
     $(document).on('keydown', @keypressHandler)
 
@@ -18,9 +24,6 @@ class Eidolon.MasterController
     subscriptionController = new Eidolon[upname+"Subscription"]()
     channel = upname+"Channel"
     Eidolon.Channels[name] = Eidolon.cable.subscriptions.create(channel, subscriptionController)
-
-  subscribed: () ->
-    @currentController.subscribed()
 
   actionAllowed: false
 
@@ -53,18 +56,23 @@ class Eidolon.MasterController
     switch(key)
       when 65
         console.log('Leaving battle...')
-        Eidolon.Channels.world.perform('leave_battle')
+        Eidolon.Channels.master.perform('leave_battle')
       when 66
         console.log('Entering battle...')
-        Eidolon.Channels.world.perform('enter_battle')
+        Eidolon.Channels.master.perform('enter_battle')
       else
         return false
     @actionAllowed = true
     return true
   
-  enterBattle: () ->
+  enterBattle: (data) ->
+    console.log('Battle data received. Loading battle!')
+    @initialBattleState = data
     @actionAllowed = false
-    $('#map-zone').fadeTo(600, 0, @finishEnteringBattle)
+    if('#map-zone').count > 0
+      $('#map-zone').fadeTo(600, 0, @finishEnteringBattle)
+    else
+      @finishEnteringBattle()
     
   finishEnteringBattle: () =>
     @setController(Eidolon.battleController)
@@ -91,6 +99,16 @@ class Eidolon.MasterController
   updateEvents: (data) ->
     if(data.mode == @currentController.mode)
       @currentController.updateEvents(data)
+
+  updateSubscription: (data) ->
+    if(data.mode == @currentController.mode)
+      @currentController.subscribed(data)
+
+  
+  commandProcessed: (data={}) ->
+    if(data.message?)
+      console.log(data.message)
+    @actionAllowed = true
 
 Eidolon.application = new Eidolon.MasterController()
 

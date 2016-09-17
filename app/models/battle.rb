@@ -3,13 +3,14 @@ class Battle < ApplicationRecord
 
   before_create :setup
   after_create :setup_associations
+  belongs_to :current_team, class_name: 'Team', required: false
 
   @@time_unit_multiplier = 12
   @@max_time_units = 5
 
   def broadcast_events
+    teams.each{|team| team.broadcast_events}
     teams.each do |team|
-      team.reload
       if(team.try(:character).try(:user))
         BattleChannel.broadcast_to(
           team.character.user,
@@ -27,20 +28,18 @@ class Battle < ApplicationRecord
   end
 
   def broadcast_state
-    reload
-    teams.each{|team| broadcast_state_to_team(team) }
+    teams.each{|team| broadcast_state_to_team(team, team.history) }
     teams.each{|team| team.clear_events }
   end
 
-  def broadcast_state_to_team(own_team)
-    enemy_team = other_team(own_team)
+  def broadcast_state_to_team(own_team, events)
     if(own_team.try(:character).try(:user))
-      BattleChannel.broadcast_to(
+      enemy_team = other_team(own_team)
+      MasterChannel.broadcast_to(
         own_team.character.user,
-        action: 'updateState',
-        mode: 'battle',
+        action: 'joinedBattle',
         max_time_units: TimeUnit.max,
-        events: own_team.state['events'],
+        events: events,
         own_state: own_team.active_spirit.own_state_hash,
         enemy_state: enemy_team.active_spirit.visible_state_hash
       )
@@ -63,44 +62,39 @@ class Battle < ApplicationRecord
     teams.each{|team| team.add_battle_end }
   end
 
+  def add_turn
+    current_team.add_take_turn
+    other_team(current_team).add_wait
+  end
+
+  def take_player_turn(team, data)
+    if current_team == team
+      team.action_selected(data['move_id'])
+      advance_time
+      broadcast_events
+    end
+  end
+
+  def take_ai_turn(team, data)
+    if current_team == team
+      team.action_selected(data['move_id'])
+      advance_time
+    end
+  end
+
   def advance_time
-    if(battle_finished?)
-      add_battle_end
-      return false
-    end
-
-    tics_passed = 0
-    while(!teams.first.ready_to_act? && !teams.last.ready_to_act?)
-      teams.each do |team|
-        spirit = team.active_spirit
-        spirit.time_units -= TimeUnit.multiplier/4 if(spirit.has_debuff?('hesitant'))
-        spirit.time_units -= TimeUnit.multiplier/3 if(spirit.has_debuff?('panic'))
-        spirit.time_units += TimeUnit.multiplier
-        
-        if(spirit.has_buff?('regenerate'))
-          spirit.health += 1
-          add_display_update(spirit, :health, spirit.health)
-          if(spirit.health >= spirit.max_health)
-            spirit.remove_buff('regenerate')
-            add_text("#{spirit.name} has finished regenerating!")
-          end
-        end
-
-        spirit.save!
-        add_display_update(spirit, :time_units, TimeUnit.reduced(spirit.time_units))
-      end
+    while(!teams.first.ready_to_act? && !teams.last.ready_to_act? && !battle_finished?)
+      teams.each{|team| team.advance_time}
       add_delay(1)
-      tics_passed += 1
     end
-    teams.each do |team|
-      if(team.ready_to_act?)
-        unless(team.try(:character).try(:user))
-          # If this is an AI, let them take their turn and trigger more time advancement
-          team.take_ai_turn 
-        end
-        # If we found someone who was ready, stop: no matter what, we don't check the other person
-        return true
-      end
+
+    if battle_finished?
+      add_battle_end
+    else # If the battle isn't finished, one of the teams must be ready to act
+      self.current_team = teams.select{|team| team.ready_to_act?}.first
+      self.save
+      add_turn
+      current_team.request_ai_turn
     end
   end
 
@@ -113,16 +107,7 @@ class Battle < ApplicationRecord
   end
 
   def battle_finished?
-    finished = false
-    teams.each do |team|
-      if(team.defeated?)
-        finished = true
-        team.add_text('Defeat! You have lost the fight!')
-        other_team(team).add_text('The enemy has been defeated!')
-      end
-    end
-    add_battle_end if finished
-    finished
+    return teams.any?{|team| team.defeated?}
   end
   
   def add_wild_team
@@ -138,7 +123,10 @@ class Battle < ApplicationRecord
     add_text("What's this?")
     add_text("You've encountered a wild Eidolon!")
     add_text("Prepare to fight!")
+    advance_time
+    broadcast_state
   end
+
 private
   def setup
   end

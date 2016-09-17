@@ -13,14 +13,11 @@ class Eidolon.WorldController
   start: () ->
     @active = true
     if(Eidolon.Channels.world)
-      @subscribed()
+      Eidolon.Channels.world.perform('request_update')
     else
       Eidolon.application.subscribe('world')
     $('body').on('click', '.move.unequipped', @equipMove)
     $('body').on('click', '.move.equipped', @unequipMove)
-
-  subscribed: ->
-    Eidolon.Channels.world.perform('request_update')
 
   end: () ->
     @active = false

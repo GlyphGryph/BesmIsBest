@@ -7,7 +7,11 @@ class Spirit < ApplicationRecord
   before_create :setup
   after_create :setup_associations
 
-  @@max_moves = 4
+  validates :species_id, presence: true
+
+  def max_moves
+    species['smarts']
+  end
 
   def equipped_move_hash
     equipped_moves.map do |em|
@@ -139,7 +143,8 @@ class Spirit < ApplicationRecord
       id: id,
       name: name,
       number_equipped_moves: equip_ids.count,
-      max_equipped_moves: @@max_moves,
+      max_equipped_moves: max_moves,
+      image: ActionController::Base.helpers.image_url(image),
       moves: known_moves.map do |km|
         { move_id: km.move_id,
           name: Move.get_move(km.move_id).name,
@@ -150,9 +155,11 @@ class Spirit < ApplicationRecord
   end
 
   def equip_move(move_id)
-    if(equipped_moves.count < @@max_moves && known_moves.where(move_id: move_id).count > 0)
+    if(equipped_moves.count < max_moves && known_moves.where(move_id: move_id).count > 0)
       EquippedMove.create(spirit: self, move_id: move_id)
-      team.character.world.broadcast_update_for(team.character.user)
+      if(team.try(:character))
+        team.character.world.broadcast_update_for(team.character.user)
+      end
     end
   end
 
@@ -160,7 +167,9 @@ class Spirit < ApplicationRecord
     if(equipped_moves.count > 1)
       target_move = equipped_moves.find_by(move_id: move_id)
       target_move.destroy
-      team.character.world.broadcast_update_for(team.character.user)
+      if(team.try(:character))
+        team.character.world.broadcast_update_for(team.character.user)
+      end
     end
   end
   
@@ -182,17 +191,27 @@ class Spirit < ApplicationRecord
     team.battle.add_display_update(self, :time_units, TimeUnit.reduced(time_units))
   end
 
+  def species
+    Species.find(species_id)
+  end
+
 private
   def setup 
-    self.name ||= 'Normalon'
-    self.max_health ||= 22
-    self.health ||= self.max_health
-    self.time_units ||= TimeUnit.multiplied(TimeUnit.max) 
-    self.image ||= 'faithdolon.png'
+    spec = species
+    self.name = spec['name']
+    self.max_health = spec['max_health']
+    self.health = self.max_health
+    self.time_units = TimeUnit.multiplied(TimeUnit.max) 
+    self.image = spec['image']
     self.buffs = []
     self.debuffs = []
   end
 
   def setup_associations
+    moves = species['learn_milestones']
+    moves.each do |move_id|
+      KnownMove.create(spirit: self, move_id: move_id)
+    end
+    EquippedMove.create(spirit: self, move_id: moves.first)
   end
 end

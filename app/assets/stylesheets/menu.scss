@@ -29,6 +29,15 @@
         font-weight:bold;
       }
     }
+
+    .portrait{
+      display:block;
+
+      img{
+        height:150px;
+        width:auto;
+      }
+    }
     
     .moves{
       border:1px solid black;

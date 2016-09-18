@@ -1,7 +1,7 @@
 class Move
   def self.execute(id, battle, owner)
     enemy = battle.other_team(owner.team).active_spirit
-    p "!! EXECUTING MOVE !!"
+    p "!! EXECUTING MOVE #{id}!!"
     action = get_move(id.to_sym)
 
     owner.time_units -= TimeUnit.multiplied(action.time_units)
@@ -189,7 +189,7 @@ class Move
       nature: :faith,
       description: 'Your attacks are guaranteed to hit, and can not be cancelled',
     ),
-    'reset': OpenStruct.new(
+    reset: OpenStruct.new(
       name: 'As You Were',
       types: [:special],
       nature: :faith,
@@ -311,7 +311,7 @@ class Move
     ),
 
     # Passion type actions
-    assault: OpenStruct.new(
+    reckless: OpenStruct.new(
       name: 'Reckless Assault',
       types: [:incomplete, :attack, :temporary, :special, :debuff],
       nature: :passion,
@@ -337,104 +337,123 @@ class Move
         end
       end
     ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
-    # : OpenStruct.new(
-    #   name: '',
-    #   types: [:],
-    #   nature: :fear,
-    #   time_units: ,
-    #   description: '',
-    #   damage: ,
-    #   special: lambda do |battle, owner, enemy|
-    #   end
-    #   trigger: lambda do |battle, owner, enemy|
-    #   end
-    #   expire: lambda do |battle, owner, enemy|
-    #   end
-    # ),
+    overexert: OpenStruct.new(
+      name: 'Overexert',
+      types: [:incomplete],
+      nature: :passion,
+      time_units: 2,
+      description: 'Deal 10 damage, but take 5',
+    ),
+    aggress: OpenStruct.new(
+      name: 'Aggress',
+      types: [:incomplete],
+      nature: :passion,
+      time_units: 0,
+      description: 'Select as many abilities as you have the time units to afford, and immediately use them all.',
+    ),
+    rage: OpenStruct.new(
+      name: 'Rage',
+      types: [:incomplete, :passive],
+      nature: :passion,
+      description: 'Whenever you take damage, apply the RAGE buff: +1 damage to all attacks. This buff stacks up to 5 times.',
+    ),
+    sprinter: OpenStruct.new(
+      name: 'Sprinter',
+      types: [:incomplete, :passive],
+      nature: :passion,
+      description: 'Your attacks deal +3 damage, but every time you attack you gain the EXHAUSTED debuff: your attacks deal -1 damage.',
+    ),
+    marathoner: OpenStruct.new(
+      name: 'Marathoner',
+      types: [:incomplete],
+      nature: :passion,
+      description: 'Your attacks deal -3 damage, but every time you attack you gain the MOMENTUM debuff: your attacks deal +1 damage.',
+    ),
 
+    # Persistence Type Actions
+    flurry: OpenStruct.new(
+      name: 'Flurry',
+      types: [:incomplete],
+      nature: :persistence,
+      time_units: 2,
+      description: 'Attack 5 times for 1 damage per attack.',
+    ),
+    poison: OpenStruct.new(
+      name: 'Poison',
+      types: [:incomplete],
+      nature: :persistence,
+      time_units: 3,
+      description: 'Causes POISONED debuff: Take 1 damage per tic.',
+    ),
+    relentless: OpenStruct.new(
+      name: 'Relentless Assault',
+      types: [:incomplete],
+      nature: :persistence,
+      time_units: 1,
+      description: 'Deals 3 damage. You gain the LOCKED IN (Relentless Assault) debuff: You may not use any other ability, unless you cannot use this ability.'
+    ),
+    recover: OpenStruct.new(
+      name: 'Recover',
+      types: [:incomplete],
+      nature: :persistence,
+      time_units: 3,
+      description: 'Regain 6 health.',
+    ),
+    persevere: OpenStruct.new(
+      name: 'Persevere',
+      types: [:incomplete],
+      nature: :persistence,
+      time_units: 5,
+      description: 'Regain full health, but reduce your maximum health by half for the remainder of the battle.',
+    ),
+    conditioning: OpenStruct.new(
+      name: 'Conditioning',
+      types: [:incomplete, :passive],
+      nature: :persistence,
+      description: 'Increases your maximum health by 10.',
+    ),
+
+    # Strength Type Actions
+    slam: OpenStruct.new(
+      name: 'Slam',
+      types: [:attack],
+      nature: :strength,
+      time_units: 4,
+      damage: 16,
+      description: 'Deals 16 damage.',
+    ),
+    pump: OpenStruct.new(
+      name: 'Pump Up',
+      types: [:incomplete],
+      nature: :strength,
+      time_units: 1,
+      description: 'Gain the BOOSTED buff: +3 damage to your next attack. Can be stacked up to 5 times.',
+    ),
+    bash: OpenStruct.new(
+      name: 'Bash',
+      types: [:attack],
+      nature: :strength,
+      time_units: 2,
+      damage: 7,
+      description: 'Deals 7 damage.',
+    ),
+    breakthrough: OpenStruct.new(
+      name: 'Breakthrough',
+      types: [:incomplete, :passive],
+      nature: :strength,
+      description: 'Your abilities cannot be locked down or cancelled.',
+    ),
+    shield: OpenStruct.new(
+      name: 'Shield',
+      types: [:incomplete, :passive],
+      nature: :strength,
+      description: 'Prevent 1 damage from all incoming attacks.',
+    ),
+    armor: OpenStruct.new(
+      name: 'Armor',
+      types: [:incomplete, :passive],
+      nature: :strength,
+      description: 'Prevent 1 damage from all incoming attacks.',
+    ),
   }
 end

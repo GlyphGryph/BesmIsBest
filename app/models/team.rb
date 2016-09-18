@@ -116,14 +116,11 @@ class Team < ApplicationRecord
   end
 
   def add_wild_spirit
-    spirit = Spirit.create!(
-      name: 'Wild Enemy',
-      max_health: 22,
-      image: 'faithdolon.png'
-    )
-    TeamMembership.create(team: self, spirit: spirit)
-    KnownMove.create(spirit: spirit, move_id: :attack)
-    EquippedMove.create(spirit: spirit, move_id: :attack)
+    spirit = Spirit.create!(species_id: rand(4)+1)
+    TeamMembership.create!(team: self, spirit: spirit)
+    3.times do
+      spirit.equip_move(spirit.known_moves.sample.move_id)
+    end
   end
 
   def events

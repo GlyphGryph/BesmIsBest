@@ -1,0 +1,63 @@
+1:
+  id: 1
+  name: 'Nellaf'
+  max_health: 22,
+  image: 'nellaf.png'
+  smarts: 4
+  learn_milestones:
+    - 'attack'
+    - 'shake_off'
+    - 'smite'
+    - 'guide'
+    - 'reset'
+    - 'no_fear'
+    - 'cleanse'
+    - 'magnet'
+2:
+  id: 2
+  name: 'Obsoc'
+  max_health: 22,
+  image: 'obsoc.png'
+  smarts: 5
+  learn_milestones:
+    - 'attack'
+    - 'shake_off'
+    - 'intimidate'
+    - 'terrify'
+    - 'doom'
+    - 'needle'
+    - 'hide'
+    - 'shroud'
+    - 'cowardice'
+3:
+  id: 3
+  name: 'Rigby'
+  max_health: 22,
+  image: 'rigby.png'
+  smarts: 4
+  learn_milestones:
+    - 'attack'
+    - 'shake_off'
+    - 'flurry'
+    - 'poison'
+    - 'relentless'
+    - 'recover'
+    - 'persevere'
+    - 'conditioning'
+4:
+  id: 4
+  name: 'Braunald'
+  max_health: 22,
+  image: 'braunald.png'
+  smarts: 3
+  learn_milestones:
+    - 'attack'
+    - 'shake_off'
+    - 'slam'
+    - 'pump'
+    - 'bash'
+    - 'breakthrough'
+    - 'shield'
+    - 'armor'
+
+

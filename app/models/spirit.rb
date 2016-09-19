@@ -20,6 +20,13 @@ class Spirit < ApplicationRecord
     end
   end
 
+  def usable_move_hash
+    equipped_move_hash.select do |em|
+      move = Move.get_move(em[:id].to_sym)
+      !move.types.include?(:passive)
+    end
+  end
+
   def apply_debuff(debuff_id)
     if can_debuff?(debuff_id)
       self.debuffs << debuff_id
@@ -130,7 +137,7 @@ class Spirit < ApplicationRecord
       max_health: max_health,
       time_units: TimeUnit.reduced(time_units),
       image: ActionController::Base.helpers.image_url(image),
-      moves: equipped_move_hash,
+      moves: usable_move_hash,
       buffs: buffs,
       debuffs: debuffs
     }

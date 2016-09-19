@@ -82,8 +82,12 @@ private
   end
 
   def setup_associations
-    starter_spirit = Spirit.create!(species_id: rand(4)+1)
     team = Team.create!(character: self)
+    starter_spirit = Spirit.create!(species_id: 1)
     TeamMembership.create!(team: team, spirit: starter_spirit, position: 0)
+    starter_spirit = Spirit.create!(species_id: 2)
+    TeamMembership.create!(team: team, spirit: starter_spirit, position: 1)
+    starter_spirit = Spirit.create!(species_id: 3)
+    TeamMembership.create!(team: team, spirit: starter_spirit, position: 2)
    end
 end

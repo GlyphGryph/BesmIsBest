@@ -3,6 +3,7 @@ class Team < ApplicationRecord
   belongs_to :battle, required: false
   has_many :team_memberships, -> { order "position ASC" }, dependent: :destroy
   has_many :spirits, through: :team_memberships
+  belongs_to :active_spirit, class_name: 'Spirit', required: false
 
   before_create :setup
   after_create :setup_associations
@@ -13,7 +14,9 @@ class Team < ApplicationRecord
 
   def reset_state
     spirits.each{ |spirit| spirit.reset_state; spirit.save! }
+    self.active_spirit = spirits.first
     clear_history
+    self.save!
   end
 
   def clear_events
@@ -28,16 +31,14 @@ class Team < ApplicationRecord
     self.save!
   end
 
-  def active_spirit
-    spirits.first
-  end
-
   def defeated?
-    active_spirit.health <= 0
+    !spirits.any?{|spirit| spirit.alive?}
   end
 
   def ready_to_act?
-    active_spirit.time_units >= TimeUnit.multiplied(TimeUnit.max)
+    if(active_spirit)
+      active_spirit.time_units >= TimeUnit.multiplied(TimeUnit.max)
+    end
   end
 
   def action_selected(move_id)
@@ -57,35 +58,37 @@ class Team < ApplicationRecord
 
   def request_ai_turn
     if(!has_player?)
-      move_to_use = active_spirit.equipped_moves.sample
+      move_to_use = active_spirit.usable_moves.sample
       battle.take_ai_turn(self, {'move_id' => move_to_use.move_id})
     end
   end
 
-  def add_text(text)
+  def add_event(body)
     if has_player?
       reload
-      self.state['events'] << {type: 'text', value: text}
-      self.state['history'] << {type: 'text', value: text}
+      self.state['events'] << body
+      self.state['history'] << body
       self.save!
     end
+  end
+
+  def add_text(text)
+    add_event({type: 'text', value: text})
   end
 
   def add_delay(delay)
-    if has_player?
-      reload
-      self.state['events'] << {type: 'delay', value: delay}
-      self.state['history'] << {type: 'delay', value: delay}
-      self.save!
-    end
+    add_event({type: 'delay', value: delay})
   end
 
   def add_display_update(spirit, stat, value)
-    if has_player?
-      reload
-      self.state['events'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
-      self.state['history'] << {type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value }
-      self.save!
+    add_event({type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value })
+  end
+
+  def add_swap(spirit)
+    if(spirit.team == self)
+      add_event({type: 'swap', side: 'own', value: spirit.own_state_hash })
+    else
+      add_event({type: 'swap', side: 'enemy', value: spirit.visible_state_hash })
     end
   end
 
@@ -116,6 +119,7 @@ class Team < ApplicationRecord
   end
 
   def add_wild_spirit
+    reload
     spirit = Spirit.create!(species_id: rand(4)+1)
     TeamMembership.create!(team: self, spirit: spirit, position: spirits.size)
     3.times do
@@ -133,6 +137,22 @@ class Team < ApplicationRecord
 
   def advance_time
     active_spirit.advance_time
+  end
+  
+  def update_status 
+    if(active_spirit.defeated?)
+      process_defeated_spirit
+    end
+  end
+
+  def process_defeated_spirit
+    add_text("#{active_spirit.name} has fallen!")
+    self.active_spirit = spirits.alive.first
+    self.save!
+    if(active_spirit)
+      battle.add_swap(active_spirit)
+      add_text("#{active_spirit.name} has entered the fray!")
+    end
   end
 
   def broadcast_events

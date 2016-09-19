@@ -9,21 +9,31 @@ class Spirit < ApplicationRecord
 
   validates :species_id, presence: true
 
+  scope :alive, -> { where('health > ?', 0) }
+
+  def alive?
+    health > 0
+  end
+
+  def defeated?
+    !alive?
+  end
+
   def max_moves
     species['smarts']
   end
 
-  def equipped_move_hash
-    equipped_moves.map do |em|
+  def usable_moves
+    equipped_moves.select do |em|
       move = Move.get_move(em.move_id.to_sym)
-      {name: move.name, id: em.move_id}
+      !move.types.include?(:passive)
     end
   end
 
-  def usable_move_hash
-    equipped_move_hash.select do |em|
-      move = Move.get_move(em[:id].to_sym)
-      !move.types.include?(:passive)
+  def usable_moves_hash
+    usable_moves.map do |em|
+      move = Move.get_move(em.move_id.to_sym)
+      {name: move.name, id: em.move_id}
     end
   end
 
@@ -137,7 +147,7 @@ class Spirit < ApplicationRecord
       max_health: max_health,
       time_units: TimeUnit.reduced(time_units),
       image: ActionController::Base.helpers.image_url(image),
-      moves: usable_move_hash,
+      moves: usable_moves_hash,
       buffs: buffs,
       debuffs: debuffs
     }

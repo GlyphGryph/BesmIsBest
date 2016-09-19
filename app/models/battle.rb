@@ -44,6 +44,10 @@ class Battle < ApplicationRecord
     teams.each{|team| team.add_display_update(spirit, stat, value) }
   end
 
+  def add_swap(spirit)
+    teams.each{|team| team.add_swap(spirit) }
+  end
+
   def add_battle_end
     teams.each{|team| team.add_battle_end }
   end
@@ -69,9 +73,11 @@ class Battle < ApplicationRecord
   end
 
   def advance_time
+    teams.each{|team| team.reload.update_status}
     while(!teams.first.ready_to_act? && !teams.last.ready_to_act? && !battle_finished?)
-      teams.each{|team| team.advance_time}
       add_delay(1)
+      teams.each{|team| team.advance_time}
+      teams.each{|team| team.reload.update_status}
     end
 
     if battle_finished?
@@ -98,7 +104,10 @@ class Battle < ApplicationRecord
   
   def add_wild_team
     if(teams.count < 2)
-      Team.create!(battle: self).add_wild_spirit
+      team = Team.create!(battle: self)
+      team.add_wild_spirit
+      team.add_wild_spirit
+      team.add_wild_spirit
       return true
     end
     return false

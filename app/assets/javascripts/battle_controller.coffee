@@ -77,7 +77,6 @@ class Eidolon.BattleController
         else if(nextEvent.stat == 'time_units')
           @setTimeUnitPercents()
         $('#battle-display').html(Handlebars.partials._battle_display(@state))
-        $('#battle-text .continue-arrow').hide()
         @processNextEvent()
       else if(nextEvent.type == 'end_battle')
         @menuMode = 'wait'
@@ -95,6 +94,12 @@ class Eidolon.BattleController
         $('#battle-text .continue-arrow').hide()
         @menuMode =  'list'
         @newMoveIndex(0)
+      else if(nextEvent.type == 'swap')
+        console.log('loading new spirit')
+        @state[nextEvent.side] = nextEvent.value
+        @setHealthPercents()
+        @setTimeUnitPercents()
+        $('#battle-display').html(Handlebars.partials._battle_display(@state))
       else
         console.log('Unrecognized event: '+nextEvent.type)
         @state.currentText = "ERROR: Unrecognized event in stack."

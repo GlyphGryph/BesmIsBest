@@ -1,7 +1,7 @@
 class Team < ApplicationRecord
   belongs_to :character, required: false
   belongs_to :battle, required: false
-  has_many :team_memberships, dependent: :destroy
+  has_many :team_memberships, -> { order "position ASC" }, dependent: :destroy
   has_many :spirits, through: :team_memberships
 
   before_create :setup
@@ -117,7 +117,7 @@ class Team < ApplicationRecord
 
   def add_wild_spirit
     spirit = Spirit.create!(species_id: rand(4)+1)
-    TeamMembership.create!(team: self, spirit: spirit)
+    TeamMembership.create!(team: self, spirit: spirit, position: spirits.size)
     3.times do
       spirit.equip_move(spirit.known_moves.sample.move_id)
     end

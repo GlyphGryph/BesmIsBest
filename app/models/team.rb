@@ -43,12 +43,13 @@ class Team < ApplicationRecord
 
   def action_selected(move_id)
     reload
-    if(ready_to_act? && active_spirit.has_move?(move_id) && battle.current_team == self)
+    if(ready_to_act? && active_spirit.can_move?(move_id) && battle.current_team == self)
       Move.execute(move_id, battle, active_spirit)
     else
+      p "Attempted to use move #{move_id} but..."
       if(battle.current_team != self)
         raise "Attempted to act out of turn!"
-      elsif(!active_spirit.has_move?(move_id))
+      elsif(!active_spirit.can_move?(move_id))
         raise "Attempted to use a move they don't know!"
       else
         raise "Something went wrong, you were not ready despite it being your turn."

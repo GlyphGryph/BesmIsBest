@@ -51,6 +51,32 @@ class Move
   end
 
   @@all = {
+    ## Player actions
+    swap: OpenStruct.new(
+      name: 'Swap',
+      types: [:player],
+      nature: :normal,
+      time_units: 2,
+    ),
+    wait: OpenStruct.new(
+      name: 'Wait',
+      types: [:player],
+      nature: :normal,
+      time_units: 1,
+    ),
+    item: OpenStruct.new(
+      name: 'Item',
+      types: [:player],
+      nature: :normal,
+      time_units: 3,
+    ),
+    flee: OpenStruct.new(
+      name: 'Flee',
+      types: [:player],
+      nature: :normal,
+      time_units: 1,
+    ),
+
     ## Normal type actions
     attack: OpenStruct.new(
       name: 'Attack',

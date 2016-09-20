@@ -22,15 +22,27 @@ class Spirit < ApplicationRecord
   def max_moves
     species['smarts']
   end
-
-  def usable_moves
+  
+  def non_passive_moves
     equipped_moves.select do |em|
       move = Move.get_move(em.move_id.to_sym)
       !move.types.include?(:passive)
     end
   end
 
-  def usable_moves_hash
+  def player_moves
+    [:swap, :wait, :flee].inject([]) do |array, id|
+      move = Move.get_move(id.to_sym)
+      array << OpenStruct.new(name: move.name, move_id: id.to_s)
+      array
+    end
+  end
+
+  def usable_moves
+    non_passive_moves + player_moves
+  end
+
+  def shaped_usable_moves
     usable_moves.map do |em|
       move = Move.get_move(em.move_id.to_sym)
       {name: move.name, id: em.move_id}
@@ -96,9 +108,9 @@ class Spirit < ApplicationRecord
   def can_debuff?(debuff_id)
     if(
       has_debuff?(debuff_id) ||
-      (debuff_id == 'hesitant' && has_move?(:no_fear)) ||
-      (debuff_id == 'panic' && has_move?(:no_fear)) ||
-      (debuff_id == 'despair' && has_move?(:no_fear))
+      (debuff_id == 'hesitant' && can_move?(:no_fear)) ||
+      (debuff_id == 'panic' && can_move?(:no_fear)) ||
+      (debuff_id == 'despair' && can_move?(:no_fear))
     )
       return false
     else
@@ -116,8 +128,8 @@ class Spirit < ApplicationRecord
     end
   end
   
-  def has_move?(move_id)
-    self.equipped_moves.find{|move| move.move_id == move_id}
+  def can_move?(move_id)
+    usable_moves.find{|move| move.move_id == move_id}
   end
 
   def reset_state
@@ -147,7 +159,7 @@ class Spirit < ApplicationRecord
       max_health: max_health,
       time_units: TimeUnit.reduced(time_units),
       image: ActionController::Base.helpers.image_url(image),
-      moves: usable_moves_hash,
+      moves: shaped_usable_moves,
       buffs: buffs,
       debuffs: debuffs
     }

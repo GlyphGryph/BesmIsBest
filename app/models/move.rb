@@ -26,7 +26,7 @@ class Move
         battle.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
       end
 
-      if(action.types.include?(:special))
+      if(action.types.include?(:special) || action.types.include?(:player))
         action.special.call(battle, owner, enemy)
       end
     end
@@ -57,24 +57,37 @@ class Move
       types: [:player],
       nature: :normal,
       time_units: 2,
+      special: lambda do |battle, owner, enemy|
+        if(owner.team.spirits.alive.count > 1)
+          owner.team.swap_to(owner.team.spirits.where.not(id: owner.id).first)
+        else
+          battle.add_text("#{owner.name} tried to swap out, but there was no one to take their place.")
+        end
+      end,
     ),
     wait: OpenStruct.new(
       name: 'Wait',
       types: [:player],
       nature: :normal,
       time_units: 1,
+      special: lambda do |battle, owner, enemy|
+      end,
     ),
     item: OpenStruct.new(
       name: 'Item',
       types: [:player],
       nature: :normal,
       time_units: 3,
+      special: lambda do |battle, owner, enemy|
+      end,
     ),
     flee: OpenStruct.new(
       name: 'Flee',
       types: [:player],
       nature: :normal,
       time_units: 1,
+      special: lambda do |battle, owner, enemy|
+      end,
     ),
 
     ## Normal type actions

@@ -59,7 +59,7 @@ class Team < ApplicationRecord
 
   def request_ai_turn
     if(!has_player?)
-      move_to_use = active_spirit.usable_moves.sample
+      move_to_use = active_spirit.non_passive_moves.sample
       battle.take_ai_turn(self, {'move_id' => move_to_use.move_id})
     end
   end
@@ -155,6 +155,17 @@ class Team < ApplicationRecord
       battle.add_swap(active_spirit)
       battle.add_text("#{active_spirit.name} has entered the fray!")
     end
+  end
+
+  def swap_to(spirit)
+    raise "Spirit #{spirit.id} is not a valid spirit on team #{id}" unless spirits.include?(spirit)
+    raise "Spirit #{spirit.id} is not a living spirit on team #{id}" unless spirit.alive?
+    add_text("#{active_spirit.name} falls back so #{spirit.name} can take their place.")
+    self.active_spirit = spirit
+    self.save!
+    active_spirit.swap_in
+    battle.add_swap(active_spirit)
+    battle.add_text("#{active_spirit.name} has entered the fray!")
   end
 
   def broadcast_events

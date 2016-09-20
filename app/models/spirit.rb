@@ -208,8 +208,34 @@ class Spirit < ApplicationRecord
     team.battle.add_display_update(self, :time_units, TimeUnit.reduced(time_units))
   end
 
+  def reduce_time_units(amount)
+    amount = TimeUnit.multiplied(amount)
+    if(time_units - amount >= 0)
+      self.time_units -= amount
+      return true
+    else
+      return false
+    end
+  end
+
+  def reduce_time_units!(amount)
+    self.time_units -= TimeUnit.multiplied(amount)
+    if time_units < 0
+      self.time_units = 0
+    end
+  end
+
+  def swap_in
+    reduce_time_units!(swap_cost)
+    self.save!
+  end
+
   def species
     Species.find(species_id)
+  end
+
+  def swap_cost
+    2
   end
 
 private

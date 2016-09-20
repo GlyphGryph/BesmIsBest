@@ -150,8 +150,9 @@ class Team < ApplicationRecord
     self.active_spirit = spirits.alive.first
     self.save!
     if(active_spirit)
+      active_spirit.swap_in
       battle.add_swap(active_spirit)
-      add_text("#{active_spirit.name} has entered the fray!")
+      battle.add_text("#{active_spirit.name} has entered the fray!")
     end
   end
 

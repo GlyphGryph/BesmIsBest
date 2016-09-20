@@ -3,12 +3,9 @@ class Move
     enemy = battle.other_team(owner.team).active_spirit
     p "!! EXECUTING MOVE #{id}!!"
     action = get_move(id.to_sym)
-
-    owner.time_units -= TimeUnit.multiplied(action.time_units)
-
-    # Early exit if there's not enough time_units for this move
-    if(owner.time_units < 0)
-      owner.time_units += TimeUnit.multiplied(action.time_units)
+    
+    # Return early if we fail to pay the time unit cost
+    unless owner.reduce_time_units(action.time_units)
       return false
     end
 

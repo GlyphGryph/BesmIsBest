@@ -1,7 +1,9 @@
-1:
-  id: 1
+'1':
+  id: '1'
   name: 'Nellaf'
-  max_health: 22,
+  max_health: 22
+  nature_id: 'faith'
+  type: 'eidolon'
   image: 'nellaf.png'
   smarts: 4
   learn_milestones:
@@ -13,10 +15,12 @@
     - 'no_fear'
     - 'cleanse'
     - 'magnet'
-2:
-  id: 2
+'2':
+  id: '2'
   name: 'Obsoc'
-  max_health: 22,
+  max_health: 22
+  nature_id: 'fear'
+  type: 'eidolon'
   image: 'obsoc.png'
   smarts: 5
   learn_milestones:
@@ -29,10 +33,12 @@
     - 'hide'
     - 'shroud'
     - 'cowardice'
-3:
-  id: 3
+'3':
+  id: '3'
   name: 'Rigby'
-  max_health: 22,
+  max_health: 22
+  nature_id: 'persistence'
+  type: 'eidolon'
   image: 'rigby.png'
   smarts: 4
   learn_milestones:
@@ -44,10 +50,12 @@
     - 'recover'
     - 'persevere'
     - 'conditioning'
-4:
-  id: 4
+'4':
+  id: '4'
   name: 'Braunald'
-  max_health: 22,
+  max_health: 22
+  nature_id: 'strength'
+  type: 'eidolon'
   image: 'braunald.png'
   smarts: 3
   learn_milestones:
@@ -59,5 +67,3 @@
     - 'breakthrough'
     - 'shield'
     - 'armor'
-
-

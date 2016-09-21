@@ -1,0 +1,24 @@
+fear:
+  id: 'fear'
+  name: 'Fear'
+  adjective: 'more fearful'
+faith:
+  id: 'faith'
+  name: 'Faith'
+  adjective: 'more faithful'
+passion:
+  id: 'passion'
+  name: 'Passion'
+  adjective: 'more passionate'
+persistence:
+  id: 'persistence'
+  name: 'Persistence'
+  adjective: 'more persistent'
+cunning:
+  id: 'cunning'
+  name: 'Cunning'
+  adjective: 'more cunning'
+strength:
+  id: 'strength'
+  name: 'Strength'
+  adjective: 'stronger'

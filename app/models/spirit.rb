@@ -250,16 +250,50 @@ class Spirit < ApplicationRecord
     2
   end
 
+  def total_experience
+    state['experience']['total']
+  end
+
+  def nature_experience(nature_id)
+    state['experience']['nature'][nature_id]
+  end
+
+  def species_experience(species_id)
+    state['experience']['species'][species_id.to_s] || 0
+  end
+
+  def add_experience_from(spirit)
+    species = Species.find(spirit.species_id)
+    state['experience']['total'] += 1
+    state['experience']['nature'][species['nature_id']] += 1
+    state['experience']['species'][species['id']] = species_experience(species_id) + 1
+    self.save!
+  end
+
 private
   def setup 
     spec = species
     self.name = spec['name']
-    self.max_health = spec['max_health']
+    self.max_health = 6 #spec['max_health']
     self.health = self.max_health
     self.time_units = TimeUnit.multiplied(TimeUnit.max) 
     self.image = spec['image']
     self.buffs = []
     self.debuffs = []
+    self.state = {
+      experience: {
+        total: 0,
+        nature: {
+          faith: 0,
+          fear: 0,
+          persistence: 0,
+          passion: 0,
+          cunning: 0,
+          strength: 0
+        },
+        species: {}
+      }
+    }
   end
 
   def setup_associations

@@ -90,6 +90,13 @@ class Battle < ApplicationRecord
     end
   end
 
+  def process_defeated_spirit(spirit)
+    team = other_team(spirit.team)
+    team.active_spirit.add_experience_from(spirit)
+    species = Species.find(spirit.species_id)
+    team.add_text("#{team.active_spirit.name} devours the enemy! #{team.active_spirit.name} has become #{Nature.adjective_for(species['nature_id'])}!")
+  end
+
   def other_team(this_team)
     teams.find{|team| team != this_team}
   end

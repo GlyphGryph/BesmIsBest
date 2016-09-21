@@ -147,7 +147,8 @@ class Team < ApplicationRecord
   end
 
   def process_defeated_spirit
-    add_text("#{active_spirit.name} has fallen!")
+    battle.add_text("#{active_spirit.name} has fallen!")
+    battle.process_defeated_spirit(active_spirit)
     self.active_spirit = spirits.alive.first
     self.save!
     if(active_spirit)

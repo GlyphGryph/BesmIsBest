@@ -270,8 +270,9 @@ class Spirit < ApplicationRecord
 
   def add_experience_from(spirit)
     species = Species.find(spirit.species_id)
-    state['experience']['total'] += 1
-    state['experience']['nature'][species['nature_id']] += 1
+    amount = (species['type']=='eidolon') ? 3 : 1
+    state['experience']['total'] += amount
+    state['experience']['nature'][species['nature_id']] += amount
     state['experience']['species'][species['id']] = species_experience(species_id) + 1
     self.save!
   end

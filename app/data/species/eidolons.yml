@@ -10,11 +10,15 @@
     - 'attack'
     - 'shake_off'
     - 'smite'
-    - 'guide'
-    - 'reset'
     - 'no_fear'
+    - 'reset'
     - 'cleanse'
     - 'magnet'
+    - 'guide'
+  learnable_moves:
+    - id: 'slam'
+      experience:
+        total: 5
 '2':
   id: '2'
   name: 'Obsoc'
@@ -33,6 +37,10 @@
     - 'hide'
     - 'shroud'
     - 'cowardice'
+  learnable_moves:
+    - id: 'slam'
+      experience:
+        total: 5
 '3':
   id: '3'
   name: 'Rigby'
@@ -50,6 +58,10 @@
     - 'recover'
     - 'persevere'
     - 'conditioning'
+  learnable_moves:
+    - id: 'slam'
+      experience:
+        total: 5
 '4':
   id: '4'
   name: 'Braunald'
@@ -67,3 +79,7 @@
     - 'breakthrough'
     - 'shield'
     - 'armor'
+  learnable_moves:
+    - id: 'smite'
+      experience:
+        total: 5

@@ -25,14 +25,14 @@ class Spirit < ApplicationRecord
   
   def non_passive_moves
     equipped_moves.select do |em|
-      move = Move.get_move(em.move_id.to_sym)
+      move = Move.find(em.move_id.to_sym)
       !move.types.include?(:passive)
     end
   end
 
   def player_moves
     [:swap, :wait, :flee].inject([]) do |array, id|
-      move = Move.get_move(id.to_sym)
+      move = Move.find(id.to_sym)
       array << OpenStruct.new(name: move.name, move_id: id.to_s)
       array
     end
@@ -44,7 +44,7 @@ class Spirit < ApplicationRecord
 
   def shaped_usable_moves
     usable_moves.map do |em|
-      move = Move.get_move(em.move_id.to_sym)
+      move = Move.find(em.move_id.to_sym)
       {name: move.name, id: em.move_id}
     end
   end
@@ -182,7 +182,7 @@ class Spirit < ApplicationRecord
       },
       moves: known_moves.map do |km|
         { move_id: km.move_id,
-          name: Move.get_move(km.move_id).name,
+          name: Move.find(km.move_id).name,
           equipped: equip_ids.include?(km.move_id)
         }
       end
@@ -275,8 +275,23 @@ class Spirit < ApplicationRecord
     state['experience']['nature'][species['nature_id']] += amount
     state['experience']['species'][species['id']] = species_experience(species_id) + 1
     self.save!
+    learnable_moves.each do |move_id|
+      KnownMove.create(spirit: self, move_id: move_id)
+      team.add_text("#{name} learned a new technique! #{name} now knows '#{Move.find(move_id).name}'")
+    end
   end
 
+
+  def learnable_moves
+    known_move_ids = known_moves
+    move_data = Species.find(species_id)['learnable_moves']
+    return [] unless move_data
+    move_data = move_data.select do |learnable_move|
+      ignored = known_moves.map(&:id).include?(learnable_move['id'])
+      !ignored && total_experience >= learnable_move['experience']['total']
+    end
+    move_data.map{|learnable_move| learnable_move['id']}
+  end
 private
   def setup
     spec = species

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160921035124) do
+ActiveRecord::Schema.define(version: 20160922031652) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -67,7 +67,7 @@ ActiveRecord::Schema.define(version: 20160921035124) do
     t.jsonb    "buffs"
     t.jsonb    "debuffs"
     t.jsonb    "poisons"
-    t.integer  "species_id"
+    t.string   "species_id"
     t.jsonb    "state"
   end
 

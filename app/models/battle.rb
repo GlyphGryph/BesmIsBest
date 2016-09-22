@@ -112,9 +112,9 @@ class Battle < ApplicationRecord
   def add_wild_team
     if(teams.count < 2)
       team = Team.create!(battle: self)
-      team.add_wild_spirit
-      team.add_wild_spirit
-      team.add_wild_spirit
+      rand(1..3).times do
+        team.add_wild_spirit(Species.sample)
+      end
       return true
     end
     return false

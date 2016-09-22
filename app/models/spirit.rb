@@ -275,10 +275,10 @@ class Spirit < ApplicationRecord
   end
 
 private
-  def setup 
+  def setup
     spec = species
     self.name ||= spec['name']
-    self.max_health = 6 #spec['max_health']
+    self.max_health = spec['max_health']
     self.health = self.max_health
     self.time_units = TimeUnit.multiplied(TimeUnit.max) 
     self.image = spec['image']
@@ -301,7 +301,7 @@ private
   end
 
   def setup_associations
-    moves = species['learn_milestones']
+    moves = species['starting_moves']
     moves.each do |move_id|
       KnownMove.create(spirit: self, move_id: move_id)
     end

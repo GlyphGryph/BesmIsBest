@@ -6,7 +6,7 @@
   type: 'eidolon'
   image: 'nellaf.png'
   smarts: 4
-  learn_milestones:
+  starting_moves:
     - 'attack'
     - 'shake_off'
     - 'smite'
@@ -23,7 +23,7 @@
   type: 'eidolon'
   image: 'obsoc.png'
   smarts: 5
-  learn_milestones:
+  starting_moves:
     - 'attack'
     - 'shake_off'
     - 'intimidate'
@@ -41,7 +41,7 @@
   type: 'eidolon'
   image: 'rigby.png'
   smarts: 4
-  learn_milestones:
+  starting_moves:
     - 'attack'
     - 'shake_off'
     - 'flurry'
@@ -58,7 +58,7 @@
   type: 'eidolon'
   image: 'braunald.png'
   smarts: 3
-  learn_milestones:
+  starting_moves:
     - 'attack'
     - 'shake_off'
     - 'slam'

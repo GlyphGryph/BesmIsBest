@@ -1,0 +1,66 @@
+'faith_figment_1':
+  id: 'faith_figment_1'
+  name: 'Figment of Faith'
+  max_health: 4
+  nature_id: 'faith'
+  type: 'figment'
+  image: 'faith_figment_1.png'
+  smarts: 2
+  starting_moves:
+    - 'attack'
+    - 'smite'
+'fear_figment_1':
+  id: 'fear_figment_1'
+  name: 'Figment of Fear'
+  max_health: 4
+  nature_id: 'fear'
+  type: 'figment'
+  image: 'fear_figment_1.png'
+  smarts: 2
+  starting_moves:
+    - 'attack'
+    - 'terrify'
+'strength_figment_1':
+  id: 'strength_figment_1'
+  name: 'Figment of Strength'
+  max_health: 4
+  nature_id: 'strength'
+  type: 'figment'
+  image: 'strength_figment_1.png'
+  smarts: 1
+  starting_moves:
+    - 'slam'
+'cunning_figment_1':
+  id: 'cunning_figment_1'
+  name: 'Figment of Cunning'
+  max_health: 4
+  nature_id: 'cunning'
+  type: 'figment'
+  image: 'cunning_figment_1.png'
+  smarts: 3
+  starting_moves:
+    - 'attack'
+    - 'smite'
+    - 'slam'
+'passion_figment_1':
+  id: 'passion_figment_1'
+  name: 'Figment of Passion'
+  max_health: 4
+  nature_id: 'passion'
+  type: 'figment'
+  image: 'passion_figment_1.png'
+  smarts: 2
+  starting_moves:
+    - 'attack'
+    - 'smite'
+'persistence_figment_1':
+  id: 'persistence_figment_1'
+  name: 'Figment of Persistence'
+  max_health: 8
+  nature_id: 'persistence'
+  type: 'figment'
+  image: 'persistence_figment_1.png'
+  smarts: 2
+  starting_moves:
+    - 'attack'
+    - 'smite'

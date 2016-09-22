@@ -25,12 +25,17 @@
               <img src='{{image}}' />
             </div>
           </div>
-          <div class='experience'>
+          <div class='section stats'>
+            <div>STATS</div>
+            <div class='subsection'>Health: {{health}}</div>
+            <div class='subsection'>Smarts: {{smarts}}</div>
+          </div>
+          <div class='section experience'>
             <div>EXPERIENCE</div>
-            <div class='total'>Total: {{experience.total}}</div>
+            <div class=' subsection total'>Total: {{experience.total}}</div>
             <div class='natures'>
               {{#each experience.natures}}
-                <div class='nature {{id}}'>{{name}}: {{value}}</div>
+                <div class='subsection nature {{id}}'>{{name}}: {{value}}</div>
               {{/each}}
             </div>
           </div>

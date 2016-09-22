@@ -174,6 +174,8 @@ class Spirit < ApplicationRecord
       number_equipped_moves: equip_ids.count,
       max_equipped_moves: max_moves,
       image: ActionController::Base.helpers.image_url(image),
+      health: max_health,
+      smarts: species['smarts'],
       experience: {
         total: total_experience,
         natures: state['experience']['nature'].map{|key, value| {id: key, name: Nature.name_for(key), value: value} }

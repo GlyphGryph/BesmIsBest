@@ -34,21 +34,21 @@
         font-weight:bold;
       }
 
-      .experience{
+      .section{
         float: left;
         border-left:1px solid black;
         margin-left:16px;
         padding-left:4px;
 
-        .total{
-          
+        .subsection{
+          display:block;
+          padding-top:5px;
+          padding-bottom:5px;
         }
-        .natures{
-          .nature{
-            display:block;
-            padding-top:5px;
-            padding-bottom:5px;
-          }
+
+        .total{
+          border: 2px outset black;
+          padding-left:10px;;
         }
       }
 

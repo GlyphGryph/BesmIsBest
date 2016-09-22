@@ -19,26 +19,58 @@
 
 .move-selector{
   .spirit{
+    margin-bottom: 16px;
 
     .header{
       border-left:1px solid black;
       border-top:1px solid black;
       padding:3px;
       
+      .left{
+        float: left;
+      }
+
       .name{
         font-weight:bold;
       }
-    }
 
-    .portrait{
-      display:block;
+      .experience{
+        float: left;
+        border-left:1px solid black;
+        margin-left:16px;
+        padding-left:4px;
 
-      img{
-        height:150px;
-        width:auto;
+        .total{
+          
+        }
+        .natures{
+          .nature{
+            display:block;
+            padding-top:5px;
+            padding-bottom:5px;
+          }
+        }
+      }
+
+      .portrait{
+        display:block;
+
+        img{
+          height:150px;
+          width:auto;
+        }
+      }
+
+      &:after {
+        visibility: hidden;
+        display: block;
+        font-size: 0;
+        content: " ";
+        clear: both;
+        height: 0;
       }
     }
-    
+
     .moves{
       border:1px solid black;
       margin-left:5px;

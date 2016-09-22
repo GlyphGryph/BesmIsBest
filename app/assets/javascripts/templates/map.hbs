@@ -16,10 +16,23 @@
     {{#each team.spirits}}
       <div class='spirit' data-id='{{id}}'>
         <div class='header'>
-          <span class='name'>{{name}}</span>
-          <span class='move-count'>{{number_equipped_moves}} / {{max_equipped_moves}} moves equipped.</span>
-          <div class='portrait'>
-            <img src='{{image}}' />
+          <div class='left'>
+            <div class='label'>
+              <span class='name'>{{name}}</span>
+              <span class='move-count'>{{number_equipped_moves}} / {{max_equipped_moves}} moves equipped.</span>
+            </div>
+            <div class='portrait'>
+              <img src='{{image}}' />
+            </div>
+          </div>
+          <div class='experience'>
+            <div>EXPERIENCE</div>
+            <div class='total'>Total: {{experience.total}}</div>
+            <div class='natures'>
+              {{#each experience.natures}}
+                <div class='nature {{id}}'>{{name}}: {{value}}</div>
+              {{/each}}
+            </div>
           </div>
         </div>
         <div class='moves'>
@@ -36,6 +49,7 @@
             {{/if}}
           {{/each}}
         </div>
+      </div>
     {{/each}}
   </div>
 </div>

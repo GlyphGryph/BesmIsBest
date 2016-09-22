@@ -174,6 +174,10 @@ class Spirit < ApplicationRecord
       number_equipped_moves: equip_ids.count,
       max_equipped_moves: max_moves,
       image: ActionController::Base.helpers.image_url(image),
+      experience: {
+        total: total_experience,
+        natures: state['experience']['nature'].map{|key, value| {id: key, name: Nature.name_for(key), value: value} }
+      },
       moves: known_moves.map do |km|
         { move_id: km.move_id,
           name: Move.get_move(km.move_id).name,
@@ -273,7 +277,7 @@ class Spirit < ApplicationRecord
 private
   def setup 
     spec = species
-    self.name = spec['name']
+    self.name ||= spec['name']
     self.max_health = 6 #spec['max_health']
     self.health = self.max_health
     self.time_units = TimeUnit.multiplied(TimeUnit.max) 

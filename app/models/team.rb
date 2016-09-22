@@ -121,7 +121,8 @@ class Team < ApplicationRecord
 
   def add_wild_spirit
     reload
-    spirit = Spirit.create!(species_id: rand(4)+1)
+    species_id = rand(4)+1
+    spirit = Spirit.create!(species_id: species_id, name: "Wild "+Species.find(species_id)['name'])
     TeamMembership.create!(team: self, spirit: spirit, position: spirits.size)
     3.times do
       spirit.equip_move(spirit.known_moves.sample.move_id)

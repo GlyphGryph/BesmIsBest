@@ -7,11 +7,11 @@ class Species
     @@species[id.to_s]
   end
 
-  def self.all_ids
-    @@species.map{|key, value| value['id']}
+  def self.all
+    @@species.map{|key, value| value}
   end
 
   def self.sample
-    all_ids.sample
+    all.sample
   end
 end

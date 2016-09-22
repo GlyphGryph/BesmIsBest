@@ -114,10 +114,10 @@ class Battle < ApplicationRecord
       team = Team.create!(battle: self)
       species = Species.sample
       if(species['type']=='eidolon')
-        team.add_wild_spirit(species)
+        team.add_wild_spirit(species['id'])
       else
         rand(1..3).times do
-          team.add_wild_spirit(species)
+          team.add_wild_spirit(species['id'])
         end
       end
       return true

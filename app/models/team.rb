@@ -144,11 +144,13 @@ class Team < ApplicationRecord
   end
 
   def advance_time
-    active_spirit.advance_time
+    if(active_spirit)
+      active_spirit.advance_time
+    end
   end
   
   def update_status 
-    if(active_spirit.defeated?)
+    if(active_spirit && active_spirit.defeated?)
       process_defeated_spirit
     end
   end
@@ -156,6 +158,10 @@ class Team < ApplicationRecord
   def process_defeated_spirit
     battle.add_text("#{active_spirit.name} has fallen!")
     battle.process_defeated_spirit(active_spirit)
+    swap_next
+  end
+
+  def swap_next
     self.active_spirit = spirits.alive.first
     self.save!
     if(active_spirit)
@@ -191,6 +197,20 @@ class Team < ApplicationRecord
 
   def has_player?
     character && character.user
+  end
+  
+  def attempt_capture(enemy)
+    if(spirits.count < 3 && enemy.species['type']=='eidolon' && !enemy.team.character)
+      enemy_team = enemy.team
+      membership = enemy.team_membership
+      membership.team = self
+      membership.position = spirits.size+1
+      membership.save!
+      battle.add_text("#{enemy.name} has been captured!")
+      enemy_team.reload.swap_next
+    else
+      add_text("Could not capture the enemy #{enemy.name}")
+    end
   end
 
 private

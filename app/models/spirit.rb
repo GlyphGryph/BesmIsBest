@@ -31,7 +31,7 @@ class Spirit < ApplicationRecord
   end
 
   def player_moves
-    [:swap, :wait, :flee].inject([]) do |array, id|
+    [:swap, :wait, :flee, :capture].inject([]) do |array, id|
       move = Move.find(id.to_sym)
       array << OpenStruct.new(name: move.name, move_id: id.to_s)
       array
@@ -292,6 +292,7 @@ class Spirit < ApplicationRecord
     end
     move_data.map{|learnable_move| learnable_move['id']}
   end
+
 private
   def setup
     spec = species

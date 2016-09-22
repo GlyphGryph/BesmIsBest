@@ -89,6 +89,15 @@ class Move
       special: lambda do |battle, owner, enemy|
       end,
     ),
+    capture: OpenStruct.new(
+      name: 'Capture',
+      types: [:player],
+      nature_id: :normal,
+      time_units: 1,
+      special: lambda do |battle, owner, enemy|
+        owner.team.attempt_capture(enemy)
+      end
+    ),
 
     ## Normal type actions
     attack: OpenStruct.new(

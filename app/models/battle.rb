@@ -92,9 +92,9 @@ class Battle < ApplicationRecord
 
   def process_defeated_spirit(spirit)
     team = other_team(spirit.team)
-    team.active_spirit.add_experience_from(spirit)
     species = Species.find(spirit.species_id)
     team.add_text("#{team.active_spirit.name} devours the enemy! #{team.active_spirit.name} has become #{Nature.adjective_for(species['nature_id'])}!")
+    team.active_spirit.add_experience_from(spirit)
   end
 
   def other_team(this_team)
@@ -114,10 +114,10 @@ class Battle < ApplicationRecord
       team = Team.create!(battle: self)
       species = Species.sample
       if(species['type']=='eidolon')
-        team.add_wild_spirit(species['id'])
+        team.add_wild_spirit(species)
       else
         rand(1..3).times do
-          team.add_wild_spirit(species['id'])
+          team.add_wild_spirit(species)
         end
       end
       return true

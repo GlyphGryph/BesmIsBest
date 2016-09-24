@@ -1,5 +1,5 @@
-'1':
-  id: '1'
+'nellaf':
+  id: 'nellaf'
   name: 'Nellaf'
   max_health: 22
   nature_id: 'faith'
@@ -19,8 +19,24 @@
     - id: 'slam'
       experience:
         total: 5
-'2':
-  id: '2'
+  subspecies:
+    'obsoc':
+      id: 'obsoc'
+      name: 'Nelferroc'
+      nature_id: 'fear'
+      image: 'nelferroc.png'
+    'rigby':
+      id: 'rigby'
+      name: 'Nillby'
+      nature_id: 'persistence'
+      image: 'nillby.png'
+    'braunald':
+      id: 'braunald'
+      name: 'Nuarbald'
+      nature_id: 'strength'
+      image: 'nuarbald.png'
+'obsoc':
+  id: 'obsoc'
   name: 'Obsoc'
   max_health: 22
   nature_id: 'fear'
@@ -41,8 +57,10 @@
     - id: 'slam'
       experience:
         total: 5
-'3':
-  id: '3'
+  subspecies:
+    'nothing': 'nothing'
+'rigby':
+  id: 'rigby'
   name: 'Rigby'
   max_health: 22
   nature_id: 'persistence'
@@ -62,8 +80,10 @@
     - id: 'slam'
       experience:
         total: 5
-'4':
-  id: '4'
+  subspecies:
+    'nothing': 'nothing'
+'braunald':
+  id: 'braunald'
   name: 'Braunald'
   max_health: 22
   nature_id: 'strength'
@@ -83,3 +103,5 @@
     - id: 'smite'
       experience:
         total: 5
+  subspecies:
+    'nothing': 'nothing'

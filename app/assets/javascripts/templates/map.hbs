@@ -27,6 +27,10 @@
           </div>
           <div class='section stats'>
             <div>STATS</div>
+            <div class='subsection'>Species: {{species}}</div>
+            {{#if subspecies}}
+              <div class='subsection'>Subpecies: {{subspecies}}</div>
+            {{/if}}
             <div class='subsection'>Health: {{health}}</div>
             <div class='subsection'>Smarts: {{smarts}}</div>
           </div>

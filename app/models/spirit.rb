@@ -176,6 +176,8 @@ class Spirit < ApplicationRecord
       image: ActionController::Base.helpers.image_url(image),
       health: max_health,
       smarts: species['smarts'],
+      species: species['name'],
+      subspecies: subspecies ? subspecies['name'] : nil,
       experience: {
         total: total_experience,
         natures: state['experience']['nature'].map{|key, value| {id: key, name: Nature.name_for(key), value: value} }
@@ -252,6 +254,10 @@ class Spirit < ApplicationRecord
     Species.find(species_id)
   end
 
+  def subspecies
+    Species.find(species_id)['subspecies'][subspecies_id]
+  end
+
   def swap_cost
     2
   end
@@ -262,6 +268,10 @@ class Spirit < ApplicationRecord
 
   def nature_experience(nature_id)
     state['experience']['nature'][nature_id]
+  end
+
+  def nature_experiences
+    state['experience']['nature']
   end
 
   def species_experience(species_id)
@@ -275,12 +285,49 @@ class Spirit < ApplicationRecord
     state['experience']['nature'][species['nature_id']] += amount
     state['experience']['species'][species['id']] = species_experience(species_id) + 1
     self.save!
+    learn_new_moves
+    adopt_new_subspecies
+  end
+  
+  def learn_new_moves
     learnable_moves.each do |move_id|
       KnownMove.create(spirit: self, move_id: move_id)
       team.add_text("#{name} learned a new technique! #{name} now knows '#{Move.find(move_id).name}'")
     end
   end
 
+  def adopt_new_subspecies
+    subspecies_found = nil
+    nature_experiences.each do |key, value|
+      if value > (total_experience * 0.4)
+        subspecies_found = subspecies_candidate_for(key)
+      end
+    end
+    if(subspecies_found.try(:[],'id') != subspecies_id)
+      if(subspecies_found && subspecies)
+        message = "#{name} is changing! #{name} is no longer a '#{subspecies['name']}' and is now a '#{species['subspecies'][subspecies_found['id']]['name']}'!"
+      elsif(subspecies_found)
+        message = "#{name} is changing! #{name} is now a '#{species['subspecies'][subspecies_found['id']]['name']}'!"
+      else
+        message = "#{name} is changing! #{name} is no longer a '#{subspecies['name']}'!"
+      end
+      self.state['subspecies_id'] = subspecies_found.try(:[],'id')
+      self.image = subspecies ? subspecies['image'] : species['image']
+      team.add_display_update(self, 'image', ActionController::Base.helpers.image_url(image))
+      self.save!
+      team.add_text(message)
+    end
+  end
+
+  def subspecies_candidate_for(nature_id)
+    return nil unless species['subspecies']
+    candidates = species['subspecies'].values.select do |ss|
+      ss['nature_id'] == nature_id
+    end
+    best = candidates.max{|aa, bb| species_experience(aa['id']) <=> species_experience(bb['id'])}
+    return nil if best.nil? || (species_experience(best['id']) <= 0)
+    return best
+  end
 
   def learnable_moves
     known_move_ids = known_moves
@@ -291,6 +338,10 @@ class Spirit < ApplicationRecord
       !ignored && total_experience >= learnable_move['experience']['total']
     end
     move_data.map{|learnable_move| learnable_move['id']}
+  end
+
+  def subspecies_id
+    state['subspecies_id']
   end
 
 private
@@ -315,7 +366,8 @@ private
           strength: 0
         },
         species: {}
-      }
+      },
+      subspecies_id: nil
     }
   end
 

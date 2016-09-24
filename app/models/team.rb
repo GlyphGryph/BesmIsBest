@@ -119,16 +119,15 @@ class Team < ApplicationRecord
     end
   end
 
-  def add_wild_spirit(species_id = nil)
+  def add_wild_spirit(species = nil)
     reload
-    species_id ||= Species.sample
-    species = Species.find(species_id)
+    species ||= Species.sample.id
     if(species['type']=='eidolon')
       name = "Wild "+species['name']
     else
       name = species['name']
     end
-    spirit = Spirit.create!(species_id: species_id, name: name)
+    spirit = Spirit.create!(species_id: species['id'], name: name)
     TeamMembership.create!(team: self, spirit: spirit, position: spirits.size)
     species['smarts'].times do
       spirit.equip_move(spirit.known_moves.sample.move_id)

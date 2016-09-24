@@ -108,13 +108,6 @@ class Move
       description: 'Deals 5 damage.',
       damage: 5
     ),
-    wait: OpenStruct.new(
-      name: 'Wait',
-      types: [],
-      nature_id: :normal,
-      description: 'Passes the time',
-      time_units: 1
-    ),
     juke: OpenStruct.new(
       name: 'Juke',
       types: [:incomplete, :hidden, :temporary, :trap],

@@ -9,16 +9,21 @@
   starting_moves:
     - 'attack'
     - 'shake_off'
-    - 'smite'
     - 'no_fear'
-    - 'reset'
-    - 'cleanse'
-    - 'magnet'
     - 'guide'
   learnable_moves:
-    - id: 'slam'
+    - id: 'smite'
       experience:
         total: 5
+    - id: 'reset'
+      experience:
+        total: 10
+    - id: 'cleanse'
+      experience:
+        total: 15
+    - id: 'magnet'
+      experience:
+        total: 20
   subspecies:
     'obsoc':
       id: 'obsoc'
@@ -47,16 +52,21 @@
     - 'attack'
     - 'shake_off'
     - 'intimidate'
-    - 'terrify'
-    - 'doom'
-    - 'needle'
     - 'hide'
-    - 'shroud'
-    - 'cowardice'
+    - 'doom'
   learnable_moves:
-    - id: 'slam'
+    - id: 'terrify'
       experience:
         total: 5
+    - id: 'shroud'
+      experience:
+        total: 10
+    - id: 'needle'
+      experience:
+        total: 15
+    - id: 'cowardice'
+      experience:
+        total: 20
   subspecies:
     'nothing': 'nothing'
 'rigby':
@@ -71,15 +81,20 @@
     - 'attack'
     - 'shake_off'
     - 'flurry'
-    - 'poison'
-    - 'relentless'
     - 'recover'
-    - 'persevere'
-    - 'conditioning'
   learnable_moves:
-    - id: 'slam'
+    - id: 'poison'
       experience:
         total: 5
+    - id: 'relentless'
+      experience:
+        total: 10
+    - id: 'conditioning'
+      experience:
+        total: 15
+    - id: 'persevere'
+      experience:
+        total: 20
   subspecies:
     'nothing': 'nothing'
 'braunald':
@@ -93,15 +108,22 @@
   starting_moves:
     - 'attack'
     - 'shake_off'
-    - 'slam'
-    - 'pump'
     - 'bash'
-    - 'breakthrough'
-    - 'shield'
-    - 'armor'
   learnable_moves:
-    - id: 'smite'
+    - id: 'breakthrough'
       experience:
-        total: 5
+        total: 4
+    - id: 'shield'
+      experience:
+        total: 8
+    - id: 'slam'
+      experience:
+        total: 12
+    - id: 'armor'
+      experience:
+        total: 16
+    - id: 'pump'
+      experience:
+        total: 20
   subspecies:
     'nothing': 'nothing'

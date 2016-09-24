@@ -87,6 +87,7 @@ class Move
       nature_id: :normal,
       time_units: 1,
       special: lambda do |battle, owner, enemy|
+        owner.team.flee
       end,
     ),
     capture: OpenStruct.new(

@@ -15,6 +15,7 @@ class Team < ApplicationRecord
   def reset_state
     spirits.each{ |spirit| spirit.reset_state; spirit.save! }
     self.active_spirit = spirits.first
+    self.state['escaped'] = false
     clear_history
     self.save!
   end
@@ -32,7 +33,11 @@ class Team < ApplicationRecord
   end
 
   def defeated?
-    !spirits.any?{|spirit| spirit.alive?}
+    !spirits.any?{|spirit| spirit.alive?} || escaped?
+  end
+
+  def escaped?
+    state['escaped']
   end
 
   def ready_to_act?
@@ -212,12 +217,18 @@ class Team < ApplicationRecord
     end
   end
 
+  def flee
+    self.state['escaped'] = true
+    self.save!
+    battle.add_battle_end
+  end
 private
   def setup
     self.state = {
       events: [],
       history: [],
-      last_event: nil
+      last_event: nil,
+      escaped: false
     }
   end
 

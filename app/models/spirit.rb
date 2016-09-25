@@ -41,7 +41,7 @@ class Spirit < ApplicationRecord
 
   def shaped_usable_moves
     usable_moves.map do |move|
-      {name: move.name, id: move.id, targets: move.targets}
+      {name: move.name, id: move.id, targets: move.targets(self)}
     end
   end
 
@@ -125,7 +125,7 @@ class Spirit < ApplicationRecord
   end
   
   def can_move?(move_id)
-    usable_moves.find{|move| move.move_id == move_id}
+    !!usable_moves.find{|move| move.id.to_sym == move_id.to_sym}
   end
 
   def reset_state

@@ -1,6 +1,6 @@
 class Move
   class << self
-    def execute(id, battle, owner)
+    def execute(id, battle, owner, target_id = nil)
       enemy = battle.other_team(owner.team).active_spirit
       p "!! EXECUTING MOVE #{id}!!"
       action = find(id.to_sym)
@@ -28,7 +28,7 @@ class Move
         end
 
         if(action.types.include?(:special) || action.types.include?(:player))
-          action.special.call(battle, owner, enemy)
+          action.special(battle, owner, enemy, target_id)
         end
       end
       owner.team.save!
@@ -54,7 +54,7 @@ class Move
 
   @@all = {}
 
-  attr_accessor :name, :types, :nature_id, :damage, :description
+  attr_accessor :id, :name, :types, :nature_id, :time_units, :damage, :description
 
   def initialize(args)
     @id = args[:id]
@@ -77,18 +77,18 @@ class Move
     @types.include?(type.to_sym)
   end
 
-  def special(battle, owner, enemy, target=nil)
+  def special(battle, owner, enemy, target_id=nil)
     return false unless @special_lambda
     if(has_type?(:targeted))
-      @special_lambda.call(battle, owner, enemy, target)
+      @special_lambda.call(battle, owner, enemy, target_id)
     else
       @special_lambda.call(battle, owner, enemy)
     end
   end
 
-  def targets
-    return false unless @targets_lambda
-    @targets_lambda.call(battle, owner, enemy)
+  def targets(owner)
+    return [] unless @targets_lambda && has_type?(:targeted)
+    @targets_lambda.call(owner)
   end
 
   def expire
@@ -100,13 +100,13 @@ class Move
     return false unless @trigger_lambda
     @trigger_lambda.call(battle, owner, enemy)
   end
-end
 
-require 'moves/player'
-require 'moves/normal'
-require 'moves/faith'
-require 'moves/fear'
-require 'moves/persistence'
-require 'moves/passion'
-require 'moves/cunning'
-require 'moves/strength'
+  load 'moves/player.rb'
+  load 'moves/normal.rb'
+  load 'moves/faith.rb'
+  load 'moves/fear.rb'
+  load 'moves/persistence.rb'
+  load 'moves/passion.rb'
+  load 'moves/cunning.rb'
+  load 'moves/strength.rb'
+end

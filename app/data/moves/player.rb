@@ -4,12 +4,15 @@ Move.new(
   types: [:player, :targeted],
   nature_id: :normal,
   time_units: 2,
-  special: lambda do |battle, owner, enemy, target|
-    if(owner.team.spirits.alive.count > 1)
-      owner.team.swap_to(owner.team.spirits.find(target.id))
+  special: lambda do |battle, owner, enemy, target_id|
+    if(target_id && owner.team.spirits.alive.count > 1)
+      owner.team.swap_to(owner.team.spirits.find(target_id))
     else
       battle.add_text("#{owner.name} tried to swap out, but there was no one to take their place.")
     end
+  end,
+  targets: lambda do |owner|
+    owner.team.spirits.where.not(id: owner.id).map{|spirit| {id: spirit.id, name: spirit.name} }
   end
 )
 Move.new(

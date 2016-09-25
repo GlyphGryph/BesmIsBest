@@ -59,7 +59,7 @@ class Battle < ApplicationRecord
 
   def take_player_turn(team, data)
     if current_team == team
-      team.action_selected(data['move_id'])
+      team.action_selected(data['move_id'], data['target_id'])
       advance_time
       broadcast_events
     end

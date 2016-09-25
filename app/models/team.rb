@@ -46,10 +46,10 @@ class Team < ApplicationRecord
     end
   end
 
-  def action_selected(move_id)
+  def action_selected(move_id, target_id=nil)
     reload
     if(ready_to_act? && active_spirit.can_move?(move_id) && battle.current_team == self)
-      Move.execute(move_id, battle, active_spirit)
+      Move.execute(move_id, battle, active_spirit, target_id)
     else
       p "Attempted to use move #{move_id} but..."
       if(battle.current_team != self)

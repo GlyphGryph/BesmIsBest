@@ -3,7 +3,7 @@ class Eidolon.BattleController
   mode: 'battle'
   menuMode: 'wait'
   active: false
-  indicatedMoveIndex: null
+  optionList: null
 
   start: ->
     if(Eidolon.application.initialBattleState)
@@ -90,10 +90,11 @@ class Eidolon.BattleController
       else if(nextEvent.type == 'take_turn')
         console.log('taking turn')
         @state.display_options = true
+        @state.options = @state.own.moves
         $('#battle-text').html(Handlebars.partials._battle_text(@state))
         $('#battle-text .continue-arrow').hide()
         @menuMode =  'list'
-        @newMoveIndex(0)
+        @optionList = new Eidolon.OptionList($('.option-list'), @moveSelected)
       else if(nextEvent.type == 'swap')
         console.log('loading new spirit')
         @state[nextEvent.side] = nextEvent.value
@@ -111,13 +112,29 @@ class Eidolon.BattleController
     @menuMode = 'normal'
     @processNextEvent()
 
-  selectMove: () ->
-    @menuMode = 'wait'
-    # Most moves will provide null targets
-    Eidolon.Channels.battle.perform('take_turn', {move_id: @indicatedMove().id}, target: @indicatedMove().target)
+  moveSelected: (data) =>
+    delete @optionList
+    @foundMove = move for move in @state.own.moves when move.id is data.id
+    if(@foundMove.targets.length > 0)
+      @state.options = @foundMove.targets
+      $('#battle-text').html(Handlebars.partials._battle_text(@state))
+      @optionList = new Eidolon.OptionList($('.option-list'), @targetSelected)
+    else
+      @takeTurn(@foundMove.id)
 
-  indicatedMove: () ->
-    @state.own.moves[@indicatedMoveIndex]
+  targetSelected: (data) =>
+    delete @optionList
+    @takeTurn(@foundMove.id, data.id)
+
+  takeTurn: (move_id, target_id=null) ->
+    @menuMode = 'wait'
+    Eidolon.Channels.battle.perform('take_turn', {move_id: move_id, target_id: target_id})
+    console.log('taking turn')
+    @state.display_options = false
+    @state.currentText = '...'
+    $('#battle-text').html(Handlebars.partials._battle_text(@state))
+    $('#battle-text .continue-arrow').hide()
+    @menuMode = 'viewText'
 
   setHealthPercents: () ->
     @state.own.health_percent = 100 * @state.own.health / @state.own.max_health
@@ -131,40 +148,16 @@ class Eidolon.BattleController
     switch(@menuMode)
       when 'normal'
         @processNextEvent()
-      when 'list'
-        @selectMove()
-  
-  indicatorDown: () ->
-    switch(@menuMode)
-      when 'list'
-        if(@indicatedMoveIndex < (@state.own.moves.length-1))
-          @newMoveIndex(@indicatedMoveIndex + 1)
-
-  indicatorUp: () ->
-    switch(@menuMode)
-      when 'list'
-        if(@indicatedMoveIndex > 0)
-          @newMoveIndex(@indicatedMoveIndex - 1)
-
-  newMoveIndex: (newIndex) ->
-    @indicatedMoveIndex = newIndex
-    element = $('.option-list')
-    element.find('.option .indicator-cell').removeClass('blink').text('')
-    element.find('.option[data-id='+@indicatedMove().id+'] .indicator-cell').addClass('blink').text('>')
 
   receiveKey: (key) ->
+    if(@optionList?)
+      return @optionList.receiveKey(key)
     switch(key)
       when 13
         @receiveConfirmation()
-        Eidolon.application.waitForKeyup(key)
-      when 38
-        @indicatorUp()
-        Eidolon.application.waitForKeyup(key)
-      when 40
-        @indicatorDown()
-        Eidolon.application.waitForKeyup(key)
       else
         return false
+    Eidolon.application.waitForKeyup(key)
     return true
 
 Eidolon.battleController = new Eidolon.BattleController()

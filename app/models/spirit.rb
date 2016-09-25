@@ -24,17 +24,14 @@ class Spirit < ApplicationRecord
   end
   
   def non_passive_moves
-    equipped_moves.select do |em|
-      move = Move.find(em.move_id.to_sym)
-      !move.types.include?(:passive)
+    equipped_moves.map{|em| Move.find(em.move_id)}.select do |move|
+      !move.has_type?(:passive)
     end
   end
 
   def player_moves
-    [:swap, :wait, :flee, :capture].inject([]) do |array, id|
-      move = Move.find(id.to_sym)
-      array << OpenStruct.new(name: move.name, move_id: id.to_s)
-      array
+    [:swap, :wait, :flee, :capture].map do |id|
+      Move.find(id)
     end
   end
 
@@ -43,9 +40,8 @@ class Spirit < ApplicationRecord
   end
 
   def shaped_usable_moves
-    usable_moves.map do |em|
-      move = Move.find(em.move_id.to_sym)
-      {name: move.name, id: em.move_id}
+    usable_moves.map do |move|
+      {name: move.name, id: move.id, targets: move.targets}
     end
   end
 
@@ -148,7 +144,8 @@ class Spirit < ApplicationRecord
       time_units: TimeUnit.reduced(time_units),
       image: ActionController::Base.helpers.image_url(image),
       buffs: buffs,
-      debuffs: debuffs
+      debuffs: debuffs,
+      teammates: teammate_statuses
     }
   end
 
@@ -161,8 +158,21 @@ class Spirit < ApplicationRecord
       image: ActionController::Base.helpers.image_url(image),
       moves: shaped_usable_moves,
       buffs: buffs,
-      debuffs: debuffs
+      debuffs: debuffs,
+      teammates: teammate_statuses
     }
+  end
+
+  def teammate_statuses
+    teammates.map do |mate|
+      { name: mate.name,
+        alive: mate.alive?
+      }
+    end
+  end
+
+  def teammates
+    mates = team.spirits.where.not(id: id)
   end
 
   def customization_data

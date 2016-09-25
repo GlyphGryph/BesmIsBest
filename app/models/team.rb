@@ -65,7 +65,7 @@ class Team < ApplicationRecord
   def request_ai_turn
     if(!has_player?)
       move_to_use = active_spirit.non_passive_moves.sample
-      battle.take_ai_turn(self, {'move_id' => move_to_use.move_id})
+      battle.take_ai_turn(self, {'move_id' => move_to_use.id})
     end
   end
 

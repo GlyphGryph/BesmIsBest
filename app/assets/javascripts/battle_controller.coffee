@@ -113,16 +113,8 @@ class Eidolon.BattleController
 
   selectMove: () ->
     @menuMode = 'wait'
-    Eidolon.Channels.battle.perform('take_turn', {move_id: @indicatedMove().id})
-
- #  moveListElement: () ->
- #    element = $('<table></table>').addClass('option-list')
- #    for move in @state.own.moves
- #      moveElement = $('<tr></tr>').addClass('option').attr('data-id', move.id)
- #      moveSelector = $('<td></td>').addClass('indicator-cell')
- #      moveText = $('<td></td>').addClass('name-cell').text(move.name)
- #      moveElement.append(moveSelector).append(moveText)
- #      element.append(moveElement)
+    # Most moves will provide null targets
+    Eidolon.Channels.battle.perform('take_turn', {move_id: @indicatedMove().id}, target: @indicatedMove().target)
 
   indicatedMove: () ->
     @state.own.moves[@indicatedMoveIndex]

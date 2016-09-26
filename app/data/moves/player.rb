@@ -12,7 +12,7 @@ Move.new(
     end
   end,
   targets: lambda do |owner|
-    owner.team.spirits.where.not(id: owner.id).map{|spirit| {id: spirit.id, name: spirit.name} }
+    owner.teammates.map{|spirit| {id: spirit.id, name: spirit.name} }
   end
 )
 Move.new(

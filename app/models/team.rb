@@ -8,6 +8,11 @@ class Team < ApplicationRecord
   before_create :setup
   after_create :setup_associations
 
+  @max_spirits = 3
+  def max_spirits
+    3
+  end
+
   def customization_data
     { spirits: spirits.map{ |spirit| spirit.customization_data } }
   end
@@ -204,7 +209,7 @@ class Team < ApplicationRecord
   end
   
   def attempt_capture(enemy)
-    if(spirits.count < 3 && enemy.species['type']=='eidolon' && !enemy.team.character)
+    if(spirits.count < max_spirits && enemy.species['type']=='eidolon' && !enemy.team.character)
       enemy_team = enemy.team
       membership = enemy.team_membership
       membership.team = self
@@ -221,6 +226,14 @@ class Team < ApplicationRecord
     self.state['escaped'] = true
     self.save!
     battle.add_battle_end
+  end
+
+  def enemy_team
+    battle.other_team(self)
+  end
+
+  def enemy_spirit
+    enemy_team.active_spirit
   end
 private
   def setup

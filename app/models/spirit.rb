@@ -30,7 +30,16 @@ class Spirit < ApplicationRecord
   end
 
   def player_moves
-    [:swap, :wait, :flee, :capture].map do |id|
+    moves = [:wait, :flee]
+    if teammates.count > 0
+      moves << :swap
+    end
+    if team.spirits.count < team.max_spirits
+      if((!team.battle) || (team.battle && team.enemy_spirit.type == 'eidolon'))
+        moves << :capture
+      end
+    end
+    moves.map do |id|
       Move.find(id)
     end
   end
@@ -268,6 +277,10 @@ class Spirit < ApplicationRecord
     Species.find(species_id)['subspecies'][subspecies_id]
   end
 
+  def type
+    species['type']
+  end
+
   def swap_cost
     2
   end
@@ -290,7 +303,7 @@ class Spirit < ApplicationRecord
 
   def add_experience_from(spirit)
     species = Species.find(spirit.species_id)
-    amount = (species['type']=='eidolon') ? 3 : 1
+    amount = (type=='eidolon') ? 3 : 1
     state['experience']['total'] += amount
     state['experience']['nature'][species['nature_id']] += amount
     state['experience']['species'][species['id']] = species_experience(species_id) + 1

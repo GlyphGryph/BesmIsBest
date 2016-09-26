@@ -44,10 +44,16 @@
             </div>
           </div>
           {{#if dismissable}}
-            <button class='section dismiss'>
-              DISMISS
-            </button>
+            <div class='section right'>
+              <button class='dismiss'>
+                DISMISS
+              </button>
+            </div>
           {{/if}}
+          <div class='section right'>
+            <button class='shift-up'>Move UP</button>
+            <button class='shift-down'>Move DOWN</button>
+          </div>
         </div>
         <div class='moves'>
           {{#each moves}}

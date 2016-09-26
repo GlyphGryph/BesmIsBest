@@ -30,4 +30,12 @@ class WorldChannel < ApplicationCable::Channel
   def dismiss_spirit(data)
     current_user.character.team.spirits.find(data['spirit_id']).dismiss
   end
+
+  def shift_spirit_down(data)
+    current_user.character.team.spirits.find(data['spirit_id']).shift_membership_down
+  end
+
+  def shift_spirit_up(data)
+    current_user.character.team.spirits.find(data['spirit_id']).shift_membership_up
+  end
 end

@@ -371,13 +371,35 @@ class Spirit < ApplicationRecord
   def dismiss
     if(teammates.count > 0)
       self.destroy
-      team.shift_members
+      team.shift_memberships
       if(team.try(:character))
         team.character.world.broadcast_update_for(team.character.user)
       end
     end
   end
 
+  def shift_membership(amount)
+    current_membership = team_membership
+    target_membership = team.team_memberships.where(position: current_membership.position + amount).first
+    if(target_membership.present?)
+      current_membership.position = target_membership.position
+      target_membership.position -= amount
+      current_membership.save!
+      target_membership.save!
+
+      if(team.try(:character))
+        team.character.world.broadcast_update_for(team.character.user)
+      end
+    end
+  end
+
+  def shift_membership_down
+    shift_membership(1)
+  end
+
+  def shift_membership_up
+    shift_membership(-1)
+  end
 private
   def setup
     spec = species

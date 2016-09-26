@@ -19,6 +19,8 @@ class Eidolon.WorldController
     $('body').on('click', '.move.unequipped', @equipMove)
     $('body').on('click', '.move.equipped', @unequipMove)
     $('body').on('click', 'button.dismiss', @dismissSpirit)
+    $('body').on('click', 'button.shift-up', @shiftSpiritUp)
+    $('body').on('click', 'button.shift-down', @shiftSpiritDown)
 
   end: () ->
     @active = false
@@ -46,6 +48,12 @@ class Eidolon.WorldController
 
   dismissSpirit: (event) ->
     Eidolon.Channels.world.perform('dismiss_spirit', {spirit_id: $(this).parents('.spirit').data('id')})
+
+  shiftSpiritUp: (event) ->
+    Eidolon.Channels.world.perform('shift_spirit_up', {spirit_id: $(this).parents('.spirit').data('id')})
+
+  shiftSpiritDown: (event) ->
+    Eidolon.Channels.world.perform('shift_spirit_down', {spirit_id: $(this).parents('.spirit').data('id')})
 
   receiveKey: (key) ->
     switch(key)

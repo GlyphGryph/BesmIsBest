@@ -51,13 +51,11 @@
           padding-left:10px;;
         }
 
-        &.dismiss{
+        &.right{
           float: right;
-          border:3px outset black;
 
-          &:hover{
-            background-color:#AAA;
-            border:3px inset black;
+          button{
+            display: block;
           }
         }
       }

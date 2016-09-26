@@ -213,7 +213,7 @@ class Team < ApplicationRecord
       enemy_team = enemy.team
       membership = enemy.team_membership
       membership.team = self
-      membership.position = spirits.size+1
+      membership.position = spirits.size
       membership.save!
       battle.add_text("#{enemy.name} has been captured!")
       enemy_team.reload.swap_next
@@ -222,7 +222,7 @@ class Team < ApplicationRecord
     end
   end
 
-  def shift_members
+  def shift_memberships
     team_memberships.each_with_index do |membership, index|
       membership.position = index
       membership.save

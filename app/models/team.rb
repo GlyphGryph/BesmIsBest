@@ -216,6 +216,8 @@ class Team < ApplicationRecord
       membership.position = spirits.size
       membership.save!
       battle.add_text("#{enemy.name} has been captured!")
+      enemy.name = enemy.species['name']
+      enemy.save!
       enemy_team.reload.swap_next
     else
       add_text("Could not capture the enemy #{enemy.name}")

@@ -1,5 +1,5 @@
 class Spirit < ApplicationRecord
-  has_one :team_membership
+  has_one :team_membership, dependent: :destroy
   has_one :team, through: :team_membership
   has_many :known_moves, dependent: :destroy
   has_many :equipped_moves, dependent: :destroy
@@ -206,7 +206,8 @@ class Spirit < ApplicationRecord
           name: Move.find(km.move_id).name,
           equipped: equip_ids.include?(km.move_id)
         }
-      end
+      end,
+      dismissable: teammates.present?
     }
   end
 
@@ -365,6 +366,16 @@ class Spirit < ApplicationRecord
 
   def subspecies_id
     state['subspecies_id']
+  end
+
+  def dismiss
+    if(teammates.count > 0)
+      self.destroy
+      team.shift_members
+      if(team.try(:character))
+        team.character.world.broadcast_update_for(team.character.user)
+      end
+    end
   end
 
 private

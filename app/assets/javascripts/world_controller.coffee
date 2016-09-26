@@ -18,6 +18,7 @@ class Eidolon.WorldController
       Eidolon.application.subscribe('world')
     $('body').on('click', '.move.unequipped', @equipMove)
     $('body').on('click', '.move.equipped', @unequipMove)
+    $('body').on('click', 'button.dismiss', @dismissSpirit)
 
   end: () ->
     @active = false
@@ -42,6 +43,9 @@ class Eidolon.WorldController
 
   unequipMove: (event) ->
     Eidolon.Channels.world.perform('unequip_move', {move_id: $(this).data('id'), spirit_id: $(this).parents('.spirit').data('id')})
+
+  dismissSpirit: (event) ->
+    Eidolon.Channels.world.perform('dismiss_spirit', {spirit_id: $(this).parents('.spirit').data('id')})
 
   receiveKey: (key) ->
     switch(key)

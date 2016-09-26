@@ -26,4 +26,8 @@ class WorldChannel < ApplicationCable::Channel
   def unequip_move(data)
     current_user.character.team.spirits.find(data['spirit_id']).unequip_move(data['move_id'])
   end
+
+  def dismiss_spirit(data)
+    current_user.character.team.spirits.find(data['spirit_id']).dismiss
+  end
 end

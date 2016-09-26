@@ -222,6 +222,13 @@ class Team < ApplicationRecord
     end
   end
 
+  def shift_members
+    team_memberships.each_with_index do |membership, index|
+      membership.position = index
+      membership.save
+    end
+  end
+
   def flee
     self.state['escaped'] = true
     self.save!
@@ -235,6 +242,7 @@ class Team < ApplicationRecord
   def enemy_spirit
     enemy_team.active_spirit
   end
+
 private
   def setup
     self.state = {

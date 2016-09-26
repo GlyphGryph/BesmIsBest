@@ -43,6 +43,11 @@
               {{/each}}
             </div>
           </div>
+          {{#if dismissable}}
+            <button class='section dismiss'>
+              DISMISS
+            </button>
+          {{/if}}
         </div>
         <div class='moves'>
           {{#each moves}}

@@ -210,7 +210,6 @@ class Team < ApplicationRecord
   
   def attempt_capture(enemy)
     if(spirits.count < max_spirits && enemy.species['type']=='eidolon' && !enemy.team.character)
-      enemy_team = enemy.team
       membership = enemy.team_membership
       membership.team = self
       membership.position = spirits.size
@@ -218,7 +217,7 @@ class Team < ApplicationRecord
       battle.add_text("#{enemy.name} has been captured!")
       enemy.name = enemy.species['name']
       enemy.save!
-      enemy_team.reload.swap_next
+      enemy_team.swap_next
     else
       add_text("Could not capture the enemy #{enemy.name}")
     end

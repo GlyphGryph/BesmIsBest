@@ -18,9 +18,10 @@ class Eidolon.WorldController
       Eidolon.application.subscribe('world')
     $('body').on('click', '.move.unequipped', @equipMove)
     $('body').on('click', '.move.equipped', @unequipMove)
-    $('body').on('click', 'button.dismiss', @dismissSpirit)
-    $('body').on('click', 'button.shift-up', @shiftSpiritUp)
-    $('body').on('click', 'button.shift-down', @shiftSpiritDown)
+    $('body').on('click', '.dismiss', @dismissSpirit)
+    $('body').on('click', '.shift-up', @shiftSpiritUp)
+    $('body').on('click', '.shift-down', @shiftSpiritDown)
+    $('body').on('click', '.request-battle', @requestBattle)
 
   end: () ->
     @active = false
@@ -29,6 +30,7 @@ class Eidolon.WorldController
     console.log(data)
     @map.rows = data.map
     @team = data.team
+    @players = data.players
     for row, row_num in @map.rows
       for cell, column_num in row
         if(cell == 0)
@@ -54,6 +56,9 @@ class Eidolon.WorldController
 
   shiftSpiritDown: (event) ->
     Eidolon.Channels.world.perform('shift_spirit_down', {spirit_id: $(this).parents('.spirit').data('id')})
+
+  requestBattle: (event) ->
+    Eidolon.Channels.master.perform('request_battle', {character_id: $(this).data('id')})
 
   receiveKey: (key) ->
     switch(key)

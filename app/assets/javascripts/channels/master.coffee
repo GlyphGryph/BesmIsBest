@@ -16,3 +16,6 @@ class Eidolon.MasterSubscription
   joinedBattle: (data) ->
     @app.enterBattle(data)
     @commandProcessed()
+
+  requestBattle: (data) ->
+    @app.battleRequested(data)

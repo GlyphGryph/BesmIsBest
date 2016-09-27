@@ -1,0 +1,13 @@
+<table id='map-display'>
+  {{#each rows}}
+    <tr data-row='{{@index}}'>
+      {{#each .}}
+        <td class='cell {{class}}' data-column='{{@index}}'>
+          {{#if occupied}}
+            @
+          {{/if}}
+        </td>
+      {{/each}}
+    </tr>
+  {{/each}}
+</table>

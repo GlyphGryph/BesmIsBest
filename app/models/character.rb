@@ -56,19 +56,21 @@ class Character < ApplicationRecord
   end
   
   def start_battle(opponent = nil)
-    if(team.reload.battle.nil?)
-      battle = Battle.create!
-      battle.teams << team
-      if(opponent)
-        battle.teams << opponent.team
-      else
-        battle.add_wild_team
-      end
-      battle.save!
-      battle.start
-    else
-      raise "You are already in battle."
+    if(team.reload.battle)
+      team.flee
     end
+    battle = Battle.create!
+    battle.teams << team
+    if(opponent)
+      if(opponent.team.battle)
+        opponent.team.flee
+      end
+      battle.teams << opponent.team
+    else
+      battle.add_wild_team
+    end
+    battle.save!
+    battle.start
   end
 
   def join_battle
@@ -77,6 +79,11 @@ class Character < ApplicationRecord
     end
   end
 
+  def view_data
+    { id: id,
+      name: user.email
+    }
+  end
 private
   def setup
   end

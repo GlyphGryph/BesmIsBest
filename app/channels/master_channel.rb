@@ -18,4 +18,12 @@ class MasterChannel < ApplicationCable::Channel
   def join_battle
     current_user.character.join_battle
   end
+
+  def request_battle(data)
+    MasterChannel.broadcast_to Character.find(data['character_id']).user, action: 'requestBattle', source: current_user.character.view_data
+  end
+
+  def accept_battle(data)
+    current_user.character.start_battle(Character.find(data['character_id']))
+  end
 end

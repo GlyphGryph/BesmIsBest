@@ -6,6 +6,6 @@ class BattleChannel < ApplicationCable::Channel
   end
 
   def take_turn(data)
-    current_user.character.team.battle.take_player_turn(current_user.character.team, data)
+    current_user.character.team.reload.battle.take_player_turn(current_user.character.team, data)
   end
 end

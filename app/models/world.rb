@@ -8,7 +8,8 @@ class World < ApplicationRecord
       action: 'update',
       mode: 'world',
       map: self.reload.full_map,
-      team: user.character.team.customization_data
+      team: user.character.team.customization_data,
+      players: characters.where.not(id: user.character.id).map(&:view_data)
     )
   end
 

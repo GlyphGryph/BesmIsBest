@@ -34,7 +34,7 @@ class Spirit < ApplicationRecord
     if teammates.count > 0
       moves << :swap
     end
-    if team.spirits.count < team.max_spirits
+    if team.spirits.count < team.max_spirits && !(team.enemy_team.character.try(:user))
       if((!team.battle) || (team.battle && team.enemy_spirit.type == 'eidolon'))
         moves << :capture
       end

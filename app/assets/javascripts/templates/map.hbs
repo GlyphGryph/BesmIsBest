@@ -1,76 +1,12 @@
 <div id='map-zone'>
-  <table id='map-display'>
-    {{#each map.rows}}
-      <tr data-row='{{@index}}'>
-        {{#each .}}
-          <td class='cell {{class}}' data-column='{{@index}}'>
-            {{#if occupied}}
-              @
-            {{/if}}
-          </td>
-        {{/each}}
-      </tr>
-    {{/each}}
-  </table>
-  <div class='move-selector menu'>
-    {{#each team.spirits}}
-      <div class='spirit' data-id='{{id}}'>
-        <div class='header'>
-          <div class='left'>
-            <div class='label'>
-              <span class='name'>{{name}}</span>
-              <span class='move-count'>{{number_equipped_moves}} / {{max_equipped_moves}} moves equipped.</span>
-            </div>
-            <div class='portrait'>
-              <img src='{{image}}' />
-            </div>
-          </div>
-          <div class='section stats'>
-            <div>STATS</div>
-            <div class='subsection'>Species: {{species}}</div>
-            {{#if subspecies}}
-              <div class='subsection'>Subpecies: {{subspecies}}</div>
-            {{/if}}
-            <div class='subsection'>Health: {{health}}</div>
-            <div class='subsection'>Smarts: {{smarts}}</div>
-          </div>
-          <div class='section experience'>
-            <div>EXPERIENCE</div>
-            <div class=' subsection total'>Total: {{experience.total}}</div>
-            <div class='natures'>
-              {{#each experience.natures}}
-                <div class='subsection nature {{id}}'>{{name}}: {{value}}</div>
-              {{/each}}
-            </div>
-          </div>
-          {{#if dismissable}}
-            <div class='section right'>
-              <button class='dismiss'>
-                DISMISS
-              </button>
-            </div>
-          {{/if}}
-          <div class='section right'>
-            <button class='shift-up'>Move UP</button>
-            <button class='shift-down'>Move DOWN</button>
-          </div>
-        </div>
-        <div class='moves'>
-          {{#each moves}}
-            {{#if equipped}}
-              <div class='move equipped' data-id='{{move_id}}'>
-                {{name}}
-                <span class='equipped-tag'>EQUIPPED</span>
-              </div>
-            {{else}}
-              <div class='move unequipped' data-id='{{move_id}}'>
-                {{name}}
-              </div>
-            {{/if}}
-          {{/each}}
-        </div>
-      </div>
-    {{/each}}
-  </div>
+  {{#with players}}
+    {{> _player_list }}
+  {{/with}}
+  {{#with map}}
+    {{> _map }}
+  {{/with}}
+  {{#with team}}
+    {{> _team }}
+  {{/with}}
 </div>
 

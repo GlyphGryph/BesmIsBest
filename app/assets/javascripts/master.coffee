@@ -104,7 +104,15 @@ class Eidolon.MasterController
     if(data.mode == @currentController.mode)
       @currentController.subscribed(data)
 
-  
+  battleRequested: (data) ->
+     confirm_text = data['source']['name']+'has challenged you to a fight!\nDo you wish to fight now?'
+     if(confirm(confirm_text))
+      @acceptFight(data['source']['id'])
+
+
+  acceptFight: (character_id) ->
+    Eidolon.Channels.master.perform('accept_battle', {character_id: character_id})
+
   commandProcessed: (data={}) ->
     if(data.message?)
       console.log(data.message)

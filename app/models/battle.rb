@@ -128,7 +128,11 @@ class Battle < ApplicationRecord
   def start
     teams.each{|team| team.reset_state; team.save! }
     add_text("What's this?")
-    add_text("You've encountered a wild Eidolon!")
+    if(teams.any?{|team| team.character.nil?})
+      add_text("You've encountered a wild Eidolon!")
+    else
+      add_text("You've encountered a challenger!")
+    end
     add_text("Prepare to fight!")
     advance_time
     broadcast_state

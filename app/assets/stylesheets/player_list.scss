@@ -1,0 +1,12 @@
+#player-list{
+  float:right;
+  border:1px solid black;
+  width:300px;
+  padding:10px;
+
+  .player{
+    .name{
+      display: inline;
+    }
+  }
+}

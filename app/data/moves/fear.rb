@@ -72,11 +72,16 @@ Move.new(
 Move.new(
   id: :shroud,
   name: 'Shroud',
-  types: [:incomplete, :buff, :special],
+  types: [:buff, :special],
   nature_id: :fear,
   time_units: 0,
-  description: 'Your health, time units, and the moves you use are not known by your opponent.',
+  description: 'Your health, time units, damage you take and your buffs and debuffs (except shroud) are not known by your opponent.',
   special: lambda do |battle, owner, enemy|
+    if(owner.apply_buff('shrouded'))
+      battle.add_text("#{owner.name} is acting from the shadows!")
+    else
+      battle.add_text("#{owner.name} could not be shrouded.")
+    end
   end
 )
 Move.new(

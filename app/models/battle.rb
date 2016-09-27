@@ -40,7 +40,7 @@ class Battle < ApplicationRecord
     teams.each{|team| team.add_delay(delay) }
   end
 
-  def add_display_update(spirit, stat, value)
+  def add_display_update(spirit, stat, value=nil)
     teams.each{|team| team.add_display_update(spirit, stat, value) }
   end
 

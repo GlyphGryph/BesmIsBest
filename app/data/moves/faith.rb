@@ -10,7 +10,7 @@ Move.new(
 Move.new(
   id: :guide,
   name: 'I Will Be Guided By Faith',
-  types: [:incomplete, :passive],
+  types: [:passive],
   nature_id: :faith,
   description: 'Your attacks are guaranteed to hit, and can not be cancelled',
 )
@@ -41,11 +41,16 @@ Move.new(
 Move.new(
   id: :cleanse,
   name: 'We Shall Become As New',
-  types: [:incomplete, :special],
+  types: [:special],
   nature_id: :faith,
   time_units: 2,
   description: 'Remove all buffs and debuffs from all members of your team.',
   special: lambda do |battle, owner, enemy|
+    owner.team.spirits.each do |spirit|
+      spirit.remove_debuffs
+      spirit.remove_buffs
+      battle.add_text("#{owner.name}'s entire team has been stripped of all buffs and debuffs.")
+    end
   end
 )
 Move.new(

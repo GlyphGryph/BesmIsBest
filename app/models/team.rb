@@ -91,7 +91,19 @@ class Team < ApplicationRecord
     add_event({type: 'delay', value: delay})
   end
 
-  def add_display_update(spirit, stat, value)
+  def add_display_update(spirit, stat, value=nil)
+    case stat
+    when :health
+      value = (active_spirit == spirit) ? spirit.health : spirit.visible_health
+    when :max_health
+      value = (active_spirit == spirit) ? spirit.max_health : spirit.visible_max_health
+    when :buffs
+      value = (active_spirit == spirit) ? spirit.buffs : spirit.visible_buffs
+    when :debuffs
+      value = (active_spirit == spirit) ? spirit.debuffs : spirit.visible_debuffs
+    when :time_units
+      value = (active_spirit == spirit) ? TimeUnit.reduced(spirit.time_units) : spirit.visible_time_units
+    end
     add_event({type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value })
   end
 

@@ -15,7 +15,10 @@ class Move
       # TODO: Bug, figure out why this needs to be added twice or it gets skipped
       allowed = battle.check_triggers(action, owner, enemy)
       if(allowed)
-        if(action.types.include?(:hidden))
+        if(owner.has_buff?('shrouded'))
+          owner.team.add_text("#{owner.name} uses #{action.name}")
+          enemy.team.add_text("#{owner.name}'s action was shrouded in shadow.")
+        elsif(action.types.include?(:hidden))
           battle.add_text("#{owner.name} has prepared a hidden technique.")
         else
           battle.add_text("#{owner.name} uses #{action.name}")
@@ -23,8 +26,13 @@ class Move
 
         if(action.types.include?(:attack))
           enemy.health -= action.damage
-          battle.add_display_update(enemy, :health, enemy.health)
-          battle.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
+          battle.add_display_update(enemy, :health)
+          if(enemy.has_buff?('shrouded'))
+            owner.team.add_text("#{enemy.name} might have take damage from the attack.")
+            enemy.team.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
+          else
+            battle.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
+          end
         end
 
         if(action.types.include?(:special) || action.types.include?(:player))

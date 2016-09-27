@@ -1,6 +1,7 @@
 class Spirit < ApplicationRecord
   has_one :team_membership, dependent: :destroy
   has_one :team, through: :team_membership
+  has_one :battle, through: :team
   has_many :known_moves, dependent: :destroy
   has_many :equipped_moves, dependent: :destroy
 
@@ -22,6 +23,12 @@ class Spirit < ApplicationRecord
   def max_moves
     species['smarts']
   end
+
+  def passive_moves
+    equipped_moves.map{|em| Move.find(em.move_id)}.select do |move|
+      move.has_type?(:passive)
+    end
+  end
   
   def non_passive_moves
     equipped_moves.map{|em| Move.find(em.move_id)}.select do |move|
@@ -35,7 +42,7 @@ class Spirit < ApplicationRecord
       moves << :swap
     end
     if team.spirits.count < team.max_spirits && !(team.enemy_team.character.try(:user))
-      if((!team.battle) || (team.battle && team.enemy_spirit.type == 'eidolon'))
+      if((!battle) || (battle && team.enemy_spirit.type == 'eidolon'))
         moves << :capture
       end
     end
@@ -57,7 +64,7 @@ class Spirit < ApplicationRecord
   def apply_debuff(debuff_id)
     if can_debuff?(debuff_id)
       self.debuffs << debuff_id
-      team.battle.add_display_update(self, :debuffs, self.debuffs)
+      apply_updates_for_debuff(buff_id)
       return true
     else
       return false
@@ -67,7 +74,7 @@ class Spirit < ApplicationRecord
   def apply_buff(buff_id)
     if can_buff?(buff_id)
       self.buffs << buff_id
-      team.battle.add_display_update(self, :buffs, self.buffs)
+      apply_updates_for_buff(buff_id)
       return true
     else
       return false
@@ -77,21 +84,19 @@ class Spirit < ApplicationRecord
   def remove_debuff(debuff_id=nil)
     if(debuff_id)
       self.debuffs.delete(debuff_id)
-      team.battle.add_display_update(self, :debuffs, self.debuffs)
     else
       self.debuffs.delete(self.debuffs.sample)
-      team.battle.add_display_update(self, :debuffs, self.debuffs)
     end
+    apply_updates_for_debuff(buff_id)
   end
 
   def remove_buff(buff_id=nil)
     if(buff_id)
       self.buffs.delete(buff_id)
-      team.battle.add_display_update(self, :buffs, self.buffs)
     else
       self.buffs.delete(self.buffs.sample)
-      team.battle.add_display_update(self, :buffs, self.buffs)
     end
+    apply_updates_for_buff(buff_id)
   end
 
   def remove_debuffs
@@ -102,12 +107,30 @@ class Spirit < ApplicationRecord
     self.buffs = []
   end
 
+  def apply_updates_for_buff(buff_id)
+    if(buff_id == 'shrouded')
+      battle.add_display_update(self, :health)
+      battle.add_display_update(self, :max_health)
+      battle.add_display_update(self, :debuffs)
+      battle.add_display_update(self, :time_units)
+    end
+    battle.add_display_update(self, :buffs)
+  end
+
+  def apply_updates_for_debuff(debuff_id)
+    battle.add_display_update(self, :debuffs)
+  end
+
   def has_debuff?(debuff_id)
     debuffs.include?(debuff_id)
   end
 
   def has_buff?(buff_id)
     buffs.include?(buff_id)
+  end
+
+  def has_passive?(move_id)
+    passive_moves.map(&:move_id).include?(move_id)
   end
 
   def can_debuff?(debuff_id)
@@ -145,11 +168,31 @@ class Spirit < ApplicationRecord
     self.debuffs = []
   end
 
+  def visible_health
+    has_buff?('shrouded') ? '???' : health
+  end
+
+  def visible_max_health
+    has_buff?('shrouded') ? '???' : max_health
+  end
+
+  def visible_time_units
+    has_buff?('shrouded') ? '???' : TimeUnit.reduced(time_units)
+  end
+
+  def visible_buffs
+    has_buff?('shrouded') ? ['shrouded'] : buffs
+  end
+
+  def visible_debuffs
+    has_buff?('shrouded') ? [] : debuffs
+  end
+
   def visible_state_hash
     {
       name: name,
-      health: health,
-      max_health: max_health,
+      health: visible_health,
+      max_health: visible_max_health,
       time_units: TimeUnit.reduced(time_units),
       image: ActionController::Base.helpers.image_url(image),
       buffs: buffs,
@@ -237,15 +280,15 @@ class Spirit < ApplicationRecord
     
     if(has_buff?('regenerate'))
       self.health += 1
-      team.battle.add_display_update(self, :health, health)
+      battle.add_display_update(self, :health)
       if(health >= max_health)
         remove_buff('regenerate')
-        team.battle.add_text("#{name} has finished regenerating!")
+        battle.add_text("#{name} has finished regenerating!")
       end
     end
 
     self.save!
-    team.battle.add_display_update(self, :time_units, TimeUnit.reduced(time_units))
+    battle.add_display_update(self, :time_units)
   end
 
   def reduce_time_units(amount)
@@ -399,6 +442,10 @@ class Spirit < ApplicationRecord
 
   def shift_membership_up
     shift_membership(-1)
+  end
+
+  def enemy
+    team.enemy_spirit
   end
 private
   def setup

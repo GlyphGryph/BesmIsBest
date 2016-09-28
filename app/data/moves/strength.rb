@@ -13,7 +13,7 @@ Move.new(
   types: [:buff, :special],
   nature_id: :strength,
   time_units: 1,
-  description: 'Gain the BOOSTED buff: +3 damage to your next attack. Can be stacked up to 5 times.',
+  description: 'Gain the BOOSTED buff: +4 damage to your next attack. Can be stacked up to 5 times.',
   special: lambda do |battle, owner, enemy|
     if(owner.apply_buff('pumped'))
       battle.add_text("#{owner.name} is getting pumped up!")

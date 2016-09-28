@@ -27,7 +27,7 @@ class Move
         if(action.types.include?(:attack))
           damage = action.damage
           # Apply 'pumped' modifiers if appropriate
-          damage += (3 * owner.buffs.count('pumped'))
+          damage += (4 * owner.buffs.count('pumped'))
           owner.remove_buff('pumped')
           enemy.health -= damage
           battle.add_display_update(enemy, :health)

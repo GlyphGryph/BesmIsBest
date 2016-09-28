@@ -134,7 +134,7 @@ class Spirit < ApplicationRecord
   end
 
   def has_passive?(move_id)
-    passive_moves.map(&:move_id).include?(move_id)
+    passive_moves.map(&:id).include?(move_id.to_sym)
   end
 
   def can_debuff?(debuff_id)

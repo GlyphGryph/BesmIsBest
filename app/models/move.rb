@@ -29,6 +29,13 @@ class Move
           # Apply 'pumped' modifiers if appropriate
           damage += (4 * owner.buffs.count('pumped'))
           owner.remove_buff('pumped')
+          if(enemy.has_passive?(:armor))
+            damage -= 1
+          end
+          if(enemy.has_passive?(:shield))
+            damage -= 1
+          end
+
           enemy.health -= damage
           battle.add_display_update(enemy, :health)
           if(enemy.has_buff?('shrouded'))

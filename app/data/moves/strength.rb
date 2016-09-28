@@ -41,14 +41,14 @@ Move.new(
 Move.new(
   id: :shield,
   name: 'Shield',
-  types: [:incomplete, :passive],
+  types: [:passive],
   nature_id: :strength,
   description: 'Prevent 1 damage from all incoming attacks.',
 )
 Move.new(
   id: :armor,
   name: 'Armor',
-  types: [:incomplete, :passive],
+  types: [:passive],
   nature_id: :strength,
   description: 'Prevent 1 damage from all incoming attacks.',
 )

@@ -25,10 +25,14 @@ Move.new(
 Move.new(
   id: :recover,
   name: 'Recover',
-  types: [:incomplete],
+  types: [:special],
   nature_id: :persistence,
   time_units: 3,
   description: 'Regain 6 health.',
+  special: lambda do |battle, owner, enemy|
+    healed = owner.heal(6)
+    battle.add_text("#{owner.name} has regained #{healed} health.")
+  end
 )
 Move.new(
   id: :persevere,

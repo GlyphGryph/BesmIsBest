@@ -493,6 +493,13 @@ class Spirit < ApplicationRecord
   def enemy
     team.enemy_spirit
   end
+
+  def heal(amount)
+    self.health += amount
+    battle.add_display_update(self, :health)
+    return amount
+  end
+
 private
   def setup
     spec = species

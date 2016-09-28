@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160922031652) do
+ActiveRecord::Schema.define(version: 20160928010452) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,8 +45,9 @@ ActiveRecord::Schema.define(version: 20160922031652) do
   create_table "equipped_moves", force: :cascade do |t|
     t.string   "move_id"
     t.integer  "spirit_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.boolean  "belongs_to_subspecies", default: false, null: false
   end
 
   create_table "known_moves", force: :cascade do |t|
@@ -54,6 +55,13 @@ ActiveRecord::Schema.define(version: 20160922031652) do
     t.integer  "spirit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "spirit_subspecies", force: :cascade do |t|
+    t.string   "subspecies_id"
+    t.string   "gained_move_id"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
   end
 
   create_table "spirits", force: :cascade do |t|

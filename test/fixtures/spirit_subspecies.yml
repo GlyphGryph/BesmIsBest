@@ -1,0 +1,9 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  subspecies_id: MyString
+  gained_move_id: MyString
+
+two:
+  subspecies_id: MyString
+  gained_move_id: MyString

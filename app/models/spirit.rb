@@ -24,6 +24,10 @@ class Spirit < ApplicationRecord
     species['smarts']
   end
 
+  def max_subspecies_moves
+    1
+  end
+
   def passive_moves
     equipped_moves.map{|em| Move.find(em.move_id)}.select do |move|
       move.has_type?(:passive)
@@ -229,36 +233,73 @@ class Spirit < ApplicationRecord
 
   def customization_data
     reload
-    equip_ids = equipped_moves.map{|em| em.move_id}
     {
       id: id,
       name: name,
-      number_equipped_moves: equip_ids.count,
-      max_equipped_moves: max_moves,
       image: ActionController::Base.helpers.image_url(image),
       health: max_health,
       smarts: species['smarts'],
       species: species['name'],
-      subspecies: subspecies ? subspecies['name'] : nil,
+      subspecies: {
+        exists: !!subspecies,
+        name: subspecies ? subspecies['name'] : nil,
+        moves: shaped_subspecies_equippable_moves,
+        number_equipped_moves: equipped_moves.where(belongs_to_subspecies: true).count,
+        max_equipped_moves: max_subspecies_moves
+      },
+      moves: shaped_equippable_moves,
+      number_equipped_moves: equipped_moves.count,
+      max_equipped_moves: max_moves,
       experience: {
         total: total_experience,
         natures: state['experience']['nature'].map{|key, value| {id: key, name: Nature.name_for(key), value: value} }
       },
-      moves: known_moves.map do |km|
-        { move_id: km.move_id,
-          name: Move.find(km.move_id).name,
-          equipped: equip_ids.include?(km.move_id)
-        }
-      end,
+      moves: shaped_equippable_moves,
       dismissable: teammates.present?
     }
   end
 
+  def shaped_equippable_moves
+    equip_ids = equipped_moves.map(&:move_id)
+    equippable_moves = known_moves.map(&:move_id).map do |move_id|
+      { move_id: move_id,
+        name: Move.find(move_id).name,
+        equipped: equip_ids.include?(move_id)
+      }
+    end
+    equippable_moves
+  end
+
+  def shaped_subspecies_equippable_moves
+    equip_ids = equipped_moves.map(&:move_id)
+    equippable_moves = []
+    if(subspecies.present?)
+      equippable_moves = subspecies['moves'].map do |move_id|
+        { move_id: move_id,
+          name: Move.find(move_id).name,
+          equipped: equip_ids.include?(move_id)
+        }
+      end
+    end
+    equippable_moves
+  end
+
   def equip_move(move_id)
-    if(equipped_moves.count < max_moves && known_moves.where(move_id: move_id).count > 0)
-      EquippedMove.create(spirit: self, move_id: move_id)
-      if(team.try(:character))
-        team.character.world.broadcast_update_for(team.character.user)
+    if(equipped_moves.count < max_moves && equipped_moves.where(move_id: move_id).blank?)
+      if(known_moves.where(move_id: move_id).present?)
+        EquippedMove.create(spirit: self, move_id: move_id)
+        if(team.character.present?)
+          team.character.world.broadcast_update_for(team.character.user)
+        end
+      elsif(subspecies['moves'].include?(move_id))
+        if(equipped_moves.where(belongs_to_subspecies: true).count < max_subspecies_moves)
+          EquippedMove.create(spirit: self, move_id: move_id, belongs_to_subspecies: true)
+          if(team.character.present?)
+            team.character.world.broadcast_update_for(team.character.user)
+          end
+        end
+      else
+        raise "Spirit '#{id} - #{name}' Tried to equip invalid move '#{move_id}'"
       end
     end
   end

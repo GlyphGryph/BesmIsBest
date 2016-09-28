@@ -1,0 +1,2 @@
+class SpiritSubspecy < ApplicationRecord
+end

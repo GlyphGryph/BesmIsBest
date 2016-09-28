@@ -14,7 +14,7 @@
         <div class='section stats'>
           <div>STATS</div>
           <div class='subsection'>Species: {{species}}</div>
-          {{#if subspecies}}
+          {{#if subspecies.exists}}
             <div class='subsection'>Subpecies: {{subspecies}}</div>
           {{/if}}
           <div class='subsection'>Health: {{health}}</div>
@@ -41,7 +41,7 @@
           <button class='shift-down'>Move DOWN</button>
         </div>
       </div>
-      <div class='moves'>
+      <div class='moves primary-moves'>
         {{#each moves}}
           {{#if equipped}}
             <div class='move equipped' data-id='{{move_id}}'>
@@ -55,6 +55,26 @@
           {{/if}}
         {{/each}}
       </div>
+      {{#if subspecies.exists}}
+        <div class='move-title'>
+          <span class='name'>Subspecies Moves:</span>
+          <span class='move-count'>{{subspecies.number_equipped_moves}} / {{subspecies.max_equipped_moves}} moves equipped.</span>
+        </div>
+        <div class='moves subspecies-moves'>
+          {{#each subspecies.moves}}
+            {{#if equipped}}
+              <div class='move equipped' data-id='{{move_id}}'>
+                {{name}}
+                <span class='equipped-tag'>EQUIPPED</span>
+              </div>
+            {{else}}
+              <div class='move unequipped' data-id='{{move_id}}'>
+                {{name}}
+              </div>
+            {{/if}}
+          {{/each}}
+        </div>
+      {{/if}}
     </div>
   {{/each}}
 </div>

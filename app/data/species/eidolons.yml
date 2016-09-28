@@ -30,16 +30,22 @@
       name: 'Nelferroc'
       nature_id: 'fear'
       image: 'nelferroc.png'
+      moves:
+        - 'intimidate'
     'rigby':
       id: 'rigby'
       name: 'Nillby'
       nature_id: 'persistence'
       image: 'nillby.png'
+      moves:
+        - 'intimidate'
     'braunald':
       id: 'braunald'
       name: 'Nuarbald'
       nature_id: 'strength'
       image: 'nuarbald.png'
+      moves:
+        - 'intimidate'
 'obsoc':
   id: 'obsoc'
   name: 'Obsoc'

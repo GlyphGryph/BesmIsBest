@@ -68,7 +68,7 @@ class Spirit < ApplicationRecord
   def apply_debuff(debuff_id)
     if can_debuff?(debuff_id)
       self.debuffs << debuff_id
-      apply_updates_for_debuff(buff_id)
+      apply_updates_for_debuff(debuff_id)
       return true
     else
       return false
@@ -91,7 +91,7 @@ class Spirit < ApplicationRecord
     else
       self.debuffs.delete(self.debuffs.sample)
     end
-    apply_updates_for_debuff(buff_id)
+    apply_updates_for_debuff(debuff_id)
   end
 
   def remove_buff(buff_id=nil)
@@ -262,8 +262,11 @@ class Spirit < ApplicationRecord
   def shaped_equippable_moves
     equip_ids = equipped_moves.map(&:move_id)
     equippable_moves = known_moves.map(&:move_id).map do |move_id|
+      move = Move.find(move_id)
       { move_id: move_id,
-        name: Move.find(move_id).name,
+        name: move.name,
+        description: move.description,
+        incomplete: move.has_type?(:incomplete),
         equipped: equip_ids.include?(move_id)
       }
     end
@@ -275,8 +278,11 @@ class Spirit < ApplicationRecord
     equippable_moves = []
     if(subspecies.present?)
       equippable_moves = subspecies['moves'].map do |move_id|
+        move = Move.find(move_id)
         { move_id: move_id,
-          name: Move.find(move_id).name,
+          name: move.name,
+          description: move.description,
+          incomplete: move.has_type?(:incomplete),
           equipped: equip_ids.include?(move_id)
         }
       end

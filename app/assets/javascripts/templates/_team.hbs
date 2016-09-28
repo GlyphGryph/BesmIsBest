@@ -41,16 +41,23 @@
           <button class='shift-down'>Move DOWN</button>
         </div>
       </div>
-      <div class='moves primary-moves'>
+      <div class='moves'>
         {{#each moves}}
           {{#if equipped}}
             <div class='move equipped' data-id='{{move_id}}'>
-              {{name}}
-              <span class='equipped-tag'>EQUIPPED</span>
+              <div class='name'>{{name}}: <span class='equipped-tag'>EQUIPPED</span></div>
+              <div class='description'>{{description}}</div>
+              {{#if incomplete}}
+                <div class='incomplete-tag'>INCOMPLETE</div>
+              {{/if}}
             </div>
           {{else}}
             <div class='move unequipped' data-id='{{move_id}}'>
-              {{name}}
+              <div class='name'>{{name}}:</div>
+              <div class='description'>{{description}}</div>
+              {{#if incomplete}}
+                <div class='incomplete-tag'>INCOMPLETE</div>
+              {{/if}}
             </div>
           {{/if}}
         {{/each}}

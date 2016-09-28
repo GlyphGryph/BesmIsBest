@@ -25,13 +25,17 @@ class Move
         end
 
         if(action.types.include?(:attack))
-          enemy.health -= action.damage
+          damage = action.damage
+          # Apply 'pumped' modifiers if appropriate
+          damage += (3 * owner.buffs.count('pumped'))
+          owner.remove_buff('pumped')
+          enemy.health -= damage
           battle.add_display_update(enemy, :health)
           if(enemy.has_buff?('shrouded'))
             owner.team.add_text("#{enemy.name} might have take damage from the attack.")
-            enemy.team.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
+            enemy.team.add_text("#{enemy.name} takes #{damage} damage from the attack!")
           else
-            battle.add_text("#{enemy.name} takes #{action.damage} damage from the attack!")
+            battle.add_text("#{enemy.name} takes #{damage} damage from the attack!")
           end
         end
 

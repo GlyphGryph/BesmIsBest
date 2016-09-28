@@ -115,6 +115,7 @@
     - 'attack'
     - 'shake_off'
     - 'bash'
+    - 'pump'
   learnable_moves:
     - id: 'breakthrough'
       experience:

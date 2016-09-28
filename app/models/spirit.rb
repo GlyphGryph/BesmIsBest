@@ -151,9 +151,8 @@ class Spirit < ApplicationRecord
   end
 
   def can_buff?(buff_id)
-    if(
-      has_buff?(buff_id)
-    )
+    buff = Buff.find(buff_id)
+    if(buffs.count(buff_id) >= buff.max_stacks)
       return false
     else
       return true

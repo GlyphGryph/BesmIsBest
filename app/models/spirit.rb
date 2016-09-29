@@ -333,6 +333,11 @@ class Spirit < ApplicationRecord
       end
     end
 
+    if(has_debuff?('poison'))
+      self.health -= 1
+      battle.add_display_update(self, :health)
+    end
+
     self.save!
     battle.add_display_update(self, :time_units)
   end
@@ -497,15 +502,15 @@ class Spirit < ApplicationRecord
   def heal(amount)
     self.health += amount
     battle.add_display_update(self, :health)
-    battle.add_text("#{owner.name} has regained #{healed} health.")
+    battle.add_text("#{name} has regained #{healed} health.")
     return amount
   end
 
   def harm(amount, source=nil)
-    if(enemy.has_passive?(:armor))
+    if(has_passive?(:armor))
       amount -= 1
     end
-    if(enemy.has_passive?(:shield))
+    if(has_passive?(:shield))
       amount -= 1
     end
     if(amount < 0)

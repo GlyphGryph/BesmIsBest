@@ -11,10 +11,17 @@ Move.new(
 Move.new(
   id: :poison,
   name: 'Poison',
-  types: [:incomplete],
+  types: [:special],
   nature_id: :persistence,
   time_units: 3,
   description: 'Causes POISONED debuff: Take 1 damage per tic.',
+  special: lambda do |battle, owner, enemy|
+    if(enemy.apply_debuff('poison'))
+      battle.add_text("#{enemy.name} can barely keep it together.")
+    else
+      battle.add_text("#{enemy.name} could not be poisoned.")
+    end
+  end
 )
 Move.new(
   id: :relentless,

@@ -23,31 +23,15 @@ class Move
         else
           battle.add_text("#{owner.name} uses #{action.name}")
         end
-
-        if(action.types.include?(:attack))
-          damage = action.damage
-          # Apply 'pumped' modifiers if appropriate
-          damage += (4 * owner.buffs.count('pumped'))
-          owner.remove_buff('pumped')
-          if(enemy.has_passive?(:armor))
-            damage -= 1
-          end
-          if(enemy.has_passive?(:shield))
-            damage -= 1
+        
+        action.repeats.times do
+          if(action.types.include?(:attack))
+            enemy.harm(owner.modified_damage(action.damage))
           end
 
-          enemy.health -= damage
-          battle.add_display_update(enemy, :health)
-          if(enemy.has_buff?('shrouded'))
-            owner.team.add_text("#{enemy.name} might have take damage from the attack.")
-            enemy.team.add_text("#{enemy.name} takes #{damage} damage from the attack!")
-          else
-            battle.add_text("#{enemy.name} takes #{damage} damage from the attack!")
+          if(action.types.include?(:special) || action.types.include?(:player))
+            action.special(battle, owner, enemy, target_id)
           end
-        end
-
-        if(action.types.include?(:special) || action.types.include?(:player))
-          action.special(battle, owner, enemy, target_id)
         end
       end
       owner.team.save!
@@ -73,7 +57,7 @@ class Move
 
   @@all = {}
 
-  attr_accessor :id, :name, :types, :nature_id, :time_units, :damage, :description
+  attr_accessor :id, :name, :types, :nature_id, :time_units, :damage, :description, :repeats
 
   def initialize(args)
     @id = args[:id]
@@ -83,6 +67,7 @@ class Move
     @time_units = args[:time_units]
     @damage = args[:damage]
     @description = args[:description]
+    @repeats = args[:repeats] || 1
 
     @special_lambda = args[:special]
     @targets_lambda = args[:targets]

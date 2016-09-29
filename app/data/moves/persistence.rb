@@ -1,10 +1,12 @@
 Move.new(
   id: :flurry,
   name: 'Flurry',
-  types: [:incomplete],
+  types: [:attack],
   nature_id: :persistence,
   time_units: 2,
+  damage: 1,
   description: 'Attack 5 times for 1 damage per attack.',
+  repeats: 5
 )
 Move.new(
   id: :poison,
@@ -30,8 +32,7 @@ Move.new(
   time_units: 3,
   description: 'Regain 6 health.',
   special: lambda do |battle, owner, enemy|
-    healed = owner.heal(6)
-    battle.add_text("#{owner.name} has regained #{healed} health.")
+    owner.heal(6)
   end
 )
 Move.new(

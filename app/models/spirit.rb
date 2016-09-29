@@ -497,7 +497,37 @@ class Spirit < ApplicationRecord
   def heal(amount)
     self.health += amount
     battle.add_display_update(self, :health)
+    battle.add_text("#{owner.name} has regained #{healed} health.")
     return amount
+  end
+
+  def harm(amount, source=nil)
+    if(enemy.has_passive?(:armor))
+      amount -= 1
+    end
+    if(enemy.has_passive?(:shield))
+      amount -= 1
+    end
+    if(amount < 0)
+      amount = 0
+    end
+
+    self.health -= amount
+    battle.add_display_update(self, :health)
+    if(has_buff?('shrouded'))
+      enemy.team.add_text("#{name} might have taken damage.")
+      team.add_text("#{name} takes #{amount} damage!")
+    else
+      battle.add_text("#{name} takes #{amount} damage!")
+    end
+    return amount
+  end
+
+  def modified_damage(damage)
+    # Apply 'pumped' modifiers if appropriate
+    damage += (4 * buffs.count('pumped'))
+    remove_buff('pumped')
+    return damage
   end
 
 private

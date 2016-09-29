@@ -45,15 +45,23 @@ Move.new(
 Move.new(
   id: :persevere,
   name: 'Persevere',
-  types: [:incomplete],
+  types: [:special],
   nature_id: :persistence,
   time_units: 5,
   description: 'Regain full health, but reduce your maximum health by half for the remainder of the battle.',
+  special: lambda do |battle, owner, enemy|
+    owner.max_health = owner.max_health/2
+    battle.add_display_update(owner, :max_health)
+    if(owner.health > owner.max_health)
+      owner.health = owner.max_health
+    end
+    owner.heal(100)
+  end
 )
 Move.new(
   id: :conditioning,
   name: 'Conditioning',
-  types: [:incomplete, :passive],
+  types: [:passive],
   nature_id: :persistence,
   description: 'Increases your maximum health by 10.',
 )

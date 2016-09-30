@@ -56,7 +56,7 @@ Move.new(
 Move.new(
   id: :magnet,
   name: 'I Will Be Your Shield',
-  types: [:incomplete, :passive],
+  types: [:passive],
   nature_id: :faith,
-  description: 'Half the damage (rounded up) and all debuffs that would effect an ally effect this Eidolon instead.',
+  description: 'Damage and debuffs that would effect an ally effect this Eidolon instead.',
 )

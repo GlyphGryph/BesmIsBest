@@ -11,19 +11,15 @@
     - 'shake_off'
     - 'no_fear'
     - 'guide'
+    - 'reset'
+    - 'magnet'
   learnable_moves:
     - id: 'smite'
       experience:
         total: 5
-    - id: 'reset'
-      experience:
-        total: 10
     - id: 'cleanse'
       experience:
-        total: 15
-    - id: 'magnet'
-      experience:
-        total: 20
+        total: 10
   subspecies:
     'obsoc':
       id: 'obsoc'
@@ -88,19 +84,16 @@
     - 'shake_off'
     - 'flurry'
     - 'recover'
+    - 'poison'
+    - 'conditioning'
+    - 'relentless'
   learnable_moves:
-    - id: 'poison'
+    - id: 'regenerate'
       experience:
         total: 5
-    - id: 'relentless'
-      experience:
-        total: 10
-    - id: 'conditioning'
-      experience:
-        total: 15
     - id: 'persevere'
       experience:
-        total: 20
+        total: 10
   subspecies:
     'nothing': 'nothing'
 'braunald':
@@ -115,21 +108,15 @@
     - 'attack'
     - 'shake_off'
     - 'bash'
+    - 'armor'
+    - 'breakthrough'
+    - 'pump'
   learnable_moves:
-    - id: 'breakthrough'
-      experience:
-        total: 4
     - id: 'shield'
       experience:
-        total: 8
+        total: 5
     - id: 'slam'
       experience:
-        total: 12
-    - id: 'armor'
-      experience:
-        total: 16
-    - id: 'pump'
-      experience:
-        total: 20
+        total: 10
   subspecies:
     'nothing': 'nothing'

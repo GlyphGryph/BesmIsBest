@@ -92,19 +92,21 @@ class Team < ApplicationRecord
   end
 
   def add_display_update(spirit, stat, value=nil)
-    case stat
-    when :health
-      value = (active_spirit == spirit) ? spirit.health : spirit.visible_health
-    when :max_health
-      value = (active_spirit == spirit) ? spirit.max_health : spirit.visible_max_health
-    when :buffs
-      value = (active_spirit == spirit) ? spirit.buffs : spirit.visible_buffs
-    when :debuffs
-      value = (active_spirit == spirit) ? spirit.debuffs : spirit.visible_debuffs
-    when :time_units
-      value = (active_spirit == spirit) ? TimeUnit.reduced(spirit.time_units) : spirit.visible_time_units
+    unless(value.present?)
+      value = case stat
+      when :health
+        spirits.include?(spirit) ? spirit.health : spirit.visible_health
+      when :max_health
+        spirits.include?(spirit) ? spirit.max_health : spirit.visible_max_health
+      when :buffs
+        spirits.include?(spirit) ? spirit.buffs : spirit.visible_buffs
+      when :debuffs
+        spirits.include?(spirit) ? spirit.debuffs : spirit.visible_debuffs
+      when :time_units
+        spirits.include?(spirit) ? TimeUnit.reduced(spirit.time_units) : spirit.visible_time_units
+      end
     end
-    add_event({type: 'update', side: (spirit == active_spirit ? 'own' : 'enemy'), stat: stat, value: value })
+    add_event({type: 'update', side: (spirits.include?(spirit) ? 'own' : 'enemy'), stat: stat, value: value })
   end
 
   def add_swap(spirit)
@@ -143,7 +145,7 @@ class Team < ApplicationRecord
 
   def add_wild_spirit(species = nil)
     reload
-    species ||= Species.sample.id
+    species = Species.find('obsoc')#||= Species.sample.id
     if(species['type']=='eidolon')
       name = "Wild "+species['name']
     else

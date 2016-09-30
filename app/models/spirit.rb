@@ -67,6 +67,14 @@ class Spirit < ApplicationRecord
 
   def apply_debuff(debuff_id)
     if can_debuff?(debuff_id)
+      if(!has_passive?(:magnet) && magnetic_teammate = teammates.alive.find{|t| t.has_passive?(:magnet)})
+        magnetic_teammate.apply_debuff(debuff_id)
+        team.add_swap(magnetic_teammate)
+        battle.add_text("#{magnetic_teammate.name} intervenes, taking #{name}'s affliction onto themselves!")
+        team.add_swap(self)
+        return 0
+      end
+
       self.debuffs << debuff_id
       apply_updates_for_debuff(debuff_id)
       return true
@@ -166,6 +174,10 @@ class Spirit < ApplicationRecord
   def reset_state
     reload
     self.time_units = TimeUnit.multiplied(TimeUnit.max)
+    self.max_health = species['max_health']
+    if(has_passive?(:conditioning))
+      self.max_health += 10
+    end
     self.health = self.max_health
     self.buffs = []
     self.debuffs = []
@@ -197,7 +209,7 @@ class Spirit < ApplicationRecord
       health: visible_health,
       max_health: visible_max_health,
       time_units: TimeUnit.reduced(time_units),
-      image: ActionController::Base.helpers.image_url(image),
+      image: image_path,
       buffs: buffs,
       debuffs: debuffs,
       teammates: teammate_statuses
@@ -210,7 +222,7 @@ class Spirit < ApplicationRecord
       health: health,
       max_health: max_health,
       time_units: TimeUnit.reduced(time_units),
-      image: ActionController::Base.helpers.image_url(image),
+      image: image_path,
       moves: shaped_usable_moves,
       buffs: buffs,
       debuffs: debuffs,
@@ -227,7 +239,7 @@ class Spirit < ApplicationRecord
   end
 
   def teammates
-    mates = team.spirits.where.not(id: id)
+    team.spirits.where.not(id: id)
   end
 
   def customization_data
@@ -235,7 +247,7 @@ class Spirit < ApplicationRecord
     {
       id: id,
       name: name,
-      image: ActionController::Base.helpers.image_url(image),
+      image: image_path,
       health: max_health,
       smarts: species['smarts'],
       species: species['name'],
@@ -431,10 +443,14 @@ class Spirit < ApplicationRecord
       end
       self.state['subspecies_id'] = subspecies_found.try(:[],'id')
       self.image = subspecies ? subspecies['image'] : species['image']
-      team.add_display_update(self, 'image', ActionController::Base.helpers.image_url(image))
+      team.add_display_update(self, 'image', image_path)
       self.save!
       team.add_text(message)
     end
+  end
+
+  def image_path
+    ActionController::Base.helpers.image_url(image)
   end
 
   def subspecies_candidate_for(nature_id)
@@ -500,13 +516,24 @@ class Spirit < ApplicationRecord
   end
 
   def heal(amount)
+    original_health = health
     self.health += amount
+    if(health > max_health)
+      self.health = max_health
+    end
     battle.add_display_update(self, :health)
-    battle.add_text("#{name} has regained #{healed} health.")
+    battle.add_text("#{name} has regained #{health - original_health} health.")
     return amount
   end
 
   def harm(amount, source=nil)
+    if(!has_passive?(:magnet) && magnetic_teammate = teammates.alive.find{|t| t.has_passive?(:magnet)})
+      team.add_swap(magnetic_teammate)
+      battle.add_text("#{magnetic_teammate.name} intervenes, protecting #{name} from the attack!")
+      magnetic_teammate.harm(amount)
+      team.add_swap(self)
+      return 0
+    end
     if(has_passive?(:armor))
       amount -= 1
     end

@@ -26,10 +26,18 @@ Move.new(
 Move.new(
   id: :relentless,
   name: 'Relentless Assault',
-  types: [:incomplete],
+  types: [:attack, :special],
   nature_id: :persistence,
-  time_units: 1,
-  description: 'Deals 3 damage. You gain the LOCKED IN (Relentless Assault) debuff: You may not use any other ability, unless you cannot use this ability.'
+  time_units: 2,
+  damage: 7,
+  description: 'Deals 7 damage. You gain the LOCKED IN (Relentless Assault) debuff: You may not use any other ability, unless you cannot use this ability.',
+  special: lambda do |battle, owner, enemy|
+    if(owner.apply_debuff('locked_in', :relentless))
+      battle.add_text("#{owner.name} cannot use any other move.")
+    else
+      battle.add_text("#{owner.name} cannot be locked in, or already is locked in.")
+    end
+  end
 )
 Move.new(
   id: :recover,

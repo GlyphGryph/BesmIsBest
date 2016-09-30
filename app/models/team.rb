@@ -104,6 +104,8 @@ class Team < ApplicationRecord
         spirits.include?(spirit) ? spirit.debuffs : spirit.visible_debuffs
       when :time_units
         spirits.include?(spirit) ? TimeUnit.reduced(spirit.time_units) : spirit.visible_time_units
+      when :moves
+        spirits.include?(spirit) ? spirit.shaped_usable_moves : []
       end
     end
     add_event({type: 'update', side: (spirits.include?(spirit) ? 'own' : 'enemy'), stat: stat, value: value })

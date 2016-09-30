@@ -56,7 +56,11 @@ class Spirit < ApplicationRecord
   end
 
   def usable_moves
-    non_passive_moves + player_moves
+    moves = non_passive_moves + player_moves
+    if(has_debuff?('locked_in'))
+      moves = moves.select{|m| m.id.to_s == state['debuff_modifiers']['locked_in'].to_s}
+    end
+    moves
   end
 
   def shaped_usable_moves
@@ -65,18 +69,23 @@ class Spirit < ApplicationRecord
     end
   end
 
-  def apply_debuff(debuff_id)
-    if can_debuff?(debuff_id)
+  def apply_debuff(debuff_id, debuff_modifier=nil)
+    if can_debuff?(debuff_id, debuff_modifier)
       if(!has_passive?(:magnet) && magnetic_teammate = teammates.alive.find{|t| t.has_passive?(:magnet)})
-        magnetic_teammate.apply_debuff(debuff_id)
+        magnetic_teammate.apply_debuff(debuff_id, debuff_modifier)
+        magnetic_teammate.save!
         team.add_swap(magnetic_teammate)
         battle.add_text("#{magnetic_teammate.name} intervenes, taking #{name}'s affliction onto themselves!")
         team.add_swap(self)
-        return 0
+        return false
       end
 
       self.debuffs << debuff_id
+      if(debuff_modifier)
+        self.state['debuff_modifiers'][debuff_id] = debuff_modifier.to_s
+      end
       apply_updates_for_debuff(debuff_id)
+
       return true
     else
       return false
@@ -94,11 +103,9 @@ class Spirit < ApplicationRecord
   end
 
   def remove_debuff(debuff_id=nil)
-    if(debuff_id)
-      self.debuffs.delete(debuff_id)
-    else
-      self.debuffs.delete(self.debuffs.sample)
-    end
+    debuff_id ||= self.debuffs.sample
+    self.debuffs.delete(debuff_id)
+    self.state['debuff_modifiers'].delete(debuff_id)
     apply_updates_for_debuff(debuff_id)
   end
 
@@ -113,13 +120,15 @@ class Spirit < ApplicationRecord
 
   def remove_debuffs
     self.debuffs = []
+    apply_updates_for_debuffs
   end
 
   def remove_buffs
     self.buffs = []
+    apply_updates_for_debuffs
   end
 
-  def apply_updates_for_buff(buff_id)
+  def apply_updates_for_buff(buff_id=nil)
     if(buff_id == 'shrouded')
       battle.add_display_update(self, :health)
       battle.add_display_update(self, :max_health)
@@ -129,7 +138,10 @@ class Spirit < ApplicationRecord
     battle.add_display_update(self, :buffs)
   end
 
-  def apply_updates_for_debuff(debuff_id)
+  def apply_updates_for_debuff(debuff_id=nil)
+    if(debuff_id == 'locked_in')
+      battle.add_display_update(self, :moves)
+    end
     battle.add_display_update(self, :debuffs)
   end
 
@@ -145,12 +157,14 @@ class Spirit < ApplicationRecord
     passive_moves.map(&:id).include?(move_id.to_sym)
   end
 
-  def can_debuff?(debuff_id)
+  def can_debuff?(debuff_id, debuff_modifier=nil)
     if(
       has_debuff?(debuff_id) ||
       (debuff_id == 'hesitant' && can_move?(:no_fear)) ||
       (debuff_id == 'panic' && can_move?(:no_fear)) ||
-      (debuff_id == 'despair' && can_move?(:no_fear))
+      (debuff_id == 'despair' && can_move?(:no_fear)) ||
+      (debuff_id == 'locked_in' && can_move?(:breakthrough)) ||
+      (debuff_modifier && debuff_id == 'locked_in' && !can_move?(debuff_modifier.to_sym))
     )
       return false
     else
@@ -178,6 +192,7 @@ class Spirit < ApplicationRecord
     self.health = max_health
     self.buffs = []
     self.debuffs = []
+    self.state['debuff_modifiers'] = {}
   end
 
   def possible_max_health
@@ -582,6 +597,7 @@ private
     self.buffs = []
     self.debuffs = []
     self.state = {
+      debuff_modifiers: {},
       experience: {
         total: 0,
         nature: {

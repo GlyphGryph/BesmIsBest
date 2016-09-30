@@ -12,7 +12,7 @@ Move.new(
     end
   end,
   targets: lambda do |owner|
-    owner.teammates.map{|spirit| {id: spirit.id, name: spirit.name} }
+    owner.teammates.alive.map{|spirit| {id: spirit.id, name: spirit.name} }
   end
 )
 Move.new(

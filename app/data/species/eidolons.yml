@@ -9,15 +9,15 @@
   starting_moves:
     - 'attack'
     - 'shake_off'
-    - 'no_fear'
     - 'guide'
     - 'reset'
-    - 'magnet'
+    - 'no_fear'
+    - 'smite'
   learnable_moves:
-    - id: 'smite'
+    - id: 'cleanse'
       experience:
         total: 5
-    - id: 'cleanse'
+    - id: 'magnet'
       experience:
         total: 10
   subspecies:

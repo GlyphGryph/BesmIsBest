@@ -42,7 +42,7 @@ class Spirit < ApplicationRecord
 
   def player_moves
     moves = [:wait, :flee]
-    if teammates.count > 0
+    if teammates.alive.count > 0
       moves << :swap
     end
     if team.spirits.count < team.max_spirits && !(team.enemy_team.character.try(:user))
@@ -174,13 +174,18 @@ class Spirit < ApplicationRecord
   def reset_state
     reload
     self.time_units = TimeUnit.multiplied(TimeUnit.max)
-    self.max_health = species['max_health']
-    if(has_passive?(:conditioning))
-      self.max_health += 10
-    end
-    self.health = self.max_health
+    self.max_health = possible_max_health
+    self.health = max_health
     self.buffs = []
     self.debuffs = []
+  end
+
+  def possible_max_health
+    possible = species['max_health'] + [total_experience, species['max_health']].min
+    if(has_passive?(:conditioning))
+      possible += 10
+    end
+    return possible
   end
 
   def visible_health
@@ -248,7 +253,7 @@ class Spirit < ApplicationRecord
       id: id,
       name: name,
       image: image_path,
-      health: max_health,
+      health: possible_max_health,
       smarts: species['smarts'],
       species: species['name'],
       subspecies: {
@@ -531,7 +536,11 @@ class Spirit < ApplicationRecord
       team.add_swap(magnetic_teammate)
       battle.add_text("#{magnetic_teammate.name} intervenes, protecting #{name} from the attack!")
       magnetic_teammate.harm(amount)
-      team.add_swap(self)
+      magnetic_teammate.save!
+      if(magnetic_teammate.defeated?)
+        battle.add_text("#{magnetic_teammate.name} has fallen!")
+      end
+      battle.add_swap(self)
       return 0
     end
     if(has_passive?(:armor))

@@ -145,7 +145,7 @@ class Team < ApplicationRecord
 
   def add_wild_spirit(species = nil)
     reload
-    species = Species.find('obsoc')#||= Species.sample.id
+    species ||= Species.sample.id
     if(species['type']=='eidolon')
       name = "Wild "+species['name']
     else

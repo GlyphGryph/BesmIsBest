@@ -46,7 +46,14 @@
           {{#if equipped}}
             <div class='move equipped' data-id='{{move_id}}'>
               <div class='name'>{{name}}: <span class='equipped-tag'>EQUIPPED</span></div>
-              <div class='description'>{{description}}</div>
+              <div class='description'>
+                {{description}} 
+                {{#if time_units}}
+                  [TIME COST: {{time_units}}]
+                {{else}}
+                  [PASSIVE]
+                {{/if}}
+              </div>
               {{#if incomplete}}
                 <div class='incomplete-tag'>INCOMPLETE</div>
               {{/if}}
@@ -54,7 +61,14 @@
           {{else}}
             <div class='move unequipped' data-id='{{move_id}}'>
               <div class='name'>{{name}}:</div>
-              <div class='description'>{{description}}</div>
+              <div class='description'>
+                {{description}} 
+                {{#if time_units}}
+                  [TIME COST: {{time_units}}]
+                {{else}}
+                  [PASSIVE]
+                {{/if}}
+              </div>
               {{#if incomplete}}
                 <div class='incomplete-tag'>INCOMPLETE</div>
               {{/if}}

@@ -65,7 +65,7 @@ class Spirit < ApplicationRecord
 
   def shaped_usable_moves
     usable_moves.map do |move|
-      {name: move.name, id: move.id, targets: move.targets(self)}
+      {name: move.name, id: move.id, targets: move.targets(self), time_units: move.time_units}
     end
   end
 
@@ -298,6 +298,7 @@ class Spirit < ApplicationRecord
       move = Move.find(move_id)
       { move_id: move_id,
         name: move.name,
+        time_units: move.time_units,
         description: move.description,
         incomplete: move.has_type?(:incomplete),
         equipped: equip_ids.include?(move_id)
@@ -314,6 +315,7 @@ class Spirit < ApplicationRecord
         move = Move.find(move_id)
         { move_id: move_id,
           name: move.name,
+          time_units: move.time_units,
           description: move.description,
           incomplete: move.has_type?(:incomplete),
           equipped: equip_ids.include?(move_id)

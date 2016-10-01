@@ -28,20 +28,27 @@
       image: 'nelferroc.png'
       moves:
         - 'intimidate'
+        - 'cowardice'
+        - 'shroud'
+        - 'doom'
     'rigby':
       id: 'rigby'
       name: 'Nillby'
       nature_id: 'persistence'
       image: 'nillby.png'
       moves:
-        - 'intimidate'
+        - 'recover'
+        - 'poison'
+        - 'relentless'
+        - 'conditioning'
     'braunald':
       id: 'braunald'
       name: 'Nuarbald'
       nature_id: 'strength'
       image: 'nuarbald.png'
       moves:
-        - 'intimidate'
+        - 'shield'
+        - 'bash'
 'obsoc':
   id: 'obsoc'
   name: 'Obsoc'
@@ -72,14 +79,19 @@
       nature_id: 'persistence'
       image: 'rigsoc.png'
       moves:
-        - 'intimidate'
+        - 'regenerate'
+        - 'persevere'
+        - 'poison'
     'nellaf':
       id: 'nellaf'
       name: 'Eidder'
       nature_id: 'faith'
       image: 'eidder.png'
       moves:
-        - 'intimidate'
+        - 'reset'
+        - 'no_fear'
+        - 'guide'
+        - 'cleanse'
 'rigby':
   id: 'rigby'
   name: 'Rigby'
@@ -110,14 +122,19 @@
       nature_id: 'fear'
       image: 'rogsby.png'
       moves:
-        - 'intimidate'
+        - 'cowardice'
+        - 'painful_jab'
+        - 'doom'
+        - 'hide'
     'nellaf':
       id: 'nellaf'
       name: 'Relf'
       nature_id: 'fear'
       image: 'relf.png'
       moves:
-        - 'intimidate'
+        - 'smite'
+        - 'magnet'
+        - 'no_fear'
 'braunald':
   id: 'braunald'
   name: 'Braunald'

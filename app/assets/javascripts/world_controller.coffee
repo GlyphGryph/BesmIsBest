@@ -58,6 +58,8 @@ class Eidolon.WorldController
     Eidolon.Channels.world.perform('shift_spirit_down', {spirit_id: $(this).parents('.spirit').data('id')})
 
   requestBattle: (event) ->
+    $('body').off('click', '.request-battle', @requestBattle)
+    $('body .request-battle').remove()
     Eidolon.Channels.master.perform('request_battle', {character_id: $(this).data('id')})
 
   receiveKey: (key) ->

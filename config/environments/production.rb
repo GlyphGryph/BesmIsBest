@@ -85,4 +85,5 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   config.web_socket_server_url = "wss://whispering-mountain-88337.herokuapp.com/cable" 
+  config.action_cable.allowed_request_origins = ['https://whispering-mountain-88337.herokuapp.com', 'http://whispering-mountain-88337.herokuapp.com']
 end

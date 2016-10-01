@@ -56,19 +56,15 @@
     - 'intimidate'
     - 'hide'
     - 'doom'
+    - 'shroud'
+    - 'cowardice'
   learnable_moves:
     - id: 'terrify'
       experience:
         total: 5
-    - id: 'shroud'
+    - id: 'painful_jab'
       experience:
         total: 10
-    - id: 'needle'
-      experience:
-        total: 15
-    - id: 'cowardice'
-      experience:
-        total: 20
   subspecies:
     'nothing': 'nothing'
 'rigby':

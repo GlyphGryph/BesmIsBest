@@ -119,13 +119,15 @@ class Spirit < ApplicationRecord
   end
 
   def remove_debuffs
-    self.debuffs = []
-    apply_updates_for_debuffs
+    while(!debuffs.empty?)
+      remove_buff
+    end
   end
 
   def remove_buffs
-    self.buffs = []
-    apply_updates_for_debuffs
+    while(!buffs.empty?)
+      remove_buff
+    end
   end
 
   def apply_updates_for_buff(buff_id=nil)
@@ -391,11 +393,6 @@ class Spirit < ApplicationRecord
     end
   end
 
-  def swap_in
-    reduce_time_units!(swap_cost)
-    self.save!
-  end
-
   def species
     Species.find(species_id)
   end
@@ -408,8 +405,12 @@ class Spirit < ApplicationRecord
     species['type']
   end
 
-  def swap_cost
-    2
+  def swap_in_cost
+    if(has_passive?(:eagerness))
+      return 0
+    else
+      return 2
+    end
   end
 
   def total_experience

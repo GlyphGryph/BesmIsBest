@@ -190,7 +190,8 @@ class Team < ApplicationRecord
     self.active_spirit = spirits.alive.first
     self.save!
     if(active_spirit)
-      active_spirit.swap_in
+      active_spirit.reduce_time_units!(active_spirit.swap_in_cost)
+      active_spirit.save!
       battle.add_swap(active_spirit)
       battle.add_text("#{active_spirit.name} has entered the fray!")
     end
@@ -200,9 +201,10 @@ class Team < ApplicationRecord
     raise "Spirit #{spirit.id} is not a valid spirit on team #{id}" unless spirits.include?(spirit)
     raise "Spirit #{spirit.id} is not a living spirit on team #{id}" unless spirit.alive?
     add_text("#{active_spirit.name} falls back so #{spirit.name} can take their place.")
+    spirit.reduce_time_units!(spirit.swap_in_cost)
     self.active_spirit = spirit
+    spirit.save!
     self.save!
-    active_spirit.swap_in
     battle.add_swap(active_spirit)
     battle.add_text("#{active_spirit.name} has entered the fray!")
   end

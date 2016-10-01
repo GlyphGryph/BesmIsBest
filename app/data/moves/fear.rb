@@ -87,7 +87,7 @@ Move.new(
 Move.new(
   id: :cowardice,
   name: 'Cowardice',
-  types: [:incomplete, :passive],
+  types: [:passive],
   nature_id: :fear,
-  description: 'Switching out of battle has no time unit cost for this Eidolon.',
+  description: 'Switching this Eidolon out of battle is free.',
 )

@@ -63,3 +63,10 @@ Move.new(
   nature_id: :passion,
   description: 'Your attacks deal -3 damage, but every time you attack you gain the MOMENTUM debuff: your attacks deal +1 damage.',
 )
+Move.new(
+  id: :eagerness,
+  name: 'Eagerness',
+  types: [:passive],
+  nature_id: :passion,
+  description: 'Switching to this Eidolon has no associated time cost.',
+)

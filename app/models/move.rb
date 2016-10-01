@@ -4,9 +4,14 @@ class Move
       enemy = battle.other_team(owner.team).active_spirit
       p "!! EXECUTING MOVE #{id}!!"
       action = find(id.to_sym)
-      
+
+      if(action.id == :swap && owner.has_passive?(:cowardice))
+        time_cost = 0
+      else
+        time_cost = action.time_units
+      end
       # Return early if we fail to pay the time unit cost
-      unless owner.reduce_time_units(action.time_units)
+      unless owner.reduce_time_units(time_cost)
         return false
       end
 

@@ -129,7 +129,7 @@
     'nellaf':
       id: 'nellaf'
       name: 'Relf'
-      nature_id: 'fear'
+      nature_id: 'faith'
       image: 'relf.png'
       moves:
         - 'smite'

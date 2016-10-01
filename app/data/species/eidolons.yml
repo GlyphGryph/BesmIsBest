@@ -66,7 +66,20 @@
       experience:
         total: 10
   subspecies:
-    'nothing': 'nothing'
+    'rigby':
+      id: 'rigby'
+      name: 'Rigsoc'
+      nature_id: 'persistence'
+      image: 'rigsoc.png'
+      moves:
+        - 'intimidate'
+    'nellaf':
+      id: 'nellaf'
+      name: 'Eidder'
+      nature_id: 'faith'
+      image: 'eidder.png'
+      moves:
+        - 'intimidate'
 'rigby':
   id: 'rigby'
   name: 'Rigby'
@@ -91,7 +104,20 @@
       experience:
         total: 10
   subspecies:
-    'nothing': 'nothing'
+    'obsoc':
+      id: 'obsoc'
+      name: 'Rogsby'
+      nature_id: 'fear'
+      image: 'rogsby.png'
+      moves:
+        - 'intimidate'
+    'nellaf':
+      id: 'nellaf'
+      name: 'Relf'
+      nature_id: 'fear'
+      image: 'relf.png'
+      moves:
+        - 'intimidate'
 'braunald':
   id: 'braunald'
   name: 'Braunald'

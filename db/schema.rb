@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160928010452) do
+ActiveRecord::Schema.define(version: 20161001014016) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -48,6 +48,7 @@ ActiveRecord::Schema.define(version: 20160928010452) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.boolean  "belongs_to_subspecies", default: false, null: false
+    t.index ["spirit_id", "move_id"], name: "index_equipped_moves_on_spirit_id_and_move_id", unique: true, using: :btree
   end
 
   create_table "known_moves", force: :cascade do |t|
@@ -55,6 +56,7 @@ ActiveRecord::Schema.define(version: 20160928010452) do
     t.integer  "spirit_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["spirit_id", "move_id"], name: "index_known_moves_on_spirit_id_and_move_id", unique: true, using: :btree
   end
 
   create_table "spirit_subspecies", force: :cascade do |t|

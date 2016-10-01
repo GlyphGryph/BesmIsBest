@@ -441,9 +441,9 @@ class Spirit < ApplicationRecord
   end
   
   def learn_new_moves
-    learnable_moves.each do |move_id|
-      KnownMove.create(spirit: self, move_id: move_id)
-      team.add_text("#{name} learned a new technique! #{name} now knows '#{Move.find(move_id).name}'")
+    learnable_moves.each do |move|
+      KnownMove.create!(spirit: self, move_id: move.id)
+      team.add_text("#{name} learned a new technique! #{name} now knows '#{move.name}'")
     end
   end
 
@@ -485,14 +485,12 @@ class Spirit < ApplicationRecord
   end
 
   def learnable_moves
-    known_move_ids = known_moves
-    move_data = Species.find(species_id)['learnable_moves']
-    return [] unless move_data
-    move_data = move_data.select do |learnable_move|
-      ignored = known_moves.map(&:id).include?(learnable_move['id'])
-      !ignored && total_experience >= learnable_move['experience']['total']
-    end
-    move_data.map{|learnable_move| learnable_move['id']}
+    learnset = Species.find(species_id)['learnable_moves']
+    return [] unless learnset
+    learnset.select!{|learnable_move| total_experience >= learnable_move['experience']['total'] }
+    known_move_ids = known_moves.map(&:move_id)
+    learnset.reject!{|learnable_move| known_move_ids.include?(learnable_move['id']) }
+    learnset.map{|learnable_move| Move.find(learnable_move['id'])}
   end
 
   def subspecies_id

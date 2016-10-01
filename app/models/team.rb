@@ -60,7 +60,7 @@ class Team < ApplicationRecord
       if(battle.current_team != self)
         raise "Attempted to act out of turn!"
       elsif(!active_spirit.can_move?(move_id))
-        raise "Attempted to use a move they don't know!"
+        raise "Attempted to use '#{move_id}, a move they don't have! This spirit only has '#{active_spirit.equipped_moves.map(&:move_id).join("','")}'."
       else
         raise "Something went wrong, you were not ready despite it being your turn."
       end

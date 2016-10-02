@@ -2,9 +2,11 @@
   float:right;
   border:1px solid black;
   width:300px;
-  padding:10px;
+  padding:5px;
 
   .player{
+    border: 1px dotted black;
+    padding: 5px;
     .name{
       display: inline;
     }

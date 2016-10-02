@@ -5,4 +5,6 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :trackable, :validatable
 
   has_one :character
+
+  scope :alive, -> { where(alive: true) }
 end

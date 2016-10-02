@@ -30,7 +30,8 @@ class Eidolon.WorldController
     console.log(data)
     @map.rows = data.map
     @team = data.team
-    @players = data.players
+    @character = data.character
+    @players = @processPlayers(data.players)
     for row, row_num in @map.rows
       for cell, column_num in row
         if(cell == 0)
@@ -38,6 +39,18 @@ class Eidolon.WorldController
         else
           @map.rows[row_num][column_num] = {class: 'occupied', occupied: true}
     $('body').html(HandlebarsTemplates.map(@))
+
+  updatePlayerList: (data) ->
+    @players = @processPlayers(data.players)
+    $('body').html(HandlebarsTemplates.map(@))
+
+  processPlayers: (player_list) ->
+    for player in player_list
+      if player.id != @character.id
+        player.available = true
+      else
+        player.available = false
+    return player_list
 
   move: (direction) ->
     Eidolon.Channels.world.perform('move', {direction: direction})

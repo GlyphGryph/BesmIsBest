@@ -8,7 +8,7 @@ class MasterChannel < ApplicationCable::Channel
     stream_for current_user
 
     state = current_user.character.status
-    MasterChannel.broadcast_to current_user, action: 'subscribed', state: state
+    MasterChannel.broadcast_to current_user, action: 'subscribed', mode: 'world', state: state
   end
 
   def start_battle

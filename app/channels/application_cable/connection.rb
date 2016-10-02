@@ -5,6 +5,18 @@ module ApplicationCable
     def connect
       self.current_user = find_verified_user
       logger.add_tags 'ActionCable', current_user.email
+
+      current_user.alive = true
+      current_user.save!
+      world = World.first
+      WorldChannel.broadcast_to world, mode: 'world', action: 'updatePlayerList', players: world.players
+    end
+
+    def disconnect
+      current_user.alive = false
+      current_user.save!
+      world = World.first
+      WorldChannel.broadcast_to world, mode: 'world', action: 'updatePlayerList', players: world.players
     end
 
     protected

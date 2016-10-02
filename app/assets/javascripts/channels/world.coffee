@@ -10,3 +10,6 @@ class Eidolon.WorldSubscription
   update: (data) ->
     @app.update(data)
     @app.commandProcessed()
+
+  updatePlayerList: (data) ->
+    @app.updatePlayerList(data)

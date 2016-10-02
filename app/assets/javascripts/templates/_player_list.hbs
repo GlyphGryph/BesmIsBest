@@ -1,9 +1,11 @@
 <div id='player-list'>
-  <h2>Other players:</h2>
+  <h2>Active Players:</h2>
   {{#each .}}
     <div class='player'>
       <div class='name'>{{name}}</div>
-      <button class='request-battle' data-id='{{id}}'>Challenge</button>
+      {{#if available}}
+        <button class='request-battle' data-id='{{id}}'>Challenge</button>
+      {{/if}}
     </div>
   {{/each}}
 </div>

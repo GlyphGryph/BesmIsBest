@@ -7,9 +7,9 @@ class WorldChannel < ApplicationCable::Channel
     current_user.character.world.broadcast_update_for(current_user)
   end
 
-  def unsubscribed
-    current_user.character.leave_battle_mode
-  end
+  # def unsubscribed
+  #   current_user.character.leave_battle_mode
+  # end
 
   def move(data)
     current_user.character.move(data['direction'])

@@ -9,8 +9,13 @@ class World < ApplicationRecord
       mode: 'world',
       map: self.reload.full_map,
       team: user.character.team.customization_data,
-      players: characters.where.not(id: user.character.id).map(&:view_data)
+      players: players,
+      character: user.character.view_data
     )
+  end
+  
+  def players
+    User.alive.map{|u| u.character.view_data}
   end
 
   def full_map

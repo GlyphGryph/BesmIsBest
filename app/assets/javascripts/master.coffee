@@ -100,6 +100,10 @@ class Eidolon.MasterController
     if(data.mode == @currentController.mode)
       @currentController.updateEvents(data)
 
+  updatePlayerList: (data) ->
+    if(data.mode == @currentController.mode)
+      @currentController.updatePlayerList(data)
+
   updateSubscription: (data) ->
     if(data.mode == @currentController.mode)
       @currentController.subscribed(data)

@@ -5,7 +5,7 @@ class Character < ApplicationRecord
 
   before_create :setup
   after_create :setup_associations
-  
+
   def mode
     team.battle ? :battle : :world
   end

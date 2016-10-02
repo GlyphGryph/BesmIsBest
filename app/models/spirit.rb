@@ -287,7 +287,6 @@ class Spirit < ApplicationRecord
         total: total_experience,
         natures: state['experience']['nature'].map{|key, value| {id: key, name: Nature.name_for(key), value: value} }
       },
-      moves: shaped_equippable_moves,
       dismissable: teammates.present?
     }
   end
@@ -564,6 +563,9 @@ class Spirit < ApplicationRecord
     end
     if(has_passive?(:shield))
       amount -= 1
+    end
+    if(has_debuff?('despair'))
+      amount *= 2
     end
     if(amount < 0)
       amount = 0

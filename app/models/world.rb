@@ -15,7 +15,7 @@ class World < ApplicationRecord
   end
   
   def players
-    User.alive.map{|u| u.character.view_data}
+    User.alive.select{|u| u.character}.map{|u| u.character.view_data}
   end
 
   def full_map
